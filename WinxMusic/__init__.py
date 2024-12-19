@@ -10,8 +10,8 @@ from .logging import LOGGER
 # Directories
 dirr()
 
-# Check Git Updates
-git()
+# # Check Git Updates
+# git()
 
 # Save cookies in txt
 # save_cookies()
