@@ -274,6 +274,7 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
             db[chat_id][0]["markup"] = "tg"
             await callback_query.edit_message_text(txt)
         elif "vid_" in queued:
+            thumbnail = None
             mystic = await callback_query.message.reply_text(
                 _["call_8"], disable_web_page_preview=True
             )
