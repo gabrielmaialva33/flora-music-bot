@@ -10,10 +10,12 @@ httpx[http2]
 kurigram==2.1.38
 lyricsgenius
 motor
+pillow
 pykeyboard2
+pyromod
 psutil
 pytube
-py-tgcalls==2.1.0
+py-tgcalls~=2.1.0
 python-dotenv
 pyyaml
 requests
@@ -24,5 +26,5 @@ urllib3
 uvloop
 flask
 gunicorn
-yt-dlp
-py-yt-search>=0.2
+yt-dlp~=2025.3.27
+py-yt-search
