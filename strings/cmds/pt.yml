@@ -1,106 +1,111 @@
-# Bilingual Commands - English/Portuguese
+# Commands in English Language
 
-# Bot
-PING_COMMAND: [ "ping", "alive", "vivo" ]
-PRIVACY_COMMAND: [ "privacy", "privacidade" ]
-START_COMMAND: [ "start", "iniciar" ]
-HELP_COMMAND: [ "help", "ajuda" ]
-SETTINGS_COMMAND: [ "settings", "config" ]
-RELOAD_COMMAND: [ "reload", "recarregar" ]
+# Bot Commands
+PING_COMMAND: [ "ping", "alive", "aalive" ]
+PRIVACY_COMMAND: [ "privacy" ]
+START_COMMAND: [ "start" ]
+HELP_COMMAND: [ "help" ]
+SETTINGS_COMMAND: [ "settings", "setting" ]
+RELOAD_COMMAND: [ "admincache", "reload" ]
 GSTATS_COMMAND: [ "gstats" ]
-STATS_COMMAND: [ "stats", "estatísticas" ]
-LANGUAGE_COMMAND: [ "lang", "idioma" ]
+STATS_COMMAND: [ "stats" ]
+LANGUAGE_COMMAND: [ "lang", "language", "langs" ]
 
-# Playback
-PLAY_COMMAND: [ "play", "tocar" ]
-PLAYMODE_COMMAND: [ "playmode", "modoreprodução" ]
-CHANNELPLAY_COMMAND: [ "channelplay", "reproducaocanal" ]
-STREAM_COMMAND: [ "stream", "transmitir" ]
+# Play Commands
+PLAY_COMMAND: [ "play", "vplay", "cplay", "cvplay", "playforce", "vplayforce", "cplayforce", "cvplayforce" ]
+PLAYMODE_COMMAND: [ "playmode" ]
+CHANNELPLAY_COMMAND: [ "channelplay" ]
+STREAM_COMMAND: [ "stream", "cstream", "streamforce", "cstreamforce" ]
 
-# Playlist
+#Playlists Command
 PLAYLIST_COMMAND: [ "playlist" ]
-PLAY_PLAYLIST_COMMAND: [ "playplaylist", "tocarplaylist" ]
-DELETE_PLAYLIST_COMMAND: [ "deleteplaylist", "deletarplaylist" ]
-ADD_PLAYLIST_COMMAND: [ "addplaylist", "adicionarplaylist" ]
+PLAY_PLAYLIST_COMMAND: [ "playplaylist", "vplayplaylist" ]
+DELETE_PLAYLIST_COMMAND: [ "deleteplaylist", "delplaylist" ]
+ADD_PLAYLIST_COMMAND: [ "addplaylist" ]
+
 
 # Tools
-QUEUE_COMMAND: [ "queue", "fila" ]
-SONG_COMMAND: [ "song", "video", "musica" ]
-LYRICS_COMMAND: [ "lyrics", "letra" ]
+QUEUE_COMMAND: [ "queue","cqueue","cplayer", "playing", "cplaying", "player" ]
+SONG_COMMAND: [ "song", "video" ]
+LYRICS_COMMAND: [ "lyrics" ]
 
-# Administration
-AUTH_COMMAND: [ "auth", "autorizados" ]
-UNAUTH_COMMAND: [ "unauth", "removerautorizado" ]
-AUTHUSERS_COMMAND: [ "authusers", "usuariosautorizados" ]
-PAUSE_COMMAND: [ "pause", "pausar" ]
-RESUME_COMMAND: [ "resume", "retomar" ]
-MUTE_COMMAND: [ "mute", "silenciar" ]
-UNMUTE_COMMAND: [ "unmute", "desmutar" ]
-STOP_COMMAND: [ "stop", "parar" ]
-SKIP_COMMAND: [ "skip", "pular" ]
-SHUFFLE_COMMAND: [ "shuffle", "embaralhar" ]
-LOOP_COMMAND: [ "loop" ]
-SEEK_COMMAND: [ "seek", "buscar" ]
-SEEK_BACK_COMMAND: [ "seekback", "retroceder" ]
-REBOOT_COMMAND: [ "reboot", "reiniciar" ]
 
-# Sudo Users
-ADDSUDO_COMMAND: [ "addsudo", "adicionarsudo" ]
-DELSUDO_COMMAND: [ "delsudo", "removersudo" ]
-SUDOUSERS_COMMAND: [ "sudolist", "listasudo" ]
+# Admin Commands
+AUTH_COMMAND: [ "auth" ]
+UNAUTH_COMMAND: [ "unauth" ]
+AUTHUSERS_COMMAND: [ "authusers" ]
+PAUSE_COMMAND: [ "pause", "cpause" ]
+RESUME_COMMAND: [ "resume", "cresume" ]
+MUTE_COMMAND: [ "cmute", "mute" ]
+UNMUTE_COMMAND: [ "unmute", "cunmute" ]
+STOP_COMMAND: [ "stop", "end", "cstop", "cend" ]
+SKIP_COMMAND: [ "skip", "cskip" ]
+SHUFFLE_COMMAND: [ "shuffle", "cshuffle" ]
+LOOP_COMMAND: [ "loop", "cloop" ]
+SEEK_COMMAND: [ "seek", "cseek" ]
+SEEK_BACK_COMMAND: [ "seekback", "cseekback" ]
+REBOOT_COMMAND: [ "reboot" ]
 
-# Broadcast
-BROADCAST_COMMAND: [ "broadcast", "gcast", "transmissao" ]
+# Sudo Users Commaands
 
-# Blacklist
-BLACKLISTCHAT_COMMAND: [ "blacklistchat", "bloquearchat" ]
-WHITELISTCHAT_COMMAND: [ "whitelistchat", "liberarchat" ]
-BLACKLISTEDCHAT_COMMAND: [ "blacklistedchat", "chatsbloqueados" ]
+# Sudo Command
+ADDSUDO_COMMAND: [ "addsudo" ]
+DELSUDO_COMMAND: [ "delsudo" ]
+SUDOUSERS_COMMAND: [ "sudolist" ]
 
-# Video Calls
-VIDEOLIMIT_COMMAND: [ "set_video_limit", "limitevideo" ]
-VIDEOMODE_COMMAND: [ "videomode", "modovideo" ]
+#Broadcast
+BROADCAST_COMMAND: [ "broadcast", "gcast" ]
 
-# Maintenance
-MAINTENANCE_COMMAND: [ "maintenance", "manutencao" ]
+#Blacklist chat
+BLACKLISTCHAT_COMMAND: [ "blacklistchat" ]
+WHITELISTCHAT_COMMAND: [ "whitelistchat" ]
+BLACKLISTEDCHAT_COMMAND: [ "blacklistedchat" ]
+
+# Video Calls Command
+VIDEOLIMIT_COMMAND: [ "set_video_limit" ]
+VIDEOMODE_COMMAND: [ "videomode" ]
+
+#Mantenance
+MAINTENANCE_COMMAND: [ "maintenance" ]
 LOGGER_COMMAND: [ "logger" ]
 
-# Heroku
-GETLOG_COMMAND: [ "getlog", "log", "obterlog" ]
-GETVAR_COMMAND: [ "getvar", "obtervar" ]
-DELVAR_COMMAND: [ "delvar", "deletarvar" ]
-SETVAR_COMMAND: [ "setvar", "definirvar" ]
-USAGE_COMMAND: [ "usage", "uso" ]
+#Heroku
+GETLOG_COMMAND: [ "log", "logs", "get_log", "getlog", "get_logs", "getlogs" ]
+GETVAR_COMMAND: [ "get_var", "getvar" ]
+DELVAR_COMMAND: [ "del_var", "delvar" ]
+SETVAR_COMMAND: [ "set_var", "setvar" ]
+USAGE_COMMAND: [ "usage" ]
 
-# Basic Bot Commands
-UPDATE_COMMAND: [ "update", "up", "atualizar" ]
-RESTART_COMMAND: [ "restart", "reiniciar" ]
-AUTOEND_COMMAND: [ "autoend", "autoencerrar" ]
 
-# Private Mode
-AUTHORIZE_COMMAND: [ "authorize", "autorizar" ]
-UNAUTHORIZE_COMMAND: [ "unauthorize", "removerautorizado" ]
-AUTHORIZED_COMMAND: [ "authorized", "autorizados" ]
+#Basic Bot Commands
+UPDATE_COMMAND: [ "update","gitpull", "up" ]
+RESTART_COMMAND: [ "restart" ]
+AUTOEND_COMMAND: [ "autoend" ]
 
-# User Blocking
-BLOCK_COMMAND: [ "block", "bloquear" ]
-UNBLOCK_COMMAND: [ "unblock", "desbloquear" ]
-BLOCKED_COMMAND: [ "blockedusers", "usuariosbloqueados" ]
+#Private Bot Mode
+AUTHORIZE_COMMAND: [ "authorize" ]
+UNAUTHORIZE_COMMAND: [ "unauthorize" ]
+AUTHORIZED_COMMAND: [ "authorized" ]
 
-# Speed Test
-SPEEDTEST_COMMAND: [ "speedtest", "velocidade" ]
+#Block Users Command
+BLOCK_COMMAND: [ "block" ]
+UNBLOCK_COMMAND: [ "unblock" ]
+BLOCKED_COMMAND: [ "blockedusers" ]
 
-# Voice Chat
-ACTIVEVC_COMMAND: [ "activevc", "vozativa" ]
-ACTIVEVIDEO_COMMAND: [ "activevideo", "videoativo" ]
+#sPEEDTEST
+SPEEDTEST_COMMAND: [ "speedtest" ]
+
+#Voice chat commands
+ACTIVEVC_COMMAND: [ "activevoice","activevc" ]
+ACTIVEVIDEO_COMMAND: [ "activevideo","activevd" ]
 AC_COMMAND: [ "ac" ]
 
-# Gban
+#Gban Commands
 GBAN_COMMAND: [ "gban" ]
 UNGBAN_COMMAND: [ "ungban" ]
-GBANNED_COMMAND: [ "gbannedusers", "usuariosgbaneados" ]
+GBANNED_COMMAND: [ "gbannedusers" ]
 
 # AnimiZeY
-MOVIES_COMMAND: [ "movies", "filmes", "cinema", "filme" ]
-ANIME_COMMAND: [ "anime" ]
-FOLDER_COMMAND: [ "folder", "pasta" ]
+MOVIES_COMMAND: [ "movies", "movie" ]
+ANIME_COMMAND: [ "anime", "animes" ]
+FOLDER_COMMAND: [ "folder", "folders" ]
