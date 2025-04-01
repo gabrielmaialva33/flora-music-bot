@@ -100,11 +100,11 @@ class Userbot(Client):
                     )
                     await asyncio.sleep(e.value)
                 except (
-                        ChatWriteForbidden,
-                        ChatSendMediaForbidden,
-                        ChatSendPhotosForbidden,
-                        MessageNotModified,
-                        MessageIdInvalid,
+                    ChatWriteForbidden,
+                    ChatSendMediaForbidden,
+                    ChatSendPhotosForbidden,
+                    MessageNotModified,
+                    MessageIdInvalid,
                 ):
                     pass
                 except StopPropagation:
