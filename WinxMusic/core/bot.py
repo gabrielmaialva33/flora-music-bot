@@ -53,11 +53,11 @@ class WinxBot(Client):
                     )
                     await asyncio.sleep(e.value)
                 except (
-                        ChatWriteForbidden,
-                        ChatSendMediaForbidden,
-                        ChatSendPhotosForbidden,
-                        MessageNotModified,
-                        MessageIdInvalid,
+                    ChatWriteForbidden,
+                    ChatSendMediaForbidden,
+                    ChatSendPhotosForbidden,
+                    MessageNotModified,
+                    MessageIdInvalid,
                 ):
                     pass
                 except StopPropagation:
@@ -191,7 +191,7 @@ class WinxBot(Client):
         LOG_GROUP_ID = (
             f"@{config.LOG_GROUP_ID}"
             if isinstance(config.LOG_GROUP_ID, str)
-               and not config.LOG_GROUP_ID.startswith("@")
+            and not config.LOG_GROUP_ID.startswith("@")
             else config.LOG_GROUP_ID
         )
 

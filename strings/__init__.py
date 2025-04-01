@@ -97,9 +97,9 @@ if not commands:
 
 
 def command(
-        commands: Union[str, List[str]],
-        prefixes: Union[str, List[str], None] = "/",
-        case_sensitive: bool = False,
+    commands: Union[str, List[str]],
+    prefixes: Union[str, List[str], None] = "/",
+    case_sensitive: bool = False,
 ):
     async def func(flt, client: Client, message: Message):
         lang_code = await get_lang(message.chat.id)
@@ -110,7 +110,7 @@ def command(
 
         if not await is_maintenance():
             if (
-                    message.from_user and message.from_user.id not in SUDOERS
+                message.from_user and message.from_user.id not in SUDOERS
             ) or not message.from_user:
                 if message.chat.type == ChatType.PRIVATE:
                     await message.reply_text(_["maint_4"])
@@ -149,19 +149,19 @@ def command(
             if with_prefix and flt.prefixes:
                 for prefix in flt.prefixes:
                     if text.startswith(prefix):
-                        without_prefix = text[len(prefix):]
+                        without_prefix = text[len(prefix) :]
                         if re.match(
-                                rf"^(?:{cmd}(?:@?{username})?)(?:\s|$)",
-                                without_prefix,
-                                flags=re.IGNORECASE if not flt.case_sensitive else 0,
+                            rf"^(?:{cmd}(?:@?{username})?)(?:\s|$)",
+                            without_prefix,
+                            flags=re.IGNORECASE if not flt.case_sensitive else 0,
                         ):
                             return prefix + cmd
             else:
                 # Match without prefix
                 if re.match(
-                        rf"^(?:{cmd}(?:@?{username})?)(?:\s|$)",
-                        text,
-                        flags=re.IGNORECASE if not flt.case_sensitive else 0,
+                    rf"^(?:{cmd}(?:@?{username})?)(?:\s|$)",
+                    text,
+                    flags=re.IGNORECASE if not flt.case_sensitive else 0,
                 ):
                     return cmd
             return None
