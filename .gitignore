@@ -2,6 +2,7 @@
 .winx.env
 .cinewinx.env
 .dev.env
+.env.cinewinx
 .cache
 WinxLogs.txt
 .DS_Store
@@ -16,3 +17,5 @@ tempdb/
 plugins
 utils
 .venv
+
+**/.claude/settings.local.json
