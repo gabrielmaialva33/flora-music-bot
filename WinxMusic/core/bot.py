@@ -13,7 +13,6 @@ from pyrogram import Client, StopPropagation, errors
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import (
     ChatSendMediaForbidden,
-    ChatSendPhotosForbidden,
     ChatWriteForbidden,
     FloodWait,
     MessageIdInvalid,
@@ -55,7 +54,6 @@ class WinxBot(Client):
                 except (
                     ChatWriteForbidden,
                     ChatSendMediaForbidden,
-                    ChatSendPhotosForbidden,
                     MessageNotModified,
                     MessageIdInvalid,
                 ):
@@ -99,7 +97,7 @@ class WinxBot(Client):
         get_me = await self.get_me()
         self.username = get_me.username
         self.id = get_me.id
-        self.name = get_me.full_name
+        self.name = get_me.first_name
         self.mention = get_me.mention
 
         try:
