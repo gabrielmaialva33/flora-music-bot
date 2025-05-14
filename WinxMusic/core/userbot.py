@@ -7,7 +7,6 @@ from functools import wraps
 from pyrogram import Client, StopPropagation
 from pyrogram.errors import (
     ChatSendMediaForbidden,
-    ChatSendPhotosForbidden,
     ChatWriteForbidden,
     FloodWait,
     MessageIdInvalid,
@@ -102,7 +101,6 @@ class Userbot(Client):
                 except (
                     ChatWriteForbidden,
                     ChatSendMediaForbidden,
-                    ChatSendPhotosForbidden,
                     MessageNotModified,
                     MessageIdInvalid,
                 ):
