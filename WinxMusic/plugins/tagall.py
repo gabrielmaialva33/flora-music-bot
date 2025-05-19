@@ -37,17 +37,17 @@ async def tag_all_users(_, message):
         return
 
     if message.chat.id in SPAM_CHATS:
-        return await message.reply_text("<blockquote><b>Tag all sedang berjalan der, ketik /cancel untuk membatalkan der</b></blockquote>", parse_mode="HTML")
+        return await message.reply_text("<blockquote><b>Tag all sedang berjalan der, ketik /cancel untuk membatalkan der</b></blockquote>")
 
     replied = message.reply_to_message
     if len(message.command) < 2 and not replied:
-        await message.reply_text("<blockquote><b>Kasih teks nya der\nContoh: /tagall Halo semuanya!</b></blockquote>", parse_mode="HTML")
+        await message.reply_text("<blockquote><b>Kasih teks nya der\nContoh: /tagall Halo semuanya!</b></blockquote>")
         return
 
     try:
         SPAM_CHATS.append(message.chat.id)
         usernum = 0
-        usertxt = f"<blockquote><b>{ASCII_ART}</b></blockquote>\n\n"
+        usertxt = f"<blockquote><b>{ASCII_ART.replace('<', '&lt;').replace('>', '&gt;')}</b></blockquote>\n\n"
 
         async for m in app.get_chat_members(message.chat.id):
             if message.chat.id not in SPAM_CHATS:
@@ -63,13 +63,13 @@ async def tag_all_users(_, message):
             usertxt += f"\n<blockquote><b>{emoji} {quote} {symbol} {m.user.first_name}</b></blockquote>"
 
             if usernum == 7:
-                await replied.reply_text(usertxt, disable_web_page_preview=True, parse_mode="HTML")
+                await replied.reply_text(usertxt, disable_web_page_preview=True)
                 await asyncio.sleep(1)
                 usernum = 0
-                usertxt = f"<blockquote><b>{ASCII_ART}</b></blockquote>\n\n"
+                usertxt = f"<blockquote><b>{ASCII_ART.replace('<', '&lt;').replace('>', '&gt;')}</b></blockquote>\n\n"
 
         if usernum != 0:
-            await replied.reply_text(usertxt, disable_web_page_preview=True, parse_mode="HTML")
+            await replied.reply_text(usertxt, disable_web_page_preview=True)
     except FloodWait as e:
         await asyncio.sleep(e.value + 2)  # Tambahkan buffer waktu
     finally:
@@ -83,6 +83,6 @@ async def cancelcmd(_, message):
         return
     if chat_id in SPAM_CHATS:
         SPAM_CHATS.remove(chat_id)
-        return await message.reply_text("<blockquote><b>Tag all sukses dihentikan der</b></blockquote>", parse_mode="HTML")
+        return await message.reply_text("<blockquote><b>Tag all sukses dihentikan der</b></blockquote>")
     else:
-        await message.reply_text("<blockquote><b>Gak ada proses berjalan der</b></blockquote>", parse_mode="HTML")
+        await message.reply_text("<blockquote><b>Gak ada proses berjalan der</b></blockquote>")
