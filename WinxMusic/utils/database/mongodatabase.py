@@ -1,4 +1,5 @@
 from typing import Dict, List, Union
+from WinxMusic.utils.database.mongodatabase import setup_database
 
 from WinxMusic.core.mongo import mongodb
 
