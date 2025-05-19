@@ -84,7 +84,7 @@ async def freeoff_handler(client: Client, message: Message):
 @app.on_message(filters.group)
 async def group_handler(client: Client, message: Message):
     await message.reply("Pesan diterima di grup.")
-  import asyncio
+import asyncio
 import re
 from pyrogram import filters, Client
 from pyrogram.types import Message
