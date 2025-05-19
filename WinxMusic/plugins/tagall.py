@@ -10,13 +10,11 @@ SPAM_CHATS = []
 
 EMOJIS = ["🔥", "⚡", "🌟", "🚀", "🎯", "💥", "🎉", "💫", "❤️", "🌀"]
 SYMBOLS = ["✦", "➤", "✪", "★", "❖", "✺"]
-QUOTES = [
-    "   ‌ ⑅         ⑅
+QUOTES = ["   ‌ ⑅         ⑅
     ૮  ˊ ˘ ˋ  ა
 ‌ପ ‌ /  つ❤️ぅ 
     ⊂、 / 
-         U!"
-]
+         U!"]
 
 async def is_admin(chat_id, user_id):
     admin_ids = [
