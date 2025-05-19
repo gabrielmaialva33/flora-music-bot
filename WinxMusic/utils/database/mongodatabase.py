@@ -1,6 +1,9 @@
 from typing import Dict, List, Union
 
 from WinxMusic.core.mongo import mongodb
+async def setup_database():
+    from WinxMusic.core.mongo import mongodb
+    return mongodb
 
 queriesdb = mongodb.queries
 userdb = mongodb.userstats
