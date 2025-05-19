@@ -1,0 +1,125 @@
+Auth: |
+  <b>Pengguna yang disetujui dapat menggunakan perintah admin tanpa izin admin di obrolan Anda.</b>
+
+  <b>✧ {0}</b> [Nama pengguna] - Tambahkan pengguna ke DAFTAR OTORITAS grup.
+
+  <b>✧ {1}</b> [Nama pengguna] - Hapus pengguna dari DAFTAR OTORITAS grup.
+
+  <b>✧ {2}</b> - Periksa DAFTAR OTORITAS grup.
+
+Admin: |
+  <b>c berarti pemutaran di saluran</b>
+
+  <b>✧ {0}</b> - Jeda musik yang sedang diputar.
+  <b>✧ {1}</b> - Lanjutkan musik yang dijeda.
+  <b>✧ {2}</b> - Bisukan musik yang sedang diputar.
+  <b>✧ {3}</b> - Aktifkan kembali musik yang dibisukan.
+  <b>✧ {4}</b> - Lewati musik yang sedang diputar.
+  <b>✧ {5}</b> - Hentikan musik yang sedang diputar.
+  <b>✧ {6}</b> - Kocok acak daftar putar/lagu dalam antrean.
+  <b>✧ {7}</b> - Maju musik.
+  <b>✧ {8}</b> - Mundurkan musik ke durasinya.
+  <b>✧ {9}</b> - Nyalakan ulang bot untuk obrolan Anda.
+
+  <b>✧ {4}</b> [Nomor (Contoh: 3)] - Lewati musik ke nomor tertentu. Contoh: <b>/skip 3</b> akan melewati ke lagu ketiga dalam antrean dan mengabaikan 1 dan 2.
+
+  <b>✧ {10}</b> [Aktifkan/Nonaktifkan] atau [Nomor antara 1-10] - Ketika diaktifkan, bot akan mengulang lagu saat ini dari 1 hingga 10 kali di obrolan suara. Nilai default putaran adalah 10 kali.
+
+Aktif: |
+  <b>✧ {0}</b> - Periksa obrolan suara aktif di bot.
+
+  <b>✧ {1}</b> - Periksa panggilan suara dan video aktif di bot.
+
+  <b>✧ {2}</b> - Periksa panggilan video aktif di bot.
+
+  <b>✧ {3}</b> - Periksa statistik bot.
+
+Pemutaran: |
+  <b>✧ {0}</b> - Bot akan mulai memutar kueri yang Anda berikan di obrolan suara atau streaming tautan langsung di obrolan suara.
+
+  <b>✧ {1}</b> - Perintah Paksa Pemutaran untuk bot menghentikan musik yang sedang diputar di obrolan suara dan mulai memutar lagu yang dicari secara instan, tanpa mengganggu/membersihkan antrean.
+
+  <b>✧ {2}</b> - Hubungkan saluran ke grup dan streaming musik di obrolan suara saluran dari grup Anda.
+
+  <b>✧ {3}</b> - Streaming URL yang Anda yakini langsung atau m3u8, yang tidak dapat diputar oleh /play.
+
+G-cast: |
+  <b>{0} [Pesan atau Balas ke pesan apa pun]</b> » Siarkan pesan ke obrolan yang dilayani oleh bot
+  <u>Mode siaran:</u>
+
+  <b><code>-pin</code></b> » Sematkan pesan yang disiarkan di obrolan yang dilayani
+
+  <b><code>-pinloud</code></b> » Sematkan pesan yang disiarkan di obrolan yang dilayani dan kirimkan pemberitahuan ke anggota
+
+  <b><code>-user</code></b> » Siarkan pesan ke pengguna yang memulai bot Anda [Anda juga dapat menyematkan pesan dengan menambahkan `-pin` atau `-pinloud`]
+
+  <b><code>-assistant</code></b> » Siarkan pesan Anda melalui semua asisten bot
+
+  <b><code>-nobot</code></b> » Pastikan **bot** tidak menyiarkan pesan [Berguna saat Anda tidak ingin menyiarkan pesan ke grup]
+
+  > <b>Contoh:</b> <code>/{0} -user -assistant -pin Menguji siaran</code>
+
+Bot: |
+  <b>★ {0}</b> - Dapatkan statistik 10 Lagu Teratas Global, 10 Pengguna Bot Teratas, 10 Obrolan Teratas di Bot, 10 Lagu Teratas di obrolan, dll.
+
+  <b>★ {1}</b> - Periksa pengguna Sudo dari bot.
+
+  <b>★ {2} [Nama Lagu]</b> - Cari lirik lagu tertentu di web.
+
+  <b>★ {3} [Nama Lagu] atau [Link YT]</b> - Unduh lagu apa pun dari YouTube dalam format MP3 atau MP4.
+
+  <b>★ {4}</b> - Periksa daftar antrean lagu.
+
+  <u><b>⚡️Bot Pribadi:</b></u>
+  
+  <b>✧ {5} [CHAT_ID]</b> - Izinkan obrolan menggunakan bot Anda.
+
+  <b>✧ {6} [CHAT_ID]</b> - Cegah obrolan menggunakan bot Anda.
+
+  <b>✧ {7}</b> - Periksa semua obrolan yang diizinkan dari bot Anda.
+
+P-List: |
+  <b>{0}</b> - Periksa semua daftar putar Anda di server bot
+
+  <b>{1}</b> - Hapus lagu apa pun dari daftar putar yang disimpan
+
+  <b>{2}</b> - Mulai memutar daftar putar yang disimpan dalam **audio**
+
+  <b>{3}</b> - Mulai memutar daftar putar dalam **video**
+
+B-list: |
+  <b>✧ {0}</b> [ID obrolan] - Tambahkan obrolan apa pun ke daftar hitam untuk menggunakan Bot Musik.
+  <b>✧ {1}</b> [ID obrolan] - Tambahkan obrolan apa pun dari daftar hitam ke daftar putih untuk menggunakan Bot Musik.
+  <b>✧ {2}</b> - Periksa semua obrolan yang diblokir.
+
+  <b>✧ {3}</b> [Nama pengguna atau balas ke pengguna] - Cegah pengguna menggunakan perintah bot.
+  <b>✧ {4}</b> [Nama pengguna atau balas ke pengguna] - Hapus pengguna dari daftar blokir bot.
+  <b>✧ {5}</b> - Periksa daftar pengguna yang diblokir.
+
+  <b>✧ {6}</b> [Nama pengguna atau balas ke pengguna] - Gban pengguna dari semua obrolan yang dilayani dan cegah mereka menggunakan bot Anda.
+  <b>✧ {7}</b> [Nama pengguna atau balas ke pengguna] - Hapus pengguna dari daftar gban bot dan izinkan mereka menggunakan bot Anda.
+  <b>✧ {8}</b> - Periksa daftar pengguna yang dibanned.
+
+Dev: |
+  <b><u>Tambahkan dan hapus sudoers:</u></b>
+
+  <b>{0} [Nama pengguna atau balas ke pengguna] - Tambahkan sudo ke bot Anda</b>
+  <b>{1} [Nama pengguna atau ID pengguna atau balas ke pengguna] - Hapus dari sudoers bot</b>
+  <b>{2} - Dapatkan daftar semua sudoers</b>
+
+  <b><u>Heroku:</u></b>
+
+  <b>{3}</b> - Penggunaan Dyno
+  <b>{4} [Nama Variabel]</b> - Dapatkan variabel konfigurasi
+  <b>{5} [Nama Variabel]</b> - Hapus variabel
+  <b>{6} [Nama Variabel] [Nilai]</b> - Tambahkan atau perbarui variabel. Pisahkan variabel dan nilainya dengan spasi
+
+  <b><u>Perintah Bot:</u></b>
+
+  <b>{7}</b> - Nyalakan ulang bot (hanya untuk SUDOERS)
+  <b>{8}</b> - Perbarui bot
+  <b>{9}</b> - Periksa kecepatan server
+  <b>{10} [enable / disable]</b> - Ubah mode pemeliharaan bot
+  <b>{11} [enable / disable]</b> - Alihkan log kueri yang dicari ke grup log
+  <b>{12} [Jumlah baris]</b> - Dapatkan log server
+  <b>{13} [enable / disable]</b> - Akhiri siaran secara otomatis setelah 30 detik jika tidak ada yang mendengarkan musik
