@@ -107,7 +107,7 @@ async def tag_all_users(_, message):
 
 # Fungsi untuk men-tag semua admin di grup
 @app.on_message(
-    filters.command(["admin", "admins", "report"], prefixes=["/"]) & filters.grou)
+    filters.command(["admin", "admins", "report"], prefixes=["/"]) & filters.group)
 async def admintag_with_reporting(client, message):
     if not message.from_user:
         return
