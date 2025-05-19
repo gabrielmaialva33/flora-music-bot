@@ -10,11 +10,18 @@ SPAM_CHATS = []
 
 EMOJIS = ["🔥", "⚡", "🌟", "🚀", "🎯", "💥", "🎉", "💫", "❤️", "🌀"]
 SYMBOLS = ["✦", "➤", "✪", "★", "❖", "✺"]
-QUOTES = ["   ‌ ⑅         ⑅
+QUOTES = [
+    "Tetap semangat!", "Jangan lupa bahagia!", "Waktunya bersinar!",
+    "Lanjutkan perjuangan!", "Kita hebat bersama!", "Bangkit dan maju!"
+]
+
+ASCII_ART = """   
+       ⑅         ⑅
     ૮  ˊ ˘ ˋ  ა
-‌ପ ‌ /  つ❤️ぅ 
-    ⊂、 / 
-         U!"]
+ ପ ‌ /  つ❤️ぅ  
+    ⊂、 /  
+         U!
+"""
 
 async def is_admin(chat_id, user_id):
     admin_ids = [
@@ -40,7 +47,7 @@ async def tag_all_users(_, message):
     try:
         SPAM_CHATS.append(message.chat.id)
         usernum = 0
-        usertxt = ""
+        usertxt = f"<blockquote><b>{ASCII_ART}</b></blockquote>\n\n"
 
         async for m in app.get_chat_members(message.chat.id):
             if message.chat.id not in SPAM_CHATS:
@@ -59,7 +66,7 @@ async def tag_all_users(_, message):
                 await replied.reply_text(usertxt, disable_web_page_preview=True, parse_mode="HTML")
                 await asyncio.sleep(1)
                 usernum = 0
-                usertxt = ""
+                usertxt = f"<blockquote><b>{ASCII_ART}</b></blockquote>\n\n"
 
         if usernum != 0:
             await replied.reply_text(usertxt, disable_web_page_preview=True, parse_mode="HTML")
