@@ -13,3 +13,4 @@ __pycache__/
 tempdb/
 *.egg-info/
 .idea
+.claude
