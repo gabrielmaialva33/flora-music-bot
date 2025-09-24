@@ -1,3 +1,4 @@
+from .animezey import AnimeZey
 from .apple import Apple
 from .carbon import Carbon
 from .jiosavan import Saavn
@@ -15,3 +16,4 @@ soundcloud = SoundCloud()
 spotify = Spotify()
 telegram = Telegram()
 youtube = YouTube()
+animezey = AnimeZey()

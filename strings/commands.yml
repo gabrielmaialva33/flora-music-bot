@@ -1,389 +1,468 @@
 START_COMMAND:
   ar: [ "تفعيل", "ميوزك" ]
   ku: [ "دەستپێکردن", "چالاککردن" ]
+  pt: [ "start", "iniciar" ]
   en: [ "start" ]
   tr: [ "baslat" ]
 
 PING_COMMAND:
   ar: [ "بينج", "بنج" ]
   ku: [ "پینگ" ]
+  pt: [ "ping", "vivo" ]
   en: [ "ping", "alive", "aalive" ]
   tr: [ "ping" ]
 
 HELP_COMMAND:
   ar: [ "مساعده" ]
   ku: [ "یارمەتی", "فەرمانەکان" ]
+  pt: [ "ajuda", "help" ]
   en: [ "help" ]
   tr: [ "yardim", "yardım" ]
 
 SETTINGS_COMMAND:
   ar: [ "اعدادات", "الاعدادت", "اعدادات", "الاعدادات" ]
   ku: [ "ڕێکخستنەکان", "ڕێکخستن" ]
+  pt: [ "config", "configuracoes", "settings" ]
   en: [ "settings", "setting" ]
   tr: [ "ayarlar", "ayar" ]
 
 RELOAD_COMMAND:
   ar: [ "ريلود" ]
   ku: [ "نوێکردنەوەی ئەدمین", "ڕیلۆد" ]
+  pt: [ "recarregar", "reload", "admincache" ]
   en: [ "admincache", "reload" ]
   tr: [ "admincache", "reload" ]
 
 GSTATS_COMMAND:
   ar: [ "الاحصائيات", "احصائيات" ]
   ku: [ "ئاماری گشتی", "ئامارەکان" ]
+  pt: [ "gstats", "estatisticasglobais" ]
   en: [ "gstats" ]
   tr: [ "gstats" ]
 
 STATS_COMMAND:
   ar: [ "إحصائيات" ]
   ku: [ "ئامار" ]
+  pt: [ "stats", "estatisticas" ]
   en: [ "stats" ]
   tr: [ "stats" ]
 
 LANGUAGE_COMMAND:
   ar: [ "لغه", "اللغه" ]
   ku: [ "زمان", "زمانەکان" ]
+  pt: [ "idioma", "lingua", "lang" ]
   en: [ "lang", "language", "langs" ]
   tr: [ "dil", "diller" ]
 
 PLAY_COMMAND:
   ar: [ "تشغيل", "شغل" ]
   ku: [ "پەخشکردنی", "لێدانی", "پلەی", "کارکردنی", "پەخشکردن" ]
+  pt: [ "play", "tocar", "vplay", "cplay" ]
   en: [ "play", "vplay", "cplay", "cvplay", "playforce", "vplayforce", "cplayforce", "cvplayforce" ]
   tr: [ "oynat", "voynat", "coynat" ]
 
 PLAYMODE_COMMAND:
   ar: [ "وضع تشغيل", "المصرحين" ]
   ku: [ "دۆخی لێدان", "دۆخی کارکردن", "دۆخی پەخشکردن" ]
+  pt: [ "playmode", "modoplay" ]
   en: [ "playmode" ]
   tr: [ "oynatmamodu" ]
 
 CHANNELPLAY_COMMAND:
   ar: [ "ربط قناة" ]
   ku: [ "گرێدانی کەناڵ" ]
+  pt: [ "channelplay", "playcanal" ]
   en: [ "channelplay" ]
   tr: [ "kanaloynat" ]
 
 STREAM_COMMAND:
   ar: [ "لايف" ]
   ku: [ "تەوژم", "لایڤ" ]
+  pt: [ "stream", "transmitir", "aovivo" ]
   en: [ "stream", "cstream", "streamforce", "cstreamforce" ]
   tr: [ "stream", "cstream" ]
 
 PLAYLIST_COMMAND:
   ar: [ "قائمة التشغيل" ]
   ku: [ "لیستی پەخشکردن", "لیستی گۆرانی" ]
+  pt: [ "playlist", "lista" ]
   en: [ "playlist" ]
   tr: [ "oynatmalistesi" ]
 
 PLAY_PLAYLIST_COMMAND:
   ar: [ "شغل قائمتي", "تشغيل قائمة التشغيل", "تشغيل قائمتي", "تشغيل القائمة" ]
   ku: [ "لێدانی لیست", "لێدانی لیستەکەم", "لێدانی لیستی گۆرانی", "پلەی لیستی گۆرانی", "پەخشکردنی لیستی پەخشکردن" ]
+  pt: [ "playplaylist", "tocarplaylist" ]
   en: [ "playplaylist", "vplayplaylist" ]
   tr: [ "oynatmalistesinioynat", "voynatmalistesinioynat" ]
 
 DELETE_PLAYLIST_COMMAND:
   ar: [ "حذف قائمة التشغيل" ]
   ku: [ "سرینەوەی لیستی پەخشکردن", "سڕینەوەی لیستی پەخشکردن" ]
+  pt: [ "delplaylist", "deletarplaylist" ]
   en: [ "deleteplaylist", "delplaylist" ]
   tr: [ "oynatmalistesinisil" ]
 
 ADD_PLAYLIST_COMMAND:
   ar: [ "اضافة لقائمة التشغيل" ]
   ku: [ "زیادکردنی لیستی گۆرانی", "زیادکردنی لیستی پەخشکردن" ]
+  pt: [ "addplaylist", "adicionarplaylist" ]
   en: [ "addplaylist" ]
   tr: [ "pekle" ]
 
 QUEUE_COMMAND:
   ar: [ "قائمة الانتظار", "قائمة", "تشغيل", "تشغيل الآن", "تشغيل قائمة", "قائمة التشغيل" ]
   ku: [ "ڕیزکراو", "لێدراو", "لیستی چاوەڕوانی", "لێدراوەکان", "پەخشکراو" ]
+  pt: [ "queue", "fila" ]
   en: [ "queue", "cqueue", "cplayer", "playing", "cplaying", "player" ]
   tr: [ "csira", "sira" ]
 
 SONG_COMMAND:
   ar: [ "تنزيل", "بحث", "يوت" ]
   ku: [ "گۆرانی", "ڤیدیۆ", "داگرتن" ]
+  pt: [ "song", "musica", "video", "baixar" ]
   en: [ "song", "video" ]
   tr: [ "sarki", "muzik", "indir" ]
 
 LYRICS_COMMAND:
   ar: [ "كلمات" ]
   ku: [ "ژێرنووس" ]
+  pt: [ "lyrics", "letra" ]
   en: [ "lyrics" ]
   tr: [ "sarkisozu" ]
 
 AUTH_COMMAND:
   ar: [ "رفع ادمن" ]
   ku: [ "زیادکردنی ئەدمین" ]
+  pt: [ "auth", "autorizar" ]
   en: [ "auth" ]
   tr: [ "yetki", "yetkiver" ]
 
 UNAUTH_COMMAND:
   ar: [ "تنزيل ادمن" ]
   ku: [ "لادانی ئەدمین" ]
+  pt: [ "unauth", "desautorizar" ]
   en: [ "unauth" ]
   tr: [ "yetkial" ]
 
 AUTHUSERS_COMMAND:
   ar: [ "الادمنيه" ]
   ku: [ "ئەدمینەکان" ]
+  pt: [ "authusers", "autorizados" ]
   en: [ "authusers" ]
   tr: [ "yetkililer" ]
 
 PAUSE_COMMAND:
   ar: [ "وقف" ]
   ku: [ "وەستانی کاتی", "وسبە" ]
+  pt: [ "pause", "pausar" ]
   en: [ "pause", "cpause" ]
   tr: [ "duraklat", "cduraklat", "kduraklat" ]
 
 RESUME_COMMAND:
   ar: [ "كمل", "كملي" ]
   ku: [ "دەستپێکردنەوە" ]
+  pt: [ "resume", "continuar" ]
   en: [ "resume", "cresume" ]
   tr: [ "devam", "cdevam", "kdevam" ]
 
 MUTE_COMMAND:
   ar: [ "اسكت" ]
   ku: [ "بێدەنگکردن" ]
+  pt: [ "mute", "silenciar" ]
   en: [ "cmute", "mute" ]
   tr: [ "sustur", "csustur", "ksustur" ]
 
 UNMUTE_COMMAND:
   ar: [ "اتكلم" ]
   ku: [ "لادانی بێدەنگی" ]
+  pt: [ "unmute", "dessilenciar", "ativarsom" ]
   en: [ "unmute", "cunmute" ]
   tr: [ "unmute", "cunmute" ]
 
 STOP_COMMAND:
   ar: [ "ايقاف", "انهاء" ]
   ku: [ "وەستان", "ڕاگرتن" ]
+  pt: [ "stop", "parar", "end" ]
   en: [ "stop", "end", "cstop", "cend" ]
   tr: [ "durdur", "cdurdur", "kdurdur" ]
 
 SKIP_COMMAND:
   ar: [ "تخطي" ]
   ku: [ "دواتر", "تێپەڕاندن", "سکیپ" ]
+  pt: [ "skip", "pular" ]
   en: [ "skip", "cskip" ]
   tr: [ "atla", "catla", "katla" ]
 
 SHUFFLE_COMMAND:
   ar: [ "خلط" ]
   ku: [ "تیکەڵکردن" ]
+  pt: [ "shuffle", "embaralhar" ]
   en: [ "shuffle", "cshuffle" ]
   tr: [ "ckaristir", "ckaristir", "karistir" ]
 
 LOOP_COMMAND:
   ar: [ "تكرار" ]
   ku: [ "دووبارەکردنەوە" ]
+  pt: [ "loop", "repetir" ]
   en: [ "loop", "cloop" ]
   tr: [ "cdongu", "dongu" ]
 
 SEEK_COMMAND:
   ar: [ "تقديم" ]
   ku: [ "گەڕان" ]
+  pt: [ "seek", "avancar" ]
   en: [ "seek", "cseek" ]
   tr: [ "sar", "csar" ]
 
 SEEK_BACK_COMMAND:
   ar: [ "ارجع_الى_الخلف", "بحث_الى_الخلف" ]
   ku: [ "گەڕانەوە" ]
+  pt: [ "seekback", "retroceder" ]
   en: [ "seekback", "cseekback" ]
   tr: [ "ilerisar", "gerisar", "cilerisar", "cgerisar" ]
 
 REBOOT_COMMAND:
   ar: [ "اعاده تشغيل" ]
   ku: [ "ڕێستارت" ]
+  pt: [ "reboot", "reiniciar" ]
   en: [ "reboot" ]
   tr: [ "yenidenbaslat" ]
 
 ADDSUDO_COMMAND:
   ar: [ "رفع مطور" ]
   ku: [ "زیادکردنی گەشەپێدەر" ]
+  pt: [ "addsudo" ]
   en: [ "addsudo" ]
   tr: [ "sudoekle" ]
 
 DELSUDO_COMMAND:
   ar: [ "تنزيل مطور" ]
   ku: [ "لادانی گەشەپێدەر" ]
+  pt: [ "delsudo" ]
   en: [ "delsudo" ]
   tr: [ "sudosil" ]
 
 SUDOUSERS_COMMAND:
   ar: [ "المطورين" ]
   ku: [ "گەشەپێدەرەکان" ]
+  pt: [ "sudolist", "listasudo" ]
   en: [ "sudolist" ]
   tr: [ "sudolistesi" ]
 
 BROADCAST_COMMAND:
   ar: [ "اذاعة" ]
   ku: [ "ناردن", "ڕێکلام", "پەخش", "ناردنی" ]
+  pt: [ "broadcast", "transmitir", "anunciar" ]
   en: [ "broadcast", "gcast" ]
   tr: [ "reklam", "duyuru" ]
 
 BLACKLISTCHAT_COMMAND:
   ar: [ "المجموعات المحظورة" ]
   ku: [ "بلۆککردنی گرووپ" ]
+  pt: [ "blacklistchat" ]
   en: [ "blacklistchat" ]
   tr: [ "grupyasakla" ]
 
 WHITELISTCHAT_COMMAND:
   ar: [ "المجموعات المسموحة" ]
   ku: [ "لادانی بلۆکی گرووپ" ]
+  pt: [ "whitelistchat" ]
   en: [ "whitelistchat" ]
   tr: [ "grupyasakkaldir" ]
 
 BLACKLISTEDCHAT_COMMAND:
   ar: [ "المجموعات المحظورة حاليا" ]
   ku: [ "گرووپە بلۆککراوەکان" ]
+  pt: [ "blacklistedchat", "listanegra" ]
   en: [ "blacklistedchat" ]
   tr: [ "yasakligruplar" ]
 
 VIDEOLIMIT_COMMAND:
   ar: [ "تحديد حد الفيديو" ]
   ku: [ "دانانی سنووری ڤیدیۆ" ]
+  pt: [ "set_video_limit", "limitevideo" ]
   en: [ "set_video_limit" ]
   tr: [ "set_video_limit" ]
 
 VIDEOMODE_COMMAND:
   ar: [ "وضع الفيديو" ]
   ku: [ "دۆخی ڤیدیۆ" ]
+  pt: [ "videomode", "modovideo" ]
   en: [ "videomode" ]
   tr: [ "videomode" ]
 
 MAINTENANCE_COMMAND:
   ar: [ "الصيانة" ]
   ku: [ "چاککردنەوە" ]
+  pt: [ "maintenance", "manutencao" ]
   en: [ "maintenance" ]
   tr: [ "bakimmodu", "bakim" ]
 
 LOGGER_COMMAND:
   ar: [ "السجل" ]
   ku: [ "تۆمارکردن" ]
+  pt: [ "logger" ]
   en: [ "logger" ]
   tr: [ "logger" ]
 
 GETLOG_COMMAND:
   ar: [ "سجل" ]
   ku: [ "لۆگ", "لۆگەکان", "هێنانی لۆگ" ]
+  pt: [ "log", "getlog" ]
   en: [ "log", "logs", "get_log", "getlog", "get_logs", "getlogs" ]
   tr: [ "log" ]
 
 GETVAR_COMMAND:
   ar: [ "جلب فار" ]
   ku: [ "ڤارەکان", "هێنانی ڤار" ]
+  pt: [ "getvar", "vervar" ]
   en: [ "get_var", "getvar" ]
   tr: [ "get_var", "getvar" ]
 
 DELVAR_COMMAND:
   ar: [ "حذف فار" ]
   ku: [ "سرینەوەی ڤار", "سڕینەوەی ڤار" ]
+  pt: [ "delvar", "apagarvar" ]
   en: [ "del_var", "delvar" ]
   tr: [ "del_var", "delvar" ]
 
 SETVAR_COMMAND:
   ar: [ "تعيين فار" ]
   ku: [ "دانانی_ڤار", "دانانی ڤار" ]
+  pt: [ "setvar", "definirvar" ]
   en: [ "set_var", "setvar" ]
   tr: [ "setvar" ]
 
 USAGE_COMMAND:
   ar: [ "الاستخدام" ]
   ku: [ "بەکارهێنان" ]
+  pt: [ "usage", "uso" ]
   en: [ "usage" ]
   tr: [ "kullanim" ]
 
 UPDATE_COMMAND:
   ar: [ "تحديث" ]
   ku: [ "نوێکردنەوە", "up" ]
+  pt: [ "update", "atualizar" ]
   en: [ "update", "gitpull", "up" ]
   tr: [ "guncelle" ]
 
 RESTART_COMMAND:
   ar: [ "اعاده تشغيل" ]
   ku: [ "دووبارە دەستپێکردنەوە" ]
+  pt: [ "restart" ]
   en: [ "restart" ]
   tr: [ "restart" ]
 
 AUTOEND_COMMAND:
   ar: [ "الإيقاف التلقائي" ]
   ku: [ "وەستانی خۆکار" ]
+  pt: [ "autoend", "autofim" ]
   en: [ "autoend" ]
   tr: [ "autoend" ]
 
 AUTHORIZE_COMMAND:
   ar: [ "سماح" ]
   ku: [ "ڕێگەپێدان" ]
+  pt: [ "authorize" ]
   en: [ "authorize" ]
   tr: [ "authorize" ]
 
 UNAUTHORIZE_COMMAND:
   ar: [ "رفض" ]
   ku: [ "لادانی ڕێگەپێدان" ]
+  pt: [ "unauthorize" ]
   en: [ "unauthorize" ]
   tr: [ "unauthorize" ]
 
 AUTHORIZED_COMMAND:
   ar: [ "المسوحين" ]
   ku: [ "ڕێگەپێدراوەکان" ]
+  pt: [ "authorized", "autorizados" ]
   en: [ "authorized" ]
   tr: [ "authorized" ]
 
 BLOCK_COMMAND:
   ar: [ "حظر" ]
   ku: [ "بلۆک", "بلۆککردن" ]
+  pt: [ "block", "bloquear" ]
   en: [ "block" ]
   tr: [ "yasakla" ]
 
 UNBLOCK_COMMAND:
   ar: [ "الغاء حظر" ]
   ku: [ "لادانی بلۆک" ]
+  pt: [ "unblock", "desbloquear" ]
   en: [ "unblock" ]
   tr: [ "yasakkaldir" ]
 
 BLOCKED_COMMAND:
   ar: [ "المحظورين" ]
   ku: [ "بلۆککراوەکان" ]
+  pt: [ "blockedusers", "bloqueados" ]
   en: [ "blockedusers" ]
   tr: [ "yasaklilar" ]
 
 SPEEDTEST_COMMAND:
   ar: [ "السرعة" ]
   ku: [ "پشکنینی خێرای", "پشکنینی خێرایی" ]
+  pt: [ "speedtest", "velocidade" ]
   en: [ "speedtest" ]
   tr: [ "hiztesti" ]
 
 ACTIVEVC_COMMAND:
   ar: [ "المكالمات النشطة" ]
   ku: [ "پەیوەندی چالاک", "پەیوەندی دەنگی چالاک" ]
+  pt: [ "activevoice", "vozativa" ]
   en: [ "activevoice", "activevc" ]
   tr: [ "aktifses" ]
 
 ACTIVEVIDEO_COMMAND:
   ar: [ "مكالمات الفديو النشطة" ]
   ku: [ "پەیوەندی ڤ چالاک", "پەیوەندی ڤیدیۆی چالاک" ]
+  pt: [ "activevideo", "videoativo" ]
   en: [ "activevideo", "activevd" ]
   tr: [ "aktifvideo" ]
 
 AC_COMMAND:
   ar: [ "تبريد" ]
   ku: [ "پەیوەندییە چالاکەکان" ]
+  pt: [ "ac", "ativos" ]
   en: [ "ac" ]
   tr: [ "ac" ]
 
 GBAN_COMMAND:
   ar: [ "حظر عام" ]
   ku: [ "دەرکردنی گشتی" ]
+  pt: [ "gban", "banirglobal" ]
   en: [ "gban" ]
   tr: [ "gban" ]
 
 UNGBAN_COMMAND:
   ar: [ "الغاء حظر عام" ]
   ku: [ "لادانی دەرکردنی گشتی" ]
+  pt: [ "ungban", "desbanirglobal" ]
   en: [ "ungban" ]
   tr: [ "ungban" ]
 
 GBANNED_COMMAND:
   ar: [ "المحظورين عام" ]
   ku: [ "دەرکراوەکان" ]
+  pt: [ "gbannedusers", "listabanidosglobal" ]
   en: [ "gbannedusers" ]
   tr: [ "gbannedusers", "gbanlist" ]
+
+MOVIES_COMMAND:
+  ar: [ "افلام", "فيلم" ]
+  ku: [ "فیلم", "فیلمەکان" ]
+  pt: [ "filmes", "filme", "movie" ]
+  en: [ "movies", "movie" ]
+  tr: [ "filmler", "film" ]
+
+ANIME_COMMAND:
+  ar: [ "انمي" ]
+  ku: [ "ئەنیمی" ]
+  pt: [ "anime" ]
+  en: [ "anime" ]
+  tr: [ "anime" ]

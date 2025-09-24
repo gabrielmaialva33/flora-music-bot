@@ -4,15 +4,14 @@ from typing import Dict
 from pyrogram import filters, Client
 from pyrogram.types import Message, InlineKeyboardButton, CallbackQuery, InlineKeyboardMarkup
 
-from WinxMusic import app, Platform, LOGGER
+from WinxMusic import app, LOGGER
+from WinxMusic.platforms import animezey
 from WinxMusic.utils import get_lang
 from WinxMusic.utils.logger import play_logs
 from WinxMusic.utils.stream.stream import stream
 from config import BANNED_USERS, PREFIXES
-from strings import get_command, get_string
-
-MOVIES_COMMAND = get_command("pt")["MOVIES_COMMAND"]
-ANIME_COMMAND = get_command("pt")["ANIME_COMMAND"]
+from strings import command
+from strings import get_string
 
 RESULTS_PER_PAGE = 4
 
@@ -38,7 +37,7 @@ class ContextManager:
 
 
 @app.on_message(
-    filters.command(MOVIES_COMMAND, prefixes=PREFIXES)
+    command("MOVIES_COMMAND", prefixes=PREFIXES)
     & filters.group
     & ~BANNED_USERS
 )
@@ -52,7 +51,7 @@ async def scan_movie_folder(_, message: Message):
     if not query:
         return await message.reply_text("🎬 𝗜𝗻𝗳𝗼𝗿𝗺𝗲 𝗼 𝗳𝗶𝗹𝗺𝗲 𝗾𝘂𝗲 𝗱𝗲𝘀𝗲𝗷𝗮 𝗯𝘂𝘀𝗰𝗮𝗿.")
 
-    result = await Platform.animezey.search_movie(query)
+    result = await animezey.search_movie(query)
     if not result:
         return await message.reply_text("<b>No results found.</b>")
 
@@ -73,11 +72,11 @@ async def scan_movie_folder(_, message: Message):
 
     await send_results_page(message, message.from_user.id)
 
-    await Platform.animezey.close()
+    await animezey.close()
 
 
 @app.on_message(
-    filters.command(ANIME_COMMAND, prefixes=PREFIXES)
+    command("ANIME_COMMAND", prefixes=PREFIXES)
     & filters.group
     & ~BANNED_USERS
 )
@@ -91,7 +90,7 @@ async def scan_anime_folder(_, message: Message):
     if not query:
         return await message.reply_text("🎬 𝗜𝗻𝗳𝗼𝗿𝗺𝗲 𝗼 𝗾𝘂𝗲 𝗱𝗲𝘀𝗲𝗷𝗮 𝗯𝘂𝘀𝗰𝗮𝗿.")
 
-    result = await Platform.animezey.search_anime(query)
+    result = await animezey.search_anime(query)
     if not result:
         return await message.reply_text("<b>No results found.</b>")
 
@@ -112,7 +111,7 @@ async def scan_anime_folder(_, message: Message):
 
     await send_results_page(message, message.from_user.id)
 
-    await Platform.animezey.close()
+    await animezey.close()
 
 
 async def send_results_page(message: Message, user_id: int):
@@ -131,7 +130,7 @@ async def send_results_page(message: Message, user_id: int):
         name = file.get("name", "<b>Sem título</b>")
         # type = file.get("mimeType", None)
         link = file.get("link", "#")
-        text += f"<b>📽️ {idx} - <a href='{Platform.animezey.base_url + link}'>{name}</a></b>\n"
+        text += f"<b>📽️ {idx} - <a href='{animezey.base_url + link}'>{name}</a></b>\n"
 
     buttons = [
         InlineKeyboardButton(f"Ver {idx}", callback_data=f"view_{page_index}_{idx}")
@@ -215,7 +214,7 @@ async def view_movie(_client: Client, callback_query: CallbackQuery):
             _,
             mystic=callback_query.message,
             user_id=user_id,
-            result={"title": name, "link": Platform.animezey.base_url + link},
+            result={"title": name, "link": animezey.base_url + link},
             chat_id=callback_query.message.chat.id,
             user_name=callback_query.from_user.first_name,
             original_chat_id=callback_query.message.chat.id,
@@ -232,9 +231,9 @@ async def view_movie(_client: Client, callback_query: CallbackQuery):
         return await callback_query.message.edit(err)
     return await play_logs(callback_query.message, streamtype="M3u8 or Index Link")
 
-    # if await Platform.animezey.download(name, link, callback_query.message):
-    #     dur = await Platform.animezey.get_duration(name)
-    #     file_path = await Platform.animezey.get_filepath(name)
+    # if await animezey.download(name, link, callback_query.message):
+    #     dur = await animezey.get_duration(name)
+    #     file_path = await animezey.get_filepath(name)
     #     details = {
     #         "title": name,
     #         "dur": dur,

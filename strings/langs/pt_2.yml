@@ -463,127 +463,127 @@ gban_11: "⏳ 𝗢𝗯𝘁𝗲𝗻𝗱𝗼 𝗮 𝗹𝗶𝘀𝘁𝗮 𝗱𝗲 �
 # 𝗔𝗷𝘂𝗱𝗮𝗻𝘁𝗲𝘀
 
 AUTH_HELPER: |
-  <b>𝗨𝘀𝘂𝗮́𝗿𝗶𝗼𝘀 𝗮𝘂𝘁𝗼𝗿𝗶𝘇𝗮𝗱𝗼𝘀 𝗽𝗼𝗱𝗲𝗺 𝘂𝘀𝗮𝗿 𝗰𝗼𝗺𝗮𝗻𝗱𝗼𝘀 𝗱𝗲 𝗔𝗱𝗺𝗶𝗻 𝘀𝗲𝗺 𝘁𝗲𝗿 𝗱𝗶𝗿𝗲𝗶𝘁𝗼𝘀 𝗱𝗲 𝗮𝗱𝗺𝗶𝗻𝗶𝘀𝘁𝗿𝗮𝗱𝗼𝗿 𝗻𝗼 𝘀𝗲𝘂 𝗰𝗵𝗮𝘁.</b>
+  <b>Usuários autorizados podem usar comandos de Admin sem ter direitos de administrador no seu chat.</b>
 
-  <b>✧ {AUTH_COMMAND}</b> [𝗨𝘀𝗲𝗿𝗻𝗮𝗺𝗲] - 𝗔𝗱𝗶𝗰𝗶𝗼𝗻𝗮 𝘂𝗺 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼 𝗮̀ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗔𝗨𝗧𝗢𝗥𝗜𝗭𝗔𝗗𝗢𝗦 𝗱𝗼 𝗚𝗿𝘂𝗽𝗼.
+  <b>✧ {AUTH_COMMAND}</b> [Username] - Adiciona um usuário à LISTA DE AUTORIZADOS do Grupo.
 
-  <b>✧ {UNAUTH_COMMAND}</b> [𝗨𝘀𝗲𝗿𝗻𝗮𝗺𝗲] - 𝗥𝗲𝗺𝗼𝘃𝗲 𝘂𝗺 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼 𝗱𝗮 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗔𝗨𝗧𝗢𝗥𝗜𝗭𝗔𝗗𝗢𝗦 𝗱𝗼 𝗴𝗿𝘂𝗽𝗼.
+  <b>✧ {UNAUTH_COMMAND}</b> [Username] - Remove um usuário da LISTA DE AUTORIZADOS do grupo.
 
-  <b>✧ {AUTHUSERS_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗰𝗮 𝗮 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗔𝗨𝗧𝗢𝗥𝗜𝗭𝗔𝗗𝗢𝗦 𝗱𝗼 𝗚𝗿𝘂𝗽𝗼.
+  <b>✧ {AUTHUSERS_COMMAND}</b> - Verifica a LISTA DE AUTORIZADOS do Grupo.
 
 ADMIN_HELPER: |
-  <b>𝗰 𝘀𝗶𝗴𝗻𝗶𝗳𝗶𝗰𝗮 𝘁𝗼𝗰𝗮𝗿 𝗻𝗼 𝗰𝗮𝗻𝗮𝗹</b>
+  <b>c significa tocar no canal</b>
 
-  <b>✧ {PAUSE_COMMAND}</b> - 𝗣𝗮𝘂𝘀𝗮 𝗮 𝗺𝘂́𝘀𝗶𝗰𝗮 𝗲𝗺 𝗿𝗲𝗽𝗿𝗼𝗱𝘂𝗰̧𝗮̃𝗼.
-  <b>✧ {RESUME_COMMAND}</b> - 𝗥𝗲𝘁𝗼𝗺𝗮 𝗮 𝗺𝘂́𝘀𝗶𝗰𝗮 𝗽𝗮𝘂𝘀𝗮𝗱𝗮.
-  <b>✧ {MUTE_COMMAND}</b> - 𝗦𝗶𝗹𝗲𝗻𝗰𝗶𝗮 𝗮 𝗺𝘂́𝘀𝗶𝗰𝗮 𝗲𝗺 𝗿𝗲𝗽𝗿𝗼𝗱𝘂𝗰̧𝗮̃𝗼.
-  <b>✧ {UNMUTE_COMMAND}</b> - 𝗔𝘁𝗶𝘃𝗮 𝗼 𝘀𝗼𝗺 𝗱𝗮 𝗺𝘂́𝘀𝗶𝗰𝗮 𝘀𝗶𝗹𝗲𝗻𝗰𝗶𝗮𝗱𝗮.
-  <b>✧ {SKIP_COMMAND}</b> - 𝗣𝘂𝗹𝗮 𝗮 𝗺𝘂́𝘀𝗶𝗰𝗮 𝗮𝘁𝘂𝗮𝗹.
-  <b>✧ {STOP_COMMAND}</b> - 𝗣𝗮𝗿𝗮 𝗮 𝗿𝗲𝗽𝗿𝗼𝗱𝘂𝗰̧𝗮̃𝗼 𝗱𝗲 𝗺𝘂́𝘀𝗶𝗰𝗮.
-  <b>✧ {SHUFFLE_COMMAND}</b> - 𝗘𝗺𝗯𝗮𝗿𝗮𝗹𝗵𝗮 𝗮𝗹𝗲𝗮𝘁𝗼𝗿𝗶𝗮𝗺𝗲𝗻𝘁𝗲 𝗮 𝗽𝗹𝗮𝘆𝗹𝗶𝘀𝘁/𝗺𝘂́𝘀𝗶𝗰𝗮𝘀 𝗻𝗮 𝗳𝗶𝗹𝗮.
-  <b>✧ {SEEK_COMMAND}</b> - 𝗔𝘃𝗮𝗻𝗰̧𝗮 𝗮 𝗺𝘂́𝘀𝗶𝗰𝗮.
-  <b>✧ {SEEK_BACK_COMMAND}</b> - 𝗥𝗲𝘁𝗿𝗼𝗰𝗲𝗱𝗲 𝗮 𝗺𝘂́𝘀𝗶𝗰𝗮 𝗽𝗮𝗿𝗮 𝗮 𝗱𝘂𝗿𝗮𝗰̧𝗮̃𝗼 𝗱𝗲𝘀𝗲𝗷𝗮𝗱𝗮.
-  <b>✧ {REBOOT_COMMAND}</b> - 𝗥𝗲𝗶𝗻𝗶𝗰𝗶𝗮 𝗼 𝗯𝗼𝘁 𝗽𝗮𝗿𝗮 𝗼 𝘀𝗲𝘂 𝗰𝗵𝗮𝘁.
+  <b>✧ {PAUSE_COMMAND}</b> - Pausa a música em reprodução.
+  <b>✧ {RESUME_COMMAND}</b> - Retoma a música pausada.
+  <b>✧ {MUTE_COMMAND}</b> - Silencia a música em reprodução.
+  <b>✧ {UNMUTE_COMMAND}</b> - Ativa o som da música silenciada.
+  <b>✧ {SKIP_COMMAND}</b> - Pula a música atual.
+  <b>✧ {STOP_COMMAND}</b> - Para a reprodução de música.
+  <b>✧ {SHUFFLE_COMMAND}</b> - Embaralha aleatoriamente a playlist/músicas na fila.
+  <b>✧ {SEEK_COMMAND}</b> - Avança a música.
+  <b>✧ {SEEK_BACK_COMMAND}</b> - Retrocede a música para a duração desejada.
+  <b>✧ {REBOOT_COMMAND}</b> - Reinicia o bot para o seu chat.
 
-  <b>✧ {SKIP_COMMAND}</b> [𝗡𝘂́𝗺𝗲𝗿𝗼 (𝗘𝘅𝗲𝗺𝗽𝗹𝗼: 𝟯)] - 𝗣𝘂𝗹𝗮 𝗽𝗮𝗿𝗮 𝘂𝗺𝗮 𝗺𝘂́𝘀𝗶𝗰𝗮 𝗲𝘀𝗽𝗲𝗰𝗶́𝗳𝗶𝗰𝗮 𝗻𝗮 𝗳𝗶𝗹𝗮. 𝗘𝘅𝗲𝗺𝗽𝗹𝗼: <b>/𝘀𝗸𝗶𝗽 𝟯</b> 𝗽𝘂𝗹𝗮𝗿𝗮́ 𝗽𝗮𝗿𝗮 𝗮 𝘁𝗲𝗿𝗰𝗲𝗶𝗿𝗮 𝗺𝘂́𝘀𝗶𝗰𝗮 𝗻𝗮 𝗳𝗶𝗹𝗮 𝗲 𝗶𝗴𝗻𝗼𝗿𝗮𝗿𝗮́ 𝗮 𝟭 𝗲 𝗮 𝟮.
+  <b>✧ {SKIP_COMMAND}</b> [Número (Exemplo: 3)] - Pula para uma música específica na fila. Exemplo: <b>/skip 3</b> pulará para a terceira música na fila e ignorará a 1 e a 2.
 
-  <b>✧ {LOOP_COMMAND}</b> [𝗘𝗻𝗮𝗯𝗹𝗲/𝗗𝗶𝘀𝗮𝗯𝗹𝗲] 𝗼𝘂 [𝗡𝘂́𝗺𝗲𝗿𝗼 𝗲𝗻𝘁𝗿𝗲 𝟭-𝟭𝟬] - 𝗤𝘂𝗮𝗻𝗱𝗼 𝗮𝘁𝗶𝘃𝗮𝗱𝗼, 𝗼 𝗯𝗼𝘁 𝗿𝗲𝗽𝗲𝘁𝗶𝗿𝗮́ 𝗮 𝗺𝘂́𝘀𝗶𝗰𝗮 𝗮𝘁𝘂𝗮𝗹 𝗱𝗲 𝟭 𝗮 𝟭𝟬 𝘃𝗲𝘇𝗲𝘀 𝗻𝗼 𝗰𝗵𝗮𝘁 𝗱𝗲 𝘃𝗼𝘇. 𝗢 𝘃𝗮𝗹𝗼𝗿 𝗽𝗮𝗱𝗿𝗮̃𝗼 𝗲́ 𝟭𝟬 𝘃𝗲𝘇𝗲𝘀.
+  <b>✧ {LOOP_COMMAND}</b> [Enable/Disable] ou [Número entre 1-10] - Quando ativado, o bot repetirá a música atual de 1 a 10 vezes no chat de voz. O valor padrão é 10 vezes.
 
 ACTIVE_HELPER: |
-  <b>✧ {ACTIVEVC_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗰𝗮 𝗼𝘀 𝗰𝗵𝗮𝘁𝘀 𝗱𝗲 𝘃𝗼𝘇 𝗮𝘁𝗶𝘃𝗼𝘀 𝗻𝗼 𝗯𝗼𝘁.
+  <b>✧ {ACTIVEVC_COMMAND}</b> - Verifica os chats de voz ativos no bot.
 
-  <b>✧ {ACTIVEVIDEO_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗰𝗮 𝗮𝘀 𝗰𝗵𝗮𝗺𝗮𝗱𝗮𝘀 𝗱𝗲 𝘃𝗼𝘇 𝗲 𝘃𝗶́𝗱𝗲𝗼 𝗮𝘁𝗶𝘃𝗮𝘀 𝗻𝗼 𝗯𝗼𝘁.
+  <b>✧ {ACTIVEVIDEO_COMMAND}</b> - Verifica as chamadas de voz e vídeo ativas no bot.
 
-  <b>✧ {AC_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗰𝗮 𝗮𝘀 𝗰𝗵𝗮𝗺𝗮𝗱𝗮𝘀 𝗱𝗲 𝘃𝗶́𝗱𝗲𝗼 𝗮𝘁𝗶𝘃𝗮𝘀 𝗻𝗼 𝗯𝗼𝘁.
+  <b>✧ {AC_COMMAND}</b> - Verifica as chamadas de vídeo ativas no bot.
 
-  <b>✧ {STATS_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗰𝗮 𝗮𝘀 𝗲𝘀𝘁𝗮𝘁𝗶́𝘀𝘁𝗶𝗰𝗮𝘀 𝗱𝗼 𝗯𝗼𝘁.
+  <b>✧ {STATS_COMMAND}</b> - Verifica as estatísticas do bot.
 
 PLAY_HELPER: |
-  <b>✧ {PLAY_COMMAND}</b> - 𝗢 𝗯𝗼𝘁 𝗰𝗼𝗺𝗲𝗰̧𝗮𝗿𝗮́ 𝗮 𝘁𝗼𝗰𝗮𝗿 𝘀𝘂𝗮 𝗯𝘂𝘀𝗰𝗮 𝗻𝗼 𝗰𝗵𝗮𝘁 𝗱𝗲 𝘃𝗼𝘇 𝗼𝘂 𝘁𝗿𝗮𝗻𝘀𝗺𝗶𝘁𝗶𝗿𝗮́ 𝗹𝗶𝗻𝗸𝘀 𝗮𝗼 𝘃𝗶𝘃𝗼.
+  <b>✧ {PLAY_COMMAND}</b> - O bot começará a tocar sua busca no chat de voz ou transmitirá links ao vivo.
 
-  <b>✧ {PLAYMODE_COMMAND}</b> - 𝗢 𝗺𝗼𝗱𝗼 𝗙𝗼𝗿𝗰̧𝗮𝗿 𝗣𝗮𝗿𝗮𝗱𝗮 𝗶𝗻𝘁𝗲𝗿𝗿𝗼𝗺𝗽𝗲 𝗮 𝗳𝗮𝗶𝘅𝗮 𝗮𝘁𝘂𝗮𝗹 𝗲 𝗰𝗼𝗺𝗲𝗰̧𝗮 𝗮 𝘁𝗼𝗰𝗮𝗿 𝗮 𝗳𝗮𝗶𝘅𝗮 𝗽𝗲𝘀𝗾𝘂𝗶𝘀𝗮𝗱𝗮 𝗶𝗻𝘀𝘁𝗮𝗻𝘁𝗮𝗻𝗲𝗮𝗺𝗲𝗻𝘁𝗲, 𝘀𝗲𝗺 𝗹𝗶𝗺𝗽𝗮𝗿 𝗮 𝗳𝗶𝗹𝗮.
+  <b>✧ {PLAYMODE_COMMAND}</b> - O modo Forçar Parada interrompe a faixa atual e começa a tocar a faixa pesquisada instantaneamente, sem limpar a fila.
 
-  <b>✧ {CHANNELPLAY_COMMAND}</b> - 𝗖𝗼𝗻𝗲𝗰𝘁𝗮 𝘂𝗺 𝗰𝗮𝗻𝗮𝗹 𝗮 𝘂𝗺 𝗴𝗿𝘂𝗽𝗼 𝗲 𝘁𝗿𝗮𝗻𝘀𝗺𝗶𝘁𝗲 𝗺𝘂́𝘀𝗶𝗰𝗮 𝗻𝗼 𝗰𝗵𝗮𝘁 𝗱𝗲 𝘃𝗼𝘇 𝗱𝗼 𝗰𝗮𝗻𝗮𝗹 𝗮 𝗽𝗮𝗿𝘁𝗶𝗿 𝗱𝗼 𝘀𝗲𝘂 𝗴𝗿𝘂𝗽𝗼.
+  <b>✧ {CHANNELPLAY_COMMAND}</b> - Conecta um canal a um grupo e transmite música no chat de voz do canal a partir do seu grupo.
 
-  <b>✧ {STREAM_COMMAND}</b> - 𝗧𝗿𝗮𝗻𝘀𝗺𝗶𝘁𝗲 𝘂𝗺𝗮 𝗨𝗥𝗟 𝗾𝘂𝗲 𝘃𝗼𝗰𝗲̂ 𝗮𝗰𝗿𝗲𝗱𝗶𝘁𝗮 𝘀𝗲𝗿 𝗱𝗶𝗿𝗲𝘁𝗮 𝗼𝘂 𝗺𝟯𝘂𝟴 𝗾𝘂𝗲 𝗻𝗮̃𝗼 𝗽𝗼𝗱𝗲 𝘀𝗲𝗿 𝘁𝗼𝗰𝗮𝗱𝗮 𝗰𝗼𝗺 /𝗽𝗹𝗮𝘆.
+  <b>✧ {STREAM_COMMAND}</b> - Transmite uma URL que você acredita ser direta ou m3u8 que não pode ser tocada com /play.
 
 GCAST_HELPER: |
-  <b>{BROADCAST_COMMAND} [𝗠𝗲𝗻𝘀𝗮𝗴𝗲𝗺 𝗼𝘂 𝗥𝗲𝘀𝗽𝗼𝗻𝗱𝗲𝗿 𝗮 𝘂𝗺𝗮 𝗺𝗲𝗻𝘀𝗮𝗴𝗲𝗺]</b> » 𝗧𝗿𝗮𝗻𝘀𝗺𝗶𝘁𝗲 𝘂𝗺𝗮 𝗺𝗲𝗻𝘀𝗮𝗴𝗲𝗺 𝗽𝗮𝗿𝗮 𝗼𝘀 𝗰𝗵𝗮𝘁𝘀 𝗮𝘁𝗲𝗻𝗱𝗶𝗱𝗼𝘀 𝗽𝗲𝗹𝗼 𝗯𝗼𝘁
-  <u>𝗠𝗼𝗱𝗼𝘀 𝗱𝗲 𝗧𝗿𝗮𝗻𝘀𝗺𝗶𝘀𝘀𝗮̃𝗼:</u>
+  <b>{BROADCAST_COMMAND} [Mensagem ou Responder a uma mensagem]</b> » Transmite uma mensagem para os chats atendidos pelo bot
+  <u>Modos de Transmissão:</u>
 
-  <b><code>-𝗽𝗶𝗻</code></b> » 𝗙𝗶𝘅𝗮 𝘀𝘂𝗮 𝗺𝗲𝗻𝘀𝗮𝗴𝗲𝗺 𝘁𝗿𝗮𝗻𝘀𝗺𝗶𝘁𝗶𝗱𝗮 𝗻𝗼𝘀 𝗰𝗵𝗮𝘁𝘀 𝗮𝘁𝗲𝗻𝗱𝗶𝗱𝗼𝘀
+  <b><code>-pin</code></b> » Fixa sua mensagem transmitida nos chats atendidos
 
-  <b><code>-𝗽𝗶𝗻𝗹𝗼𝘂𝗱</code></b> » 𝗙𝗶𝘅𝗮 𝘀𝘂𝗮 𝗺𝗲𝗻𝘀𝗮𝗴𝗲𝗺 𝘁𝗿𝗮𝗻𝘀𝗺𝗶𝘁𝗶𝗱𝗮 𝗻𝗼𝘀 𝗰𝗵𝗮𝘁𝘀 𝗮𝘁𝗲𝗻𝗱𝗶𝗱𝗼𝘀 𝗲 𝗲𝗻𝘃𝗶𝗮 𝗻𝗼𝘁𝗶𝗳𝗶𝗰𝗮𝗰̧𝗮̃𝗼 𝗮𝗼𝘀 𝗺𝗲𝗺𝗯𝗿𝗼𝘀
+  <b><code>-pinloud</code></b> » Fixa sua mensagem transmitida nos chats atendidos e envia notificação aos membros
 
-  <b><code>-𝘂𝘀𝗲𝗿</code></b> » 𝗧𝗿𝗮𝗻𝘀𝗺𝗶𝘁𝗲 𝗮 𝗺𝗲𝗻𝘀𝗮𝗴𝗲𝗺 𝗽𝗮𝗿𝗮 𝗼𝘀 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼𝘀 𝗾𝘂𝗲 𝗶𝗻𝗶𝗰𝗶𝗮𝗿𝗮𝗺 𝘀𝗲𝘂 𝗯𝗼𝘁 [𝗩𝗼𝗰𝗲̂ 𝘁𝗮𝗺𝗯𝗲́𝗺 𝗽𝗼𝗱𝗲 𝗳𝗶𝘅𝗮𝗿 𝗮 𝗺𝗲𝗻𝘀𝗮𝗴𝗲𝗺 𝗮𝗱𝗶𝗰𝗶𝗼𝗻𝗮𝗻𝗱𝗼 `-𝗽𝗶𝗻` 𝗼𝘂 `-𝗽𝗶𝗻𝗹𝗼𝘂𝗱`]
+  <b><code>-user</code></b> » Transmite a mensagem para os usuários que iniciaram seu bot [Você também pode fixar a mensagem adicionando `-pin` ou `-pinloud`]
 
-  <b><code>-𝗮𝘀𝘀𝗶𝘀𝘁𝗮𝗻𝘁</code></b> » 𝗧𝗿𝗮𝗻𝘀𝗺𝗶𝘁𝗲 𝘀𝘂𝗮 𝗺𝗲𝗻𝘀𝗮𝗴𝗲𝗺 𝗮𝘁𝗿𝗮𝘃𝗲́𝘀 𝗱𝗲 𝘁𝗼𝗱𝗼𝘀 𝗼𝘀 𝗮𝘀𝘀𝗶𝘀𝘁𝗲𝗻𝘁𝗲𝘀 𝗱𝗼 𝗯𝗼𝘁
+  <b><code>-assistant</code></b> » Transmite sua mensagem através de todos os assistentes do bot
 
-  <b><code>-𝗻𝗼𝗯𝗼𝘁</code></b> » 𝗚𝗮𝗿𝗮𝗻𝘁𝗲 𝗾𝘂𝗲 𝗼 **𝗯𝗼𝘁** 𝗻𝗮̃𝗼 𝘁𝗿𝗮𝗻𝘀𝗺𝗶𝘁𝗮 𝗮 𝗺𝗲𝗻𝘀𝗮𝗴𝗲𝗺 [𝗨́𝘁𝗶𝗹 𝗾𝘂𝗮𝗻𝗱𝗼 𝘃𝗼𝗰𝗲̂ 𝗻𝗮̃𝗼 𝗾𝘂𝗲𝗿 𝘁𝗿𝗮𝗻𝘀𝗺𝗶𝘁𝗶𝗿 𝗮 𝗺𝗲𝗻𝘀𝗮𝗴𝗲𝗺 𝗽𝗮𝗿𝗮 𝗴𝗿𝘂𝗽𝗼𝘀]
+  <b><code>-nobot</code></b> » Garante que o **bot** não transmita a mensagem [Útil quando você não quer transmitir a mensagem para grupos]
 
-  > <b>𝗘𝘅𝗲𝗺𝗽𝗹𝗼:</b> <code>/{BROADCAST_COMMAND} -𝘂𝘀𝗲𝗿 -𝗮𝘀𝘀𝗶𝘀𝘁𝗮𝗻𝘁 -𝗽𝗶𝗻 𝗧𝗲𝘀𝘁𝗮𝗻𝗱𝗼 𝘁𝗿𝗮𝗻𝘀𝗺𝗶𝘀𝘀𝗮̃𝗼</code>
+  > <b>Exemplo:</b> <code>/{BROADCAST_COMMAND} -user -assistant -pin Testando transmissão</code>
 
 BOT_HELPER: |
-  <b>★ {GSTATS_COMMAND}</b> - 𝗢𝗯𝘁𝗲𝗻𝗵𝗮 𝗼 𝗧𝗼𝗽 𝟭𝟬 𝗱𝗲 𝗙𝗮𝗶𝘅𝗮𝘀 𝗚𝗹𝗼𝗯𝗮𝗶𝘀, 𝗧𝗼𝗽 𝟭𝟬 𝗨𝘀𝘂𝗮́𝗿𝗶𝗼𝘀 𝗱𝗼 𝗕𝗼𝘁, 𝗧𝗼𝗽 𝟭𝟬 𝗖𝗵𝗮𝘁𝘀 𝗻𝗼 𝗕𝗼𝘁, 𝗧𝗼𝗽 𝟭𝟬 𝗧𝗼𝗰𝗮𝗱𝗮𝘀 𝗲𝗺 𝘂𝗺 𝗰𝗵𝗮𝘁, 𝗲𝘁𝗰.
+  <b>★ {GSTATS_COMMAND}</b> - Obtenha o Top 10 de Faixas Globais, Top 10 Usuários do Bot, Top 10 Chats no Bot, Top 10 Tocadas em um chat, etc.
 
-  <b>★ {SUDOUSERS_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗾𝘂𝗲 𝗼𝘀 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼𝘀 𝗦𝘂𝗱𝗼 𝗱𝗼 𝗯𝗼𝘁.
+  <b>★ {SUDOUSERS_COMMAND}</b> - Verifique os usuários Sudo do bot.
 
-  <b>★ {LYRICS_COMMAND} [𝗡𝗼𝗺𝗲 𝗱𝗮 𝗠𝘂́𝘀𝗶𝗰𝗮]</b> - 𝗣𝗲𝘀𝗾𝘂𝗶𝘀𝗲 𝗮 𝗹𝗲𝘁𝗿𝗮 𝗱𝗲 𝘂𝗺𝗮 𝗺𝘂́𝘀𝗶𝗰𝗮 𝗲𝘀𝗽𝗲𝗰𝗶́𝗳𝗶𝗰𝗮 𝗻𝗮 𝘄𝗲𝗯.
+  <b>★ {LYRICS_COMMAND} [Nome da Música]</b> - Pesquise a letra de uma música específica na web.
 
-  <b>★ {SONG_COMMAND} [𝗡𝗼𝗺𝗲 𝗱𝗮 𝗙𝗮𝗶𝘅𝗮] 𝗼𝘂 [𝗟𝗶𝗻𝗸 𝗱𝗼 𝗬𝗧]</b> - 𝗕𝗮𝗶𝘅𝗲 𝗾𝘂𝗮𝗹𝗾𝘂𝗲𝗿 𝗳𝗮𝗶𝘅𝗮 𝗱𝗼 𝗬𝗼𝘂𝗧𝘂𝗯𝗲 𝗻𝗼𝘀 𝗳𝗼𝗿𝗺𝗮𝘁𝗼𝘀 𝗠𝗣𝟯 𝗼𝘂 𝗠𝗣𝟰.
+  <b>★ {SONG_COMMAND} [Nome da Faixa] ou [Link do YT]</b> - Baixe qualquer faixa do YouTube nos formatos MP3 ou MP4.
 
-  <b>★ {QUEUE_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗾𝘂𝗲 𝗮 𝗹𝗶𝘀𝘁𝗮 𝗱𝗲 𝗺𝘂́𝘀𝗶𝗰𝗮𝘀 𝗻𝗮 𝗳𝗶𝗹𝗮.
+  <b>★ {QUEUE_COMMAND}</b> - Verifique a lista de músicas na fila.
 
-  <u><b>⚡️𝗕𝗼𝘁 𝗣𝗿𝗶𝘃𝗮𝗱𝗼:</b></u>
+  <u><b>⚡️Bot Privado:</b></u>
 
-  <b>✧ {AUTHORIZE_COMMAND} [𝗜𝗗_𝗗𝗢_𝗖𝗛𝗔𝗧]</b> - 𝗣𝗲𝗿𝗺𝗶𝘁𝗲 𝗾𝘂𝗲 𝘂𝗺 𝗰𝗵𝗮𝘁 𝘂𝘀𝗲 𝘀𝗲𝘂 𝗯𝗼𝘁.
+  <b>✧ {AUTHORIZE_COMMAND} [ID_DO_CHAT]</b> - Permite que um chat use seu bot.
 
-  <b>✧ {UNAUTHORIZE_COMMAND} [𝗜𝗗_𝗗𝗢_𝗖𝗛𝗔𝗧]</b> - 𝗜𝗺𝗽𝗲𝗱𝗲 𝗾𝘂𝗲 𝘂𝗺 𝗰𝗵𝗮𝘁 𝘂𝘀𝗲 𝘀𝗲𝘂 𝗯𝗼𝘁.
+  <b>✧ {UNAUTHORIZE_COMMAND} [ID_DO_CHAT]</b> - Impede que um chat use seu bot.
 
-  <b>✧ {AUTHORIZED_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗰𝗮 𝘁𝗼𝗱𝗼𝘀 𝗼𝘀 𝗰𝗵𝗮𝘁𝘀 𝗽𝗲𝗿𝗺𝗶𝘁𝗶𝗱𝗼𝘀 𝗱𝗼 𝘀𝗲𝘂 𝗯𝗼𝘁.
+  <b>✧ {AUTHORIZED_COMMAND}</b> - Verifica todos os chats permitidos do seu bot.
 
 PLIST_HELPER: |
-  <b>{PLAYLIST_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗾𝘂𝗲 𝘁𝗼𝗱𝗮 𝗮 𝘀𝘂𝗮 𝗽𝗹𝗮𝘆𝗹𝗶𝘀𝘁 𝗻𝗼 𝘀𝗲𝗿𝘃𝗶𝗱𝗼𝗿 𝗱𝗼 𝗯𝗼𝘁
+  <b>{PLAYLIST_COMMAND}</b> - Verifique toda a sua playlist no servidor do bot
 
-  <b>{DELETE_PLAYLIST_COMMAND}</b> - 𝗘𝘅𝗰𝗹𝘂𝗮 𝗾𝘂𝗮𝗹𝗾𝘂𝗲𝗿 𝗺𝘂́𝘀𝗶𝗰𝗮 𝗱𝗮 𝘀𝘂𝗮 𝗽𝗹𝗮𝘆𝗹𝗶𝘀𝘁 𝘀𝗮𝗹𝘃𝗮
+  <b>{DELETE_PLAYLIST_COMMAND}</b> - Exclua qualquer música da sua playlist salva
 
-  <b>{PLAY_PLAYLIST_COMMAND}</b> - 𝗖𝗼𝗺𝗲𝗰𝗲 𝗮 𝘁𝗼𝗰𝗮𝗿 𝘀𝘂𝗮 𝗽𝗹𝗮𝘆𝗹𝗶𝘀𝘁 𝘀𝗮𝗹𝘃𝗮 𝗲𝗺 **𝗮́𝘂𝗱𝗶𝗼**
+  <b>{PLAY_PLAYLIST_COMMAND}</b> - Comece a tocar sua playlist salva em **áudio**
 
-  <b>{PLAY_PLAYLIST_COMMAND}</b> - 𝗖𝗼𝗺𝗲𝗰𝗲 𝗮 𝘁𝗼𝗰𝗮𝗿 𝘀𝘂𝗮 𝗽𝗹𝗮𝘆𝗹𝗶𝘀𝘁 𝗲𝗺 **𝘃𝗶́𝗱𝗲𝗼**
+  <b>{PLAY_PLAYLIST_COMMAND}</b> - Comece a tocar sua playlist em **vídeo**
 
 BLIST_HELPER: |
-  <b>✧ {BLACKLISTCHAT_COMMAND}</b> [𝗜𝗗 𝗱𝗼 𝗰𝗵𝗮𝘁] - 𝗖𝗼𝗹𝗼𝗰𝗮 𝗾𝘂𝗮𝗹𝗾𝘂𝗲𝗿 𝗰𝗵𝗮𝘁 𝗻𝗮 𝗹𝗶𝘀𝘁𝗮 𝗻𝗲𝗴𝗿𝗮 𝗽𝗮𝗿𝗮 𝗶𝗺𝗽𝗲𝗱𝗶-𝗹𝗼 𝗱𝗲 𝘂𝘀𝗮𝗿 𝗼 𝗕𝗼𝘁 𝗱𝗲 𝗠𝘂́𝘀𝗶𝗰𝗮.
-  <b>✧ {WHITELISTCHAT_COMMAND}</b> [𝗜𝗗 𝗱𝗼 𝗰𝗵𝗮𝘁] - 𝗥𝗲𝗺𝗼𝘃𝗲 𝗾𝘂𝗮𝗹𝗾𝘂𝗲𝗿 𝗰𝗵𝗮𝘁 𝗱𝗮 𝗹𝗶𝘀𝘁𝗮 𝗻𝗲𝗴𝗿𝗮, 𝗽𝗲𝗿𝗺𝗶𝘁𝗶𝗻𝗱𝗼 𝗼 𝘂𝘀𝗼 𝗱𝗼 𝗕𝗼𝘁 𝗱𝗲 𝗠𝘂́𝘀𝗶𝗰𝗮.
-  <b>✧ {BLACKLISTEDCHAT_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗰𝗮 𝘁𝗼𝗱𝗼𝘀 𝗼𝘀 𝗰𝗵𝗮𝘁𝘀 𝗯𝗹𝗼𝗾𝘂𝗲𝗮𝗱𝗼𝘀.
+  <b>✧ {BLACKLISTCHAT_COMMAND}</b> [ID do chat] - Coloca qualquer chat na lista negra para impedi-lo de usar o Bot de Música.
+  <b>✧ {WHITELISTCHAT_COMMAND}</b> [ID do chat] - Remove qualquer chat da lista negra, permitindo o uso do Bot de Música.
+  <b>✧ {BLACKLISTEDCHAT_COMMAND}</b> - Verifica todos os chats bloqueados.
 
-  <b>✧ {BLOCK_COMMAND}</b> [𝗡𝗼𝗺𝗲 𝗱𝗲 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼 𝗼𝘂 𝗿𝗲𝘀𝗽𝗼𝗻𝗱𝗲𝗿 𝗮 𝘂𝗺 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼] - 𝗜𝗺𝗽𝗲𝗱𝗲 𝘂𝗺 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼 𝗱𝗲 𝘂𝘀𝗮𝗿 𝗼𝘀 𝗰𝗼𝗺𝗮𝗻𝗱𝗼𝘀 𝗱𝗼 𝗯𝗼𝘁.
-  <b>✧ {UNBLOCK_COMMAND}</b> [𝗡𝗼𝗺𝗲 𝗱𝗲 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼 𝗼𝘂 𝗿𝗲𝘀𝗽𝗼𝗻𝗱𝗲𝗿 𝗮 𝘂𝗺 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼] - 𝗥𝗲𝗺𝗼𝘃𝗲 𝘂𝗺 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼 𝗱𝗮 𝗹𝗶𝘀𝘁𝗮 𝗱𝗲 𝗯𝗹𝗼𝗾𝘂𝗲𝗮𝗱𝗼𝘀 𝗱𝗼 𝗯𝗼𝘁.
-  <b>✧ {BLOCKED_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗰𝗮 𝗮 𝗹𝗶𝘀𝘁𝗮 𝗱𝗲 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼𝘀 𝗯𝗹𝗼𝗾𝘂𝗲𝗮𝗱𝗼𝘀.
+  <b>✧ {BLOCK_COMMAND}</b> [Nome de usuário ou responder a um usuário] - Impede um usuário de usar os comandos do bot.
+  <b>✧ {UNBLOCK_COMMAND}</b> [Nome de usuário ou responder a um usuário] - Remove um usuário da lista de bloqueados do bot.
+  <b>✧ {BLOCKED_COMMAND}</b> - Verifica a lista de usuários bloqueados.
 
-  <b>✧ {GBAN_COMMAND}</b> [𝗡𝗼𝗺𝗲 𝗱𝗲 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼 𝗼𝘂 𝗿𝗲𝘀𝗽𝗼𝗻𝗱𝗲𝗿 𝗮 𝘂𝗺 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼] - 𝗕𝗮𝗻𝗲 𝗴𝗹𝗼𝗯𝗮𝗹𝗺𝗲𝗻𝘁𝗲 𝘂𝗺 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼 𝗱𝗲 𝘁𝗼𝗱𝗼𝘀 𝗼𝘀 𝗰𝗵𝗮𝘁𝘀 𝗮𝘁𝗲𝗻𝗱𝗶𝗱𝗼𝘀 𝗲 𝗼 𝗶𝗺𝗽𝗲𝗱𝗲 𝗱𝗲 𝘂𝘀𝗮𝗿 𝘀𝗲𝘂 𝗯𝗼𝘁.
-  <b>✧ {UNGBAN_COMMAND}</b> [𝗡𝗼𝗺𝗲 𝗱𝗲 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼 𝗼𝘂 𝗿𝗲𝘀𝗽𝗼𝗻𝗱𝗲𝗿 𝗮 𝘂𝗺 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼] - 𝗥𝗲𝗺𝗼𝘃𝗲 𝘂𝗺 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼 𝗱𝗮 𝗹𝗶𝘀𝘁𝗮 𝗱𝗲 𝗯𝗮𝗻𝗶𝗺𝗲𝗻𝘁𝗼 𝗴𝗹𝗼𝗯𝗮𝗹 𝗱𝗼 𝗯𝗼𝘁 𝗲 𝗽𝗲𝗿𝗺𝗶𝘁𝗲 𝗾𝘂𝗲 𝗲𝗹𝗲 𝘂𝘀𝗲 𝘀𝗲𝘂 𝗯𝗼𝘁.
-  <b>✧ {GBANNED_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗰𝗮 𝗮 𝗹𝗶𝘀𝘁𝗮 𝗱𝗲 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼𝘀 𝗯𝗮𝗻𝗶𝗱𝗼𝘀 𝗴𝗹𝗼𝗯𝗮𝗹𝗺𝗲𝗻𝘁𝗲.
+  <b>✧ {GBAN_COMMAND}</b> [Nome de usuário ou responder a um usuário] - Bane globalmente um usuário de todos os chats atendidos e o impede de usar seu bot.
+  <b>✧ {UNGBAN_COMMAND}</b> [Nome de usuário ou responder a um usuário] - Remove um usuário da lista de banimento global do bot e permite que ele use seu bot.
+  <b>✧ {GBANNED_COMMAND}</b> - Verifica a lista de usuários banidos globalmente.
 
 DEV_HELPER: |
-  <b><u>𝗔𝗱𝗶𝗰𝗶𝗼𝗻𝗮𝗿 𝗲 𝗿𝗲𝗺𝗼𝘃𝗲𝗿 𝘀𝘂𝗱𝗼𝗲𝗿𝘀:</u></b>
+  <b><u>Adicionar e remover sudoers:</u></b>
 
-  <b>{ADDSUDO_COMMAND} [𝗡𝗼𝗺𝗲 𝗱𝗲 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼 𝗼𝘂 𝗿𝗲𝘀𝗽𝗼𝗻𝗱𝗲𝗿 𝗮 𝘂𝗺 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼] - 𝗔𝗱𝗶𝗰𝗶𝗼𝗻𝗮 𝘀𝘂𝗱𝗼 𝗻𝗼 𝘀𝗲𝘂 𝗯𝗼𝘁</b>
-  <b>{DELSUDO_COMMAND} [𝗡𝗼𝗺𝗲 𝗱𝗲 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼 𝗼𝘂 𝗶𝗱 𝗼𝘂 𝗿𝗲𝘀𝗽𝗼𝗻𝗱𝗲𝗿 𝗮 𝘂𝗺 𝘂𝘀𝘂𝗮́𝗿𝗶𝗼] - 𝗥𝗲𝗺𝗼𝘃𝗲 𝗱𝗼𝘀 𝘀𝘂𝗱𝗼𝗲𝗿𝘀 𝗱𝗼 𝗯𝗼𝘁</b>
-  <b>{SUDOUSERS_COMMAND} - 𝗢𝗯𝘁𝗲́𝗺 𝘂𝗺𝗮 𝗹𝗶𝘀𝘁𝗮 𝗱𝗲 𝘁𝗼𝗱𝗼𝘀 𝗼𝘀 𝘀𝘂𝗱𝗼𝗲𝗿𝘀</b>
+  <b>{ADDSUDO_COMMAND} [Nome de usuário ou responder a um usuário] - Adiciona sudo no seu bot</b>
+  <b>{DELSUDO_COMMAND} [Nome de usuário ou id ou responder a um usuário] - Remove dos sudoers do bot</b>
+  <b>{SUDOUSERS_COMMAND} - Obtém uma lista de todos os sudoers</b>
 
-  <b><u>𝗛𝗲𝗿𝗼𝗸𝘂:</u></b>
+  <b><u>Heroku:</u></b>
 
-  <b>{USAGE_COMMAND}</b> - 𝗨𝘀𝗼 𝗱𝗼 𝗗𝘆𝗻𝗼
-  <b>{GETVAR_COMMAND} [𝗡𝗼𝗺𝗲 𝗱𝗮 𝗩𝗮𝗿]</b> - 𝗢𝗯𝘁𝗲́𝗺 𝘂𝗺𝗮 𝘃𝗮𝗿𝗶𝗮́𝘃𝗲𝗹 𝗱𝗲 𝗰𝗼𝗻𝗳𝗶𝗴𝘂𝗿𝗮𝗰̧𝗮̃𝗼
-  <b>{DELVAR_COMMAND} [𝗡𝗼𝗺𝗲 𝗱𝗮 𝗩𝗮𝗿]</b> - 𝗘𝘅𝗰𝗹𝘂𝗶 𝘂𝗺𝗮 𝘃𝗮𝗿𝗶𝗮́𝘃𝗲𝗹
-  <b>{SETVAR_COMMAND} [𝗡𝗼𝗺𝗲 𝗱𝗮 𝗩𝗮𝗿] [𝗩𝗮𝗹𝗼𝗿]</b> - 𝗔𝗱𝗶𝗰𝗶𝗼𝗻𝗮 𝗼𝘂 𝗮𝘁𝘂𝗮𝗹𝗶𝘇𝗮 𝘂𝗺𝗮 𝘃𝗮𝗿𝗶𝗮́𝘃𝗲𝗹. 𝗦𝗲𝗽𝗮𝗿𝗲 𝗮 𝘃𝗮𝗿𝗶𝗮́𝘃𝗲𝗹 𝗲 𝘀𝗲𝘂 𝘃𝗮𝗹𝗼𝗿 𝗰𝗼𝗺 𝘂𝗺 𝗲𝘀𝗽𝗮𝗰̧𝗼
+  <b>{USAGE_COMMAND}</b> - Uso do Dyno
+  <b>{GETVAR_COMMAND} [Nome da Var]</b> - Obtém uma variável de configuração
+  <b>{DELVAR_COMMAND} [Nome da Var]</b> - Exclui uma variável
+  <b>{SETVAR_COMMAND} [Nome da Var] [Valor]</b> - Adiciona ou atualiza uma variável. Separe a variável e seu valor com um espaço
 
-  <b><u>𝗖𝗼𝗺𝗮𝗻𝗱𝗼𝘀 𝗱𝗼 𝗯𝗼𝘁:</u></b>
+  <b><u>Comandos do bot:</u></b>
 
-  <b>{RESTART_COMMAND}</b> - 𝗥𝗲𝗶𝗻𝗶𝗰𝗶𝗮 𝗼 𝗯𝗼𝘁 (𝗮𝗽𝗲𝗻𝗮𝘀 𝗦𝗨𝗗𝗢𝗘𝗥𝗦)
-  <b>{UPDATE_COMMAND}</b> - 𝗔𝘁𝘂𝗮𝗹𝗶𝘇𝗮 𝗼 𝗯𝗼𝘁
-  <b>{SPEEDTEST_COMMAND}</b> - 𝗩𝗲𝗿𝗶𝗳𝗶𝗰𝗮 𝗮 𝘃𝗲𝗹𝗼𝗰𝗶𝗱𝗮𝗱𝗲 𝗱𝗼 𝘀𝗲𝗿𝘃𝗶𝗱𝗼𝗿
-  <b>{MAINTENANCE_COMMAND} [𝗲𝗻𝗮𝗯𝗹𝗲 / 𝗱𝗶𝘀𝗮𝗯𝗹𝗲]</b> - 𝗔𝘁𝗶𝘃𝗮/𝗱𝗲𝘀𝗮𝘁𝗶𝘃𝗮 𝗼 𝗺𝗼𝗱𝗼 𝗱𝗲 𝗺𝗮𝗻𝘂𝘁𝗲𝗻𝗰̧𝗮̃𝗼 𝗱𝗼 𝗯𝗼𝘁
-  <b>{LOGGER_COMMAND} [𝗲𝗻𝗮𝗯𝗹𝗲 / 𝗱𝗶𝘀𝗮𝗯𝗹𝗲]</b> - 𝗔𝘁𝗶𝘃𝗮/𝗱𝗲𝘀𝗮𝘁𝗶𝘃𝗮 𝗼 𝗿𝗲𝗴𝗶𝘀𝘁𝗿𝗼 𝗱𝗲 𝗽𝗲𝘀𝗾𝘂𝗶𝘀𝗮𝘀 𝗻𝗼 𝗴𝗿𝘂𝗽𝗼 𝗱𝗲 𝗹𝗼𝗴𝘀
-  <b>{GETLOG_COMMAND} [𝗡𝘂́𝗺𝗲𝗿𝗼 𝗱𝗲 𝗹𝗶𝗻𝗵𝗮𝘀]</b> - 𝗢𝗯𝘁𝗲́𝗺 𝗹𝗼𝗴𝘀 𝗱𝗼 𝘀𝗲𝗿𝘃𝗶𝗱𝗼𝗿
-  <b>{AUTOEND_COMMAND} [𝗲𝗻𝗮𝗯𝗹𝗲 / 𝗱𝗶𝘀𝗮𝗯𝗹𝗲]</b> - 𝗘𝗻𝗰𝗲𝗿𝗿𝗮 𝗮𝘂𝘁𝗼𝗺𝗮𝘁𝗶𝗰𝗮𝗺𝗲𝗻𝘁𝗲 𝗮 𝘁𝗿𝗮𝗻𝘀𝗺𝗶𝘀𝘀𝗮̃𝗼 𝗮𝗽𝗼́𝘀 𝟯𝟬𝘀 𝘀𝗲 𝗻𝗶𝗻𝗴𝘂𝗲́𝗺 𝗲𝘀𝘁𝗶𝘃𝗲𝗿 𝗼𝘂𝘃𝗶𝗻𝗱𝗼
+  <b>{RESTART_COMMAND}</b> - Reinicia o bot (apenas SUDOERS)
+  <b>{UPDATE_COMMAND}</b> - Atualiza o bot
+  <b>{SPEEDTEST_COMMAND}</b> - Verifica a velocidade do servidor
+  <b>{MAINTENANCE_COMMAND} [enable / disable]</b> - Ativa/desativa o modo de manutenção do bot
+  <b>{LOGGER_COMMAND} [enable / disable]</b> - Ativa/desativa o registro de pesquisas no grupo de logs
+  <b>{GETLOG_COMMAND} [Número de linhas]</b> - Obtém logs do servidor
+  <b>{AUTOEND_COMMAND} [enable / disable]</b> - Encerra automaticamente a transmissão após 30s se ninguém estiver ouvindo

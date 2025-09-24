@@ -173,6 +173,7 @@ BANNED_USERS = _flt.user()
 YTDOWNLOADER = 1
 LOG = 2
 LOG_FILE_NAME = "logs.txt"
+PREFIXES = ["/", "!", "%", ",", ".", "@", "#"]
 adminlist = {}
 lyrical = {}
 chatstats = {}
