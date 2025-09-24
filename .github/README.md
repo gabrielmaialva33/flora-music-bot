@@ -1,16 +1,20 @@
 # 🎵 **WinxMusic** 🎶
 
-[**WinxMusic**](https://github.com/gabrielmaialva33/flora-music-bot) is a powerful, enhanced version of the original [**WinxMusicBot**](https://github.com/gabrielmaialva33/flora-music-bot), designed for seamless, high-quality music streaming in
+[**WinxMusic**](https://github.com/gabrielmaialva33/flora-music-bot) is a powerful, enhanced version of the original [*
+*WinxMusicBot**](https://github.com/gabrielmaialva33/flora-music-bot), designed for seamless, high-quality music
+streaming in
 Telegram voice chats. Built with **Python** and **Pyrogram**, it offers a robust and user-friendly experience for music
 lovers and bot developers alike. 🚀
 
 ## ⚙️ Configuration
 
-Need help setting up? Check out our detailed configuration guide: [**Configuration Instructions**](https://github.com/gabrielmaialva33/flora-music-bot/blob/master/config/README.md).
+Need help setting up? Check out our detailed configuration guide: [**Configuration Instructions
+**](https://github.com/gabrielmaialva33/flora-music-bot/blob/master/config/README.md).
 
 > [!TIP]
 > **Looking to use cookies for authentication?**  
-> See: [**Using Cookies for Authentication**](https://github.com/gabrielmaialva33/flora-music-bot/blob/master/config/README.md#using-cookies-for-authentication)
+> See: [**Using Cookies for Authentication
+**](https://github.com/gabrielmaialva33/flora-music-bot/blob/master/config/README.md#using-cookies-for-authentication)
 
 ## Quick Deployment Options
 
@@ -75,7 +79,8 @@ Get started quickly by deploying to Heroku with just one click:
 
 We're here to help you every step of the way! Reach out through:
 
-- **📝 GitHub Issues**: Report bugs or ask questions by [**opening an issue**](https://github.com/gabrielmaialva33/flora-music-botissues/new?assignees=&labels=question&title=support).
+- **📝 GitHub Issues**: Report bugs or ask questions by [**opening an issue
+  **](https://github.com/gabrielmaialva33/flora-music-botissues/new?assignees=&labels=question&title=support).
 
 - **💬 Telegram Support**: Connect with us on [**Telegram**](https://t.me/TheTeamVk).
 
@@ -84,7 +89,7 @@ We're here to help you every step of the way! Reach out through:
 ## ⭐ Support the Original
 
 Show your love for the project that started it all! If you're using or forking **WinxMusic**, please **star** the
-original repository: [**⭐ WinxMusicBot**](https://github.com/gabrielmaialva33/flora-music-bot)
+original repository: [**⭐ WinxMusicBot**](https://github.com/gabrielmaialva33/winx-music-bot)
 
 ## ❣️ Show Your Support
 
@@ -92,7 +97,8 @@ Love WinxMusic? Help us grow the project with these simple actions:
 
 - **⭐ Star the Original:** Give a star to [**WinxMusicBot**](https://github.com/gabrielmaialva33/flora-music-bot).
 
-- **🍴 Fork & Contribute**: Dive into the code and contribute to [**WinxMusic**](https://github.com/gabrielmaialva33/flora-music-bot).
+- **🍴 Fork & Contribute**: Dive into the code and contribute to [**WinxMusic
+  **](https://github.com/gabrielmaialva33/flora-music-bot).
 
 - **📢 Spread the Word**: Share your experience on [**Dev.to**](https://dev.to/), [**Medium**](https://medium.com/), or
   your personal blog.
@@ -101,10 +107,13 @@ Together, we can make **WinxMusic** and **WinxMusicBot** even better!
 
 ## 🙏 Acknowledgments
 
-A huge thank you to [**Team Winx**](https://github.com/TeamWinx) for creating the original [**WinxMusicBot**](https://github.com/gabrielmaialva33/flora-music-bot), the foundation of this project. Though the original is now inactive, its
+A huge thank you to [**Team Winx**](https://github.com/TeamWinx) for creating the original [**WinxMusicBot
+**](https://github.com/gabrielmaialva33/flora-music-bot), the foundation of this project. Though the original is now
+inactive, its
 legacy lives on.
 
-Special gratitude to [**Pranav-Saraswat**](https://github.com/Pranav-Saraswat) for reviving the project with [**WinxMusicFork**](https://github.com/Pranav-Saraswat/WinxMusicFork) (now deleted), which inspired WinxMusic.
+Special gratitude to [**Pranav-Saraswat**](https://github.com/Pranav-Saraswat) for reviving the project with [*
+*WinxMusicFork**](https://github.com/Pranav-Saraswat/WinxMusicFork) (now deleted), which inspired WinxMusic.
 
 **WinxMusic** is an imported and enhanced version of the now-deleted **WinxMusicFork**, with ongoing improvements to
 deliver the best music streaming experience.
