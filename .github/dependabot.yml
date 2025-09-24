@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 50
+    groups:
+      all-docker-deps:
+        patterns:
+          - "*"
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 50
+    groups:
+      all-gha-deps:
+        patterns:
+          - "*"
