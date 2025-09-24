@@ -2,13 +2,14 @@ import asyncio
 import time
 
 from py_yt import VideosSearch
-from pyrogram import filters, Client
+from pyrogram import filters
 from pyrogram.enums import ChatType, ParseMode
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 import config
-from WinxMusic import Platform, app
+from WinxMusic import app
 from WinxMusic.misc import SUDOERS, _boot_
+from WinxMusic.platforms import telegram, youtube
 from WinxMusic.plugins.bot.help import paginate_modules
 from WinxMusic.plugins.play.playlist import del_plist_msg
 from WinxMusic.plugins.sudo.sudoers import sudoers_list
@@ -22,7 +23,7 @@ from WinxMusic.utils.database import (
     is_on_off,
     is_served_private_chat,
 )
-from WinxMusic.utils.decorators.language import language_start
+from WinxMusic.utils.decorators import LanguageStart, asyncify
 from WinxMusic.utils.formatters import get_readable_time
 from WinxMusic.utils.functions import MARKDOWN, WELCOMEHELP
 from WinxMusic.utils.inline import private_panel, start_pannel
@@ -30,11 +31,11 @@ from config import BANNED_USERS, START_IMG_URL
 from config.config import OWNER_ID
 from strings import command, get_string
 
-loop = asyncio.get_running_loop()
 
-
-@app.on_message(command("START_COMMAND") & filters.private & ~BANNED_USERS)
-@language_start
+@app.on_message(
+    command("START_COMMAND") & filters.private & ~BANNED_USERS
+)
+@LanguageStart
 async def start_comm(client, message: Message, _):
     chat_id = message.chat.id
     await add_served_user(message.from_user.id)
@@ -70,13 +71,13 @@ async def start_comm(client, message: Message, _):
                 disable_web_page_preview=True,
             )
         if name[0:3] == "sta":
-            m = await message.reply_text("🔎 Buscando suas estatísticas pessoais!")
+            m = await message.reply_text("🔎 Fetching Your personal stats.!")
             stats = await get_userss(message.from_user.id)
             tot = len(stats)
             if not stats:
-                await asyncio.sleep(1)
                 return await m.edit(_["ustats_1"])
 
+            @asyncify
             def get_stats():
                 msg = ""
                 limit = 0
@@ -105,18 +106,18 @@ async def start_comm(client, message: Message, _):
                     details = stats.get(vidid)
                     title = (details["title"][:35]).title()
                     if vidid == "telegram":
-                        msg += f"🔗[Arquivos e áudios do Telegram]({config.SUPPORT_GROUP}) ** tocados {count} vezes**\n\n"
+                        msg += f"🔗[Telegram Files and Audio]({config.SUPPORT_GROUP}) ** played {count} Times**\n\n"
                     else:
-                        msg += f"🔗 [{title}](https://www.youtube.com/watch?v={vidid}) ** tocados {count} vezes**\n\n"
+                        msg += f"🔗 [{title}](https://www.youtube.com/watch?v={vidid}) ** played {count} Times**\n\n"
                 msg = _["ustats_2"].format(tot, tota, limit) + msg
                 return videoid, msg
 
             try:
-                videoid, msg = await loop.run_in_executor(None, get_stats)
+                videoid, msg = await get_stats()
             except Exception as e:
                 print(e)
                 return
-            thumbnail = await Platform.youtube.thumbnail(videoid, True)
+            thumbnail = await youtube.thumbnail(videoid, True)
             await m.delete()
             await message.reply_photo(photo=thumbnail, caption=msg)
             return
@@ -125,11 +126,11 @@ async def start_comm(client, message: Message, _):
             await asyncio.sleep(1)
             if await is_on_off(config.LOG):
                 sender_id = message.from_user.id
-                sender_mention = message.from_user.mention
+                message.from_user.mention
                 sender_name = message.from_user.first_name
                 return await app.send_message(
                     config.LOG_GROUP_ID,
-                    f"👤 {message.from_user.mention} acabou de iniciar o bot para verificar a <code>lista de Sudo</code>\n\n🆔 **ID do usuário:** {sender_id}\n📛 **Nome do usuário:** {sender_name}",
+                    f"{message.from_user.mention} Has just started bot to check <code>Sudolist </code>\n\n**User Id:** {sender_id}\n**User Name:** {sender_name}",
                 )
             return
         if name[0:3] == "lyr":
@@ -137,16 +138,16 @@ async def start_comm(client, message: Message, _):
             lyrical = config.lyrical
             lyrics = lyrical.get(query)
             if lyrics:
-                await Platform.telegram.send_split_text(message, lyrics)
+                await telegram.send_split_text(message, lyrics)
                 return
             else:
-                await message.reply_text("Falha ao obter as letras da música.")
+                await message.reply_text("Failed to get lyrics ")
                 return
         if name[0:3] == "del":
             await del_plist_msg(client=client, message=message, _=_)
             await asyncio.sleep(1)
         if name[0:3] == "inf":
-            m = await message.reply_text("🔎 Buscando informações!")
+            m = await message.reply_text("🔎 Fetching info..")
             query = (str(name)).replace("info_", "", 1)
             query = f"https://www.youtube.com/watch?v={query}"
             results = VideosSearch(query, limit=1)
@@ -159,24 +160,23 @@ async def start_comm(client, message: Message, _):
                 channel = result["channel"]["name"]
                 link = result["link"]
                 published = result["publishedTime"]
-                searched_text = f"""
-🔍__**Informações da Faixa de Vídeo**__
+            searched_text = f"""
+🔍__**Video track information **__
 
-❇️**Título:** {title}
+❇️**Title:** {title}
 
-⏳**Duração:** {duration} Minutos
-👀**Visualizações:** `{views}`
-⏰**Publicado em:** {published}
-🎥**Nome do Canal:** {channel}
-📎**Link do Canal:** [Visite aqui]({channellink})
-🔗**Link do Vídeo:** [Clique aqui]({link})
+⏳**Duration:** {duration} Mins
+👀**Views:** `{views}`
+⏰**Published times:** {published}
+🎥**Channel Name:** {channel}
+📎**Channel Link:** [Visit from here]({channellink})
+🔗**Video Link:** [Link]({link})
 """
-
             key = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton(text="🎥 Assistir", url=f"{link}"),
-                        InlineKeyboardButton(text="🔄 Fechar", callback_data="close"),
+                        InlineKeyboardButton(text="🎥 Watch ", url=f"{link}"),
+                        InlineKeyboardButton(text="🔄 Close", callback_data="close"),
                     ],
                 ]
             )
@@ -194,7 +194,7 @@ async def start_comm(client, message: Message, _):
                 sender_name = message.from_user.first_name
                 return await app.send_message(
                     config.LOG_GROUP_ID,
-                    f"👤 {message.from_user.mention} acabou de iniciar o bot para verificar as <code> informações do vídeo </code>\n\n🆔 **ID do usuário:** {sender_id}\n📛 **Nome do usuário:** {sender_name}",
+                    f"{message.from_user.mention} Has just started bot ot check <code> Video information  </code>\n\n**User Id:** {sender_id}\n**User Name** {sender_name}",
                 )
     else:
         try:
@@ -225,30 +225,27 @@ async def start_comm(client, message: Message, _):
             sender_name = message.from_user.first_name
             return await app.send_message(
                 config.LOG_GROUP_ID,
-                f"👤 {message.from_user.mention} iniciou o bot. \n\n🆔 **ID do usuário:** {sender_id}\n📛 **Nome do usuário:** {sender_name}",
+                f"{message.from_user.mention} Has started bot. \n\n**User id :** {sender_id}\n**User name:** {sender_name}",
             )
 
 
 @app.on_message(command("START_COMMAND") & filters.group & ~BANNED_USERS)
-@language_start
-async def testbot(_client: Client, message: Message, _):
+@LanguageStart
+async def testbot(client, message: Message, _):
     uptime = int(time.time() - _boot_)
-    chat_id = message.chat.id
+    message.chat.id
+    await message.reply_text(_["start_7"].format(get_readable_time(uptime)))
 
-    try:
-        await message.reply_text(_["start_7"].format(get_readable_time(uptime)))
-    except Exception:
-        await app.send_message(chat_id, _["start_7"].format(get_readable_time(uptime)))
     return await add_served_chat(message.chat.id)
 
 
 @app.on_message(filters.new_chat_members, group=-1)
-async def welcome(_client: Client, message: Message):
+async def welcome(client, message: Message):
     chat_id = message.chat.id
-    if config.PRIVATE_BOT_MODE == str(True):
+    if config.PRIVATE_BOT_MODE:
         if not await is_served_private_chat(message.chat.id):
             await message.reply_text(
-                "**O modo privado deste bot foi ativado, apenas meu dono pode usá-lo. Se você quiser usar este bot no seu chat, peça ao meu dono para autorizar seu chat.**"
+                "This Bot's private mode has been enabled only my owner can use this if want to use in your chat so say my Owner to authorize your chat."
             )
             return await app.leave_chat(message.chat.id)
     else:
@@ -289,5 +286,4 @@ async def welcome(_client: Client, message: Message):
                 )
             return
         except Exception:
-
             return

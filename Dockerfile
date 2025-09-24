@@ -6,11 +6,8 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-COPY requirements.txt ./
-RUN python3 -m pip install --upgrade pip setuptools wheel && \
-    pip3 install --no-cache-dir -r requirements.txt && \
-    rm -rf ~/.cache/pip
-
 COPY . .
 
-CMD ["python3", "-m", "WinxMusic"]
+RUN pip install -U uv && uv pip install --system -e .
+
+CMD ["winxmusic"]

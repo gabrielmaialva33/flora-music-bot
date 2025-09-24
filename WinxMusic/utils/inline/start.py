@@ -1,5 +1,3 @@
-from typing import Union
-
 from pyrogram.types import InlineKeyboardButton
 
 from WinxMusic import app
@@ -35,7 +33,7 @@ def start_pannel(_):
     return buttons
 
 
-def private_panel(_, BOT_USERNAME, OWNER: Union[bool, int] = None):
+def private_panel(_, BOT_USERNAME, OWNER: bool | int = None):
     buttons = [
         [InlineKeyboardButton(text=_["S_B_8"], callback_data="settings_back_helper")]
     ]
@@ -67,11 +65,10 @@ def private_panel(_, BOT_USERNAME, OWNER: Union[bool, int] = None):
         buttons.append(
             [
                 InlineKeyboardButton(text=_["S_B_7"], user_id=OWNER),
-                # InlineKeyboardButton(text=_["S_B_6"], url=f"{GITHUB_REPO}"),
+                InlineKeyboardButton(text=_["S_B_6"], url=f"{GITHUB_REPO}"),
             ]
         )
     else:
-
         if GITHUB_REPO:
             buttons.append(
                 [

@@ -1,9 +1,14 @@
 import os
+import traceback
 from random import randint
 
-from WinxMusic import Platform, app
+from pyrogram.types import InlineKeyboardMarkup
+
+import config
+from WinxMusic import app
 from WinxMusic.core.call import Winx
 from WinxMusic.misc import db
+from WinxMusic.platforms import carbon, saavn, youtube
 from WinxMusic.utils import fallback
 from WinxMusic.utils.database import (
     add_active_video_chat,
@@ -13,12 +18,9 @@ from WinxMusic.utils.database import (
 from WinxMusic.utils.exceptions import AssistantErr
 from WinxMusic.utils.inline.play import stream_markup, telegram_markup
 from WinxMusic.utils.inline.playlist import close_markup
-from WinxMusic.utils.pastebin import WinxBin
+from WinxMusic.utils.pastebin import Winxbin
 from WinxMusic.utils.stream.queue import put_queue, put_queue_index
 from WinxMusic.utils.thumbnails import gen_qthumb, gen_thumb
-from pyrogram.types import InlineKeyboardMarkup
-
-import config
 
 
 async def stream(
@@ -54,7 +56,7 @@ async def stream(
                     duration_sec,
                     thumbnail,
                     vidid,
-                ) = await Platform.youtube.details(search, False if spotify else True)
+                ) = await youtube.details(search, False if spotify else True)
             except Exception:
                 continue
             if str(duration_min) == "None":
@@ -82,7 +84,7 @@ async def stream(
                     db[chat_id] = []
                 status = True if video else None
                 try:
-                    file_path, direct = await Platform.youtube.download(
+                    file_path, direct = await youtube.download(
                         vidid, mystic, video=status, videoid=True
                     )
                 except Exception:
@@ -120,17 +122,17 @@ async def stream(
         if count == 0:
             return
         else:
-            link = await WinxBin(msg)
+            link = await Winxbin(msg)
             lines = msg.count("\n")
             if lines >= 17:
                 car = os.linesep.join(msg.split(os.linesep)[:17])
             else:
                 car = msg
-            carbon = await Platform.carbon.generate(car, randint(100, 10000000))
+            img = await carbon.generate(car, randint(100, 10000000))
             upl = close_markup(_)
             return await app.send_photo(
                 original_chat_id,
-                photo=carbon,
+                photo=img,
                 caption=_["playlist_18"].format(link, position),
                 reply_markup=upl,
             )
@@ -144,8 +146,10 @@ async def stream(
         status = True if video else None
         flink = None
         try:
-            if Platform.youtube.use_fallback:
-                file_path, _data, status = await fallback.download(title[:12], video=status)
+            if youtube.use_fallback:
+                file_path, _data, status = await fallback.download(
+                    title[:12], video=status
+                )
                 direct = None
                 title = _data.get("title", title)
                 duration_min = _data.get("duration_min", duration_min)
@@ -153,19 +157,22 @@ async def stream(
                 flink = _data.get("url", link)
             else:
                 try:
-                    file_path, direct = await Platform.youtube.download(
+                    file_path, direct = await youtube.download(
                         vidid, mystic, videoid=True, video=status
                     )
                     flink = f"https://t.me/{app.username}?start=info_{vidid}"
                 except Exception:
-                    Platform.youtube.use_fallback = True
-                    file_path, _data, status = await fallback.download(title[:12], video=status)
+                    youtube.use_fallback = True
+                    file_path, _data, status = await fallback.download(
+                        title[:12], video=status
+                    )
                     direct = None
                     title = _data.get("title", title)
                     duration_min = _data.get("duration_min", duration_min)
                     thumbnail = _data.get("thumb", thumbnail)
                     flink = _data.get("url", link)
         except Exception:
+            traceback.print_exc()
             raise AssistantErr(_["play_16"])
 
         if await is_active_chat(chat_id):
@@ -295,7 +302,7 @@ async def stream(
                 duration_sec = search["duration_sec"]
                 link = search["url"]
                 thumb = search["thumb"]
-                file_path, n = await Platform.saavn.download(link)
+                file_path, n = await saavn.download(link)
                 if await is_active_chat(chat_id):
                     await put_queue(
                         chat_id,
@@ -315,7 +322,6 @@ async def stream(
                     msg += f"{_['playlist_17']} {position}\n\n"
 
                 else:
-
                     if not forceplay:
                         db[chat_id] = []
                     await Winx.join_call(
@@ -348,17 +354,17 @@ async def stream(
             if count == 0:
                 return
             else:
-                link = await WinxBin(msg)
+                link = await Winxbin(msg)
                 lines = msg.count("\n")
                 if lines >= 17:
                     car = os.linesep.join(msg.split(os.linesep)[:17])
                 else:
                     car = msg
-                carbon = await Platform.carbon.generate(car, randint(100, 10000000))
+                img = await carbon.generate(car, randint(100, 10000000))
                 upl = close_markup(_)
                 return await app.send_photo(
                     original_chat_id,
-                    photo=carbon,
+                    photo=img,
                     caption=_["playlist_18"].format(link, position),
                     reply_markup=upl,
                 )
@@ -488,7 +494,7 @@ async def stream(
         else:
             if not forceplay:
                 db[chat_id] = []
-            n, file_path = await Platform.youtube.video(link)
+            n, file_path = await youtube.video(link)
             if n == 0:
                 raise AssistantErr(_["str_3"])
             await Winx.join_call(

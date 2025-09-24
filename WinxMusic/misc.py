@@ -1,3 +1,4 @@
+import logging
 import socket
 import time
 
@@ -5,13 +6,13 @@ import heroku3
 from pyrogram import filters
 
 import config
-from WinxMusic.core.mongo import pymongodb
-from .logging import LOGGER
+from WinxMusic.core.mongo import mongodb
 
 SUDOERS = filters.user()
 
 HAPP = None
 _boot_ = time.time()
+logger = logging.getLogger(__name__)
 
 
 def is_heroku():
@@ -38,32 +39,31 @@ XCB = [
 def dbb():
     global db
     db = {}
-    LOGGER(__name__).info(f"Database Initialized.")
+    logger.info(f"Database Initialized.")
 
 
-def sudo():
-    global SUDOERS
-    OWNER = config.OWNER_ID
+async def sudo():
     if config.MONGO_DB_URI is None:
-        for user_id in OWNER:
+        for user_id in config.OWNER_ID:
             SUDOERS.add(user_id)
     else:
-        sudoersdb = pymongodb.sudoers
-        sudoers = sudoersdb.find_one({"sudo": "sudo"})
-        sudoers = [] if not sudoers else sudoers["sudoers"]
-        for user_id in OWNER:
+        sudoersdb = mongodb.sudoers
+        db_sudoers = await sudoersdb.find_one({"sudo": "sudo"})
+        db_sudoers = [] if not db_sudoers else db_sudoers["sudoers"]
+        for user_id in config.OWNER_ID:
             SUDOERS.add(user_id)
-            if user_id not in sudoers:
-                sudoers.append(user_id)
-                sudoersdb.update_one(
+            if user_id not in db_sudoers:
+                db_sudoers.append(user_id)
+                await sudoersdb.update_one(
                     {"sudo": "sudo"},
-                    {"$set": {"sudoers": sudoers}},
+                    {"$set": {"sudoers": db_sudoers}},
                     upsert=True,
                 )
-        if sudoers:
-            for x in sudoers:
+        if db_sudoers:
+            for x in db_sudoers:
                 SUDOERS.add(x)
-    LOGGER(__name__).info(f"Sudoers Loaded.")
+
+    logger.info("Sudoers Loaded.")
 
 
 def heroku():
@@ -73,8 +73,8 @@ def heroku():
             try:
                 Heroku = heroku3.from_key(config.HEROKU_API_KEY)
                 HAPP = Heroku.app(config.HEROKU_APP_NAME)
-                LOGGER(__name__).info(f"Heroku App Configured")
+                logger.info(f"Heroku App Configured")
             except Exception:
-                LOGGER(__name__).warning(
+                logger.warning(
                     f"Please make sure your Heroku API Key and Your App name are configured correctly in the heroku."
                 )

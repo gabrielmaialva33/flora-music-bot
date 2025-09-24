@@ -1,10 +1,11 @@
 from pyrogram import filters
 from pyrogram.types import Message
 
-from WinxMusic import Platform, app
+from WinxMusic import app
 from WinxMusic.core.call import Winx
 from WinxMusic.misc import db
-from WinxMusic.utils import admin_rights_check, seconds_to_min
+from WinxMusic.platforms import youtube
+from WinxMusic.utils import AdminRightsCheck, seconds_to_min
 from config import BANNED_USERS
 from strings import command
 
@@ -12,7 +13,7 @@ from strings import command
 @app.on_message(
     command(["SEEK_COMMAND", "SEEK_BACK_COMMAND"]) & filters.group & ~BANNED_USERS
 )
-@admin_rights_check
+@AdminRightsCheck
 async def seek_comm(cli, message: Message, _, chat_id):
     if len(message.command) == 1:
         return await message.reply_text(_["admin_28"])
@@ -45,7 +46,7 @@ async def seek_comm(cli, message: Message, _, chat_id):
         to_seek = duration_played + duration_to_skip + 1
     mystic = await message.reply_text(_["admin_32"])
     if "vid_" in file_path:
-        n, file_path = await Platform.youtube.video(playing[0]["vidid"], True)
+        n, file_path = await youtube.video(playing[0]["vidid"], True)
         if n == 0:
             return await message.reply_text(_["admin_30"])
     try:

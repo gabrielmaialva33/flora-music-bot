@@ -5,7 +5,7 @@ from pytgcalls.exceptions import NoActiveGroupCall
 import config
 from WinxMusic import app
 from WinxMusic.core.call import Winx
-from WinxMusic.utils.decorators.play import play_wrapper
+from WinxMusic.utils.decorators.play import PlayWrapper
 from WinxMusic.utils.logger import play_logs
 from WinxMusic.utils.stream.stream import stream
 from config import BANNED_USERS
@@ -13,7 +13,7 @@ from strings import command
 
 
 @app.on_message(command("STREAM_COMMAND") & filters.group & ~BANNED_USERS)
-@play_wrapper
+@PlayWrapper
 async def stream_command(
         client,
         message: Message,

@@ -11,7 +11,7 @@ from config import LOG, LOG_GROUP_ID
 
 
 @app.on_message(filters.new_chat_members)
-async def on_bot_added(_, message: Message):
+async def on_bot_added(_, message):
     try:
         if not await is_on_off(LOG):
             return
@@ -24,12 +24,12 @@ async def on_bot_added(_, message: Message):
                     message.chat.username if message.chat.username else "ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ"
                 )
                 msg = (
-                    f"🎉 **Bot de música adicionado em um novo grupo #NovoGrupo**\n\n"
-                    f"📋 **Nome do Chat:** {message.chat.title}\n"
-                    f"🆔 **ID do Chat:** {message.chat.id}\n"
-                    f"🔗 **Nome de usuário do Chat:** @{username}\n"
-                    f"👥 **Número de Membros do Chat:** {count}\n"
-                    f"👤 **Adicionado por:** {message.from_user.mention}"
+                    f"**Music bot added in new Group #New_Group**\n\n"
+                    f"**Chat Name:** {message.chat.title}\n"
+                    f"**Chat Id:** {message.chat.id}\n"
+                    f"**Chat Username:** @{username}\n"
+                    f"**Chat Member Count:** {count}\n"
+                    f"**Added By:** {message.from_user.mention}"
                 )
                 await app.send_message(
                     LOG_GROUP_ID,
@@ -61,21 +61,19 @@ async def on_bot_kicked(_, message: Message):
         left_chat_member = message.left_chat_member
         if left_chat_member and left_chat_member.id == app.id:
             remove_by = (
-                message.from_user.mention
-                if message.from_user
-                else "Usuário Desconhecido"
+                message.from_user.mention if message.from_user else "𝐔ɴᴋɴᴏᴡɴ 𝐔sᴇʀ"
             )
             title = message.chat.title
             username = (
-                f"@{message.chat.username}" if message.chat.username else "Chat Privado"
+                f"@{message.chat.username}" if message.chat.username else "ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ"
             )
             chat_id = message.chat.id
             left = (
-                f"🤖 O bot foi removido do grupo {title} #GrupoRemovido\n"
-                f"📋 **Nome do Chat**: {title}\n"
-                f"🆔 **ID do Chat**: {chat_id}\n"
-                f"🔗 **Nome de Usuário do Chat**: {username}\n"
-                f"👤 **Removido Por**: {remove_by}"
+                f"Bot was Removed in {title} #Left_group\n"
+                f"**Chat Name**: {title}\n"
+                f"**Chat Id**: {chat_id}\n"
+                f"**Chat Username**: {username}\n"
+                f"**Removed By**: {remove_by}"
             )
 
             await app.send_message(
@@ -85,7 +83,7 @@ async def on_bot_kicked(_, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                text=f"Removido por: {message.from_user.first_name}",
+                                text=f"Removed By: {message.from_user.first_name}",
                                 user_id=message.from_user.id,
                             )
                         ]
@@ -94,5 +92,5 @@ async def on_bot_kicked(_, message: Message):
             )
             await delete_served_chat(chat_id)
             await userbot.leave_chat(chat_id)
-    except Exception as e:
+    except Exception:
         pass

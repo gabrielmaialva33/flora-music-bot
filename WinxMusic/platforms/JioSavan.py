@@ -1,6 +1,7 @@
 import os
 from io import BytesIO
 
+import aiofiles
 import aiohttp
 import yt_dlp
 from PIL import Image
@@ -10,14 +11,13 @@ from config import seconds_to_time
 
 
 class Saavn:
-
     @staticmethod
     async def valid(url: str) -> bool:
         return "jiosaavn.com" in url
 
     @staticmethod
     async def is_song(url: str) -> bool:
-        return "song" in url and not "/featured/" in url and "/album/" not in url
+        return "song" in url and "/featured/" not in url and "/album/" not in url
 
     @staticmethod
     async def is_playlist(url: str) -> bool:
@@ -78,7 +78,7 @@ class Saavn:
                     info = data["data"]["results"][0]  # For search queries
 
                 thumb_url = info["image"][-1]["url"]
-                thumb_path = await self._resize_thumb(thumb_url, info["_id"])
+                thumb_path = await self._resize_thumb(thumb_url, info["id"])
 
                 return {
                     "title": info["name"],
@@ -98,9 +98,9 @@ class Saavn:
             async with aiohttp.ClientSession() as session:
                 async with session.get(details["_download_url"]) as resp:
                     if resp.status == 200:
-                        with open(file_path, "wb") as f:
+                        async with aiofiles.open(file_path, "wb") as f:
                             while chunk := await resp.content.read(1024):
-                                f.write(chunk)
+                                await f.write(chunk)
                         print(f"Downloaded: {file_path}")
                     else:
                         raise ValueError(

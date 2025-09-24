@@ -1,5 +1,4 @@
 import re
-from typing import Union
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -17,7 +16,7 @@ class Resso:
         else:
             return False
 
-    async def track(self, url, playid: Union[bool, str] = None):
+    async def track(self, url, playid: bool | str = None):
         if playid:
             url = self.base + url
         async with aiohttp.ClientSession() as session:

@@ -1,6 +1,7 @@
+import os
 import random
-from os.path import realpath
 
+import aiofiles
 import aiohttp
 from aiohttp import client_exceptions
 
@@ -76,7 +77,7 @@ class Carbon:
 
     async def generate(self, text: str, user_id):
         async with aiohttp.ClientSession(
-            headers={"Content-Type": "application/json"},
+                headers={"Content-Type": "application/json"},
         ) as ses:
             params = {
                 "code": text,
@@ -98,6 +99,8 @@ class Carbon:
             except client_exceptions.ClientConnectorError:
                 raise UnableToFetchCarbon("Can not reach the Host!")
             resp = await request.read()
-            with open(f"cache/carbon{user_id}.jpg", "wb") as f:
-                f.write(resp)
-            return realpath(f.name)
+            os.makedirs("cache", exist_ok=True)
+
+            async with aiofiles.open(f"cache/carbon{user_id}.jpg", "wb") as f:
+                await f.write(resp)
+            return os.path.realpath(f.name)

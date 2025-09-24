@@ -4,6 +4,8 @@ Config vars are basically the variables which configure or modify bot to functio
 plugins or code to work. You have to set the proper mandatory vars to make it functional and to start the basic feature
 of bot.
 
+### Get to know about all these vars in depth from our Docs. [Read Now from Here](https://notreallyshikhar.gitbook.io/winxmusicbot/config-vars/available-vars)
+
 ## Mandatory Vars
 
 - These are the minimum required vars need to setup to make Winx Music Bot functional.
@@ -11,10 +13,10 @@ of bot.
 1. `API_ID` : Get it from my.telegram.org
 2. `API_HASH`  : Get it from my.telegram.org
 3. `BOT_TOKEN` : Get it from [@Botfather](http://t.me/BotFather) in Telegram
-4. `MONGO_DB_URI` : Get mongo db uri from [MongoDB](https://cloud.mongodb.com)
+4. `MONGO_DB_URI` : Get mongo db [from here.](https://notreallyshikhar.gitbook.io/winxmusicbot/deployment/mongodb)
 5. `LOG_GROUP_ID` : You'll need a Private Group ID for this. Supergroup Needed with id starting from -100
-6. `OWNER_ID` : Your Owner ID for managing your bot., muktiple ids can be seperated by commas.
-7. `STRING_SESSIONS`: Pyrogram v2 session strings for multiple assistants, separated by commas.
+6. `OWNER_ID` : Your Owner ID for managing your bot., multiple ids can be seperated by a space.
+7. `STRING_SESSIONS`: Pyrogram v2 session string. If you want to use multiple assistants, separate them with commas.
 
 ## Non-Mandatory Vars
 
@@ -63,7 +65,7 @@ of bot.
 - You can play tracks or playlists from spotify from Winx Music bot
 - You'll need these two vars to make spotify play working. This is not essential , you can leave them blank if you want.
 
-### How to get these?
+### How to get these? [Read from here](https://notreallyshikhar.gitbook.io/winxmusicbot/deployment/spotify)
 
 1. `SPOTIFY_CLIENT_ID` : Get it from https://developer.spotify.com/dashboard
 2. `SPOTIFY_CLIENT_SECRET` : Get it from https://developer.spotify.com/dashboard
@@ -74,7 +76,7 @@ of bot.
   `update` etc etc commands.
 - You can fill this var using your API key or Authorization token.
 
-### How to get these?
+### How to get these? [Read from here](https://notreallyshikhar.gitbook.io/winxmusicbot/config-vars/heroku-vars)
 
 1. `HEROKU_API_KEY` : Get it from http://dashboard.heroku.com/account
 2. `HEROKU_APP_NAME` : You have to Enter the app name which you gave to identify your Music Bot in Heroku.
@@ -91,6 +93,7 @@ of bot.
 ## Images/Thumbnail Vars
 
 - You can change images which are used in Winx Music Bot.
+- You can generate telegaph links from [@WinxTelegraphBot](http://t.me/WinxTelegraphBot) and use it here.
 
 1. `START_IMG_URL` : Image which comes on /start command in private messages of bot.
 2. `PING_IMG_URL` : Image which comes on /ping command of bot.
@@ -106,8 +109,60 @@ of bot.
 12. `SPOTIFY_ALBUM_IMG_URL` : This image comes when someone plays Spotify album via link in inline mode.
 13. `SPOTIFY_PLAYLIST_IMG_URL` : This image comes when someone plays Spotify album via link in inline mode.
 
-## Multi Assistant Mode
+## 🌐 Multi Assistant Mode
 
-- Supports unlimited assistant clients.
+- Supports **unlimited assistant clients** using **Pyrogram v2**.
 
-`STRING_SESSIONS`: Add multiple Pyrogram v2 string sessions, separated by commas.
+### 🔐 `STRING_SESSIONS`
+
+Add **multiple Pyrogram v2 string sessions**, separated by commas.
+
+#### ✅ Example:
+
+```env
+STRING_SESSIONS=ABC1234xyz... , DEF5678uvw... , GHI9012rst...
+```
+
+Each session corresponds to a separate assistant client. You can add as many as needed, separated by commas.
+
+### 🛠 How to generate string sessions:
+
+You can easily generate Pyrogram v2 string sessions from:  
+👉 [**telegram.tools**](https://telegram.tools/session-string-generator#pyrogram,user)
+
+## **Using Cookies for Authentication**
+
+### **Method: Netscape HTTP Cookie File**
+
+To authenticate requests using cookies, follow these steps:
+
+> [!NOTE]  
+> Use a **second account** for generating cookies. Once you create and upload the cookies, **do not open the account
+again** until the cookies expire — reopening may invalidate the session early.
+
+#### **1. Export Cookies in Netscape Format**
+
+Use a browser extension to export cookies in the **Netscape HTTP Cookie File** format:
+
+- **Chrome:** [Get cookies.txt (Chrome Extension)](https://chromewebstore.google.com/detail/get-cookiestxt-clean/ahmnmhfbokciafffnknlekllgcnafnie)
+- **Firefox:** [Get cookies.txt (Firefox Add-on)](https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/)
+
+#### **2. Upload Cookies to BatBin Service**
+
+1. Go to **[BatBin](https://batbin.me)**.
+2. Paste your `cookies`.
+3. Then tap to Save and Copy the URL.
+
+#### **3. Configure the Environment Variable**
+
+Paste the BatBin URL(s) into your **`COOKIE_LINK`** environment variable.
+
+- You can add **multiple cookie links**, separated by **commas**.
+
+> **Example:** `COOKIE_LINK=cookielink1 , cookielink2, cookielink3, cookielink4, cookielink5 ...`
+
+**Or**
+
+#### **4. Upload & Paste Cookies From File**
+
+Paste the Netscape HTTP cookies into config/cookies/ directory.

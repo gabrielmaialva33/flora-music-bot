@@ -5,20 +5,21 @@ from pykeyboard import InlineKeyboard
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-from WinxMusic import Platform, app
+from WinxMusic import app
+from WinxMusic.platforms import carbon, youtube
 from WinxMusic.utils.database import (
     delete_playlist,
     get_playlist,
     get_playlist_names,
     save_playlist,
 )
-from WinxMusic.utils.decorators import language, language_cb
+from WinxMusic.utils.decorators import language, languageCB
 from WinxMusic.utils.decorators.play import botplaylist_markup
 from WinxMusic.utils.inline.playlist import (
     get_playlist_markup,
     warning_markup,
 )
-from WinxMusic.utils.pastebin import WinxBin
+from WinxMusic.utils.pastebin import Winxbin
 from WinxMusic.utils.stream.stream import stream
 from config import BANNED_USERS, SERVER_PLAYLIST_LIMIT
 from strings import command
@@ -42,15 +43,15 @@ async def check_playlist(client, message: Message, _):
         count += 1
         msg += f"\n\n{count}- {title[:70]}\n"
         msg += _["playlist_5"].format(duration)
-    link = await WinxBin(msg)
+    link = await Winxbin(msg)
     lines = msg.count("\n")
     if lines >= 17:
         car = os.linesep.join(msg.split(os.linesep)[:17])
     else:
         car = msg
-    carbon = await Platform.carbon.generate(car, randint(100, 10000000000))
+    img = await carbon.generate(car, randint(100, 10000000000))
     await get.delete()
-    await message.reply_photo(carbon, caption=_["playlist_15"].format(link))
+    await message.reply_photo(img, caption=_["playlist_15"].format(link))
 
 
 async def get_keyboard(_, user_id):
@@ -70,9 +71,9 @@ async def get_keyboard(_, user_id):
     keyboard.row(
         InlineKeyboardButton(
             text=_["PL_B_5"],
-            callback_data=f"delete_warning",
+            callback_data="delete_warning",
         ),
-        InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data=f"close"),
+        InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close"),
     )
     return keyboard, count
 
@@ -93,30 +94,6 @@ async def del_group_message(client, message: Message, _):
     await message.reply_text(_["playlist_6"], reply_markup=upl)
 
 
-async def get_keyboard(_, user_id):
-    keyboard = InlineKeyboard(row_width=5)
-    _playlist = await get_playlist_names(user_id)
-    count = len(_playlist)
-    for x in _playlist:
-        _note = await get_playlist(user_id, x)
-        title = _note["title"]
-        title = title.title()
-        keyboard.row(
-            InlineKeyboardButton(
-                text=title,
-                callback_data=f"del_playlist {x}",
-            )
-        )
-    keyboard.row(
-        InlineKeyboardButton(
-            text=_["PL_B_5"],
-            callback_data=f"delete_warning",
-        ),
-        InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data=f"close"),
-    )
-    return keyboard, count
-
-
 @app.on_message(command("DELETE_PLAYLIST_COMMAND") & filters.private & ~BANNED_USERS)
 @language
 async def del_plist_msg(client, message: Message, _):
@@ -130,30 +107,30 @@ async def del_plist_msg(client, message: Message, _):
 
 
 @app.on_callback_query(filters.regex("play_playlist") & ~BANNED_USERS)
-@language_cb
-async def play_playlist(client, CallbackQuery, _):
-    callback_data = CallbackQuery.data.strip()
+@languageCB
+async def play_playlist(client, query, _):
+    callback_data = query.data.strip()
     mode = callback_data.split(None, 1)[1]
-    user_id = CallbackQuery.from_user.id
+    user_id = query.from_user.id
     _playlist = await get_playlist_names(user_id)
     if not _playlist:
         try:
-            return await CallbackQuery.answer(
+            return await query.answer(
                 _["playlist_3"],
                 show_alert=True,
             )
         except Exception:
             return
-    chat_id = CallbackQuery.message.chat.id
-    user_name = CallbackQuery.from_user.first_name
-    await CallbackQuery.message.delete()
+    chat_id = query.message.chat.id
+    user_name = query.from_user.first_name
+    await query.message.delete()
     result = []
     try:
-        await CallbackQuery.answer()
+        await query.answer()
     except Exception:
         pass
     video = True if mode == "v" else None
-    mystic = await CallbackQuery.message.reply_text(_["play_1"])
+    mystic = await query.message.reply_text(_["play_1"])
     for vidids in _playlist:
         result.append(vidids)
     try:
@@ -164,7 +141,7 @@ async def play_playlist(client, CallbackQuery, _):
             result,
             chat_id,
             user_name,
-            CallbackQuery.message.chat.id,
+            query.message.chat.id,
             video,
             streamtype="playlist",
         )
@@ -176,7 +153,7 @@ async def play_playlist(client, CallbackQuery, _):
 
 
 @app.on_message(command("PLAY_PLAYLIST_COMMAND") & ~BANNED_USERS & filters.group)
-@language_cb
+@languageCB
 async def play_playlist_command(client, message, _):
     mode = message.command[0][0]
     user_id = message.from_user.id
@@ -277,7 +254,7 @@ async def add_playlist(client, message: Message, _):
 
             m = await message.reply(_["playlist_21"])
             title, duration_min, duration_sec, thumbnail, videoid = (
-                await Platform.youtube.details(videoid, True)
+                await youtube.details(videoid, True)
             )
             title = (title[:50]).title()
             plist = {
@@ -298,42 +275,42 @@ async def add_playlist(client, message: Message, _):
 
 
 @app.on_callback_query(filters.regex("remove_playlist") & ~BANNED_USERS)
-@language_cb
-async def del_plist(client, CallbackQuery, _):
-    callback_data = CallbackQuery.data.strip()
+@languageCB
+async def del_plist(client, query, _):
+    callback_data = query.data.strip()
     videoid = callback_data.split(None, 1)[1]
-    deleted = await delete_playlist(CallbackQuery.from_user.id, videoid)
+    deleted = await delete_playlist(query.from_user.id, videoid)
     if deleted:
         try:
-            await CallbackQuery.answer(_["playlist_11"], show_alert=True)
+            await query.answer(_["playlist_11"], show_alert=True)
         except Exception:
             pass
     else:
         try:
-            return await CallbackQuery.answer(_["playlist_12"], show_alert=True)
+            return await query.answer(_["playlist_12"], show_alert=True)
         except Exception:
             return
 
-    return await CallbackQuery.edit_message_text(text=_["playlist_23"])
+    return await query.edit_message_text(text=_["playlist_23"])
 
 
 @app.on_callback_query(filters.regex("add_playlist") & ~BANNED_USERS)
-@language_cb
-async def add_playlist(client, callback_query, _):
-    callback_data = callback_query.data.strip()
+@languageCB
+async def add_playlist(client, query, _):
+    callback_data = query.data.strip()
     videoid = callback_data.split(None, 1)[1]
-    user_id = callback_query.from_user.id
+    user_id = query.from_user.id
     _check = await get_playlist(user_id, videoid)
     if _check:
         try:
-            return await callback_query.answer(_["playlist_8"], show_alert=True)
+            return await query.answer(_["playlist_8"], show_alert=True)
         except Exception:
             return
     _count = await get_playlist_names(user_id)
     count = len(_count)
     if count == SERVER_PLAYLIST_LIMIT:
         try:
-            return await callback_query.answer(
+            return await query.answer(
                 _["playlist_9"].format(SERVER_PLAYLIST_LIMIT),
                 show_alert=True,
             )
@@ -345,7 +322,7 @@ async def add_playlist(client, callback_query, _):
         duration_sec,
         thumbnail,
         vidid,
-    ) = await Platform.youtube.details(videoid, True)
+    ) = await youtube.details(videoid, True)
     title = (title[:50]).title()
     plist = {
         "videoid": vidid,
@@ -355,99 +332,95 @@ async def add_playlist(client, callback_query, _):
     await save_playlist(user_id, videoid, plist)
     try:
         title = (title[:30]).title()
-        return await callback_query.answer(
-            _["playlist_10"].format(title), show_alert=True
-        )
+        return await query.answer(_["playlist_10"].format(title), show_alert=True)
     except Exception:
         return
 
 
 @app.on_callback_query(filters.regex("del_playlist") & ~BANNED_USERS)
-@language_cb
-async def del_plist(client, callback_query, _):
-    callback_data = callback_query.data.strip()
+@languageCB
+async def del_plistcb(client, query, _):
+    callback_data = query.data.strip()
     videoid = callback_data.split(None, 1)[1]
-    user_id = callback_query.from_user.id
-    deleted = await delete_playlist(callback_query.from_user.id, videoid)
+    user_id = query.from_user.id
+    deleted = await delete_playlist(query.from_user.id, videoid)
     if deleted:
         try:
-            await callback_query.answer(_["playlist_11"], show_alert=True)
+            await query.answer(_["playlist_11"], show_alert=True)
         except Exception:
             pass
     else:
         try:
-            return await callback_query.answer(_["playlist_12"], show_alert=True)
+            return await query.answer(_["playlist_12"], show_alert=True)
         except Exception:
             return
     keyboard, count = await get_keyboard(_, user_id)
-    return await callback_query.edit_message_reply_markup(reply_markup=keyboard)
+    return await query.edit_message_reply_markup(reply_markup=keyboard)
 
 
 @app.on_callback_query(filters.regex("delete_whole_playlist") & ~BANNED_USERS)
-@language_cb
-async def del_whole_playlist(client, CallbackQuery, _):
-    _playlist = await get_playlist_names(CallbackQuery.from_user.id)
+@languageCB
+async def del_whole_playlist(client, query, _):
+    _playlist = await get_playlist_names(query.from_user.id)
     for x in _playlist:
-        await CallbackQuery.answer(_["playlist_25"], show_alert=True)
-        await delete_playlist(CallbackQuery.from_user.id, x)
-    return await CallbackQuery.edit_message_text(_["playlist_13"])
+        await query.answer(_["playlist_25"], show_alert=True)
+        await delete_playlist(query.from_user.id, x)
+    return await query.edit_message_text(_["playlist_13"])
 
 
 @app.on_callback_query(filters.regex("get_playlist_playmode") & ~BANNED_USERS)
-@language_cb
-async def get_playlist_playmode_(client, CallbackQuery, _):
+@languageCB
+async def get_playlist_playmode_(client, query, _):
     try:
-        await CallbackQuery.answer()
+        await query.answer()
     except Exception:
         pass
     buttons = get_playlist_markup(_)
-    await CallbackQuery.edit_message_reply_markup(
-        reply_markup=InlineKeyboardMarkup(buttons)
-    )
+    await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @app.on_callback_query(filters.regex("home_play") & ~BANNED_USERS)
-@language_cb
-async def home_play_(client, CallbackQuery, _):
+@languageCB
+async def home_play_(client, query, _):
     pass
 
     try:
-        await CallbackQuery.answer()
+        await query.answer()
     except Exception:
         pass
     buttons = botplaylist_markup(_)
-    return await CallbackQuery.edit_message_reply_markup(
+    return await query.edit_message_reply_markup(
         reply_markup=InlineKeyboardMarkup(buttons)
     )
 
 
 @app.on_callback_query(filters.regex("delete_warning") & ~BANNED_USERS)
-@language_cb
-async def delete_warning_message(client, CallbackQuery, _):
+@languageCB
+async def delete_warning_message(client, query, _):
     try:
-        await CallbackQuery.answer()
+        await query.answer()
     except Exception:
         pass
     upl = warning_markup(_)
-    return await CallbackQuery.edit_message_text(_["playlist_14"], reply_markup=upl)
+    return await query.edit_message_text(_["playlist_14"], reply_markup=upl)
 
 
 @app.on_callback_query(filters.regex("del_back_playlist") & ~BANNED_USERS)
-@language_cb
-async def del_back_playlist(client, CallbackQuery, _):
-    user_id = CallbackQuery.from_user.id
+@languageCB
+async def del_back_playlist(client, query, _):
+    user_id = query.from_user.id
     _playlist = await get_playlist_names(user_id)
     if _playlist:
         try:
-            await CallbackQuery.answer(_["playlist_2"], show_alert=True)
+            await query.answer(_["playlist_2"], show_alert=True)
         except Exception:
             pass
     else:
         try:
-            return await CallbackQuery.answer(_["playlist_3"], show_alert=True)
+            return await query.answer(_["playlist_3"], show_alert=True)
         except Exception:
             return
     keyboard, count = await get_keyboard(_, user_id)
-    return await CallbackQuery.edit_message_text(
+    return await query.edit_message_text(
         _["playlist_7"].format(count), reply_markup=keyboard
     )

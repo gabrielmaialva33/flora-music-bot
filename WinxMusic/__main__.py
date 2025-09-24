@@ -7,14 +7,12 @@ from pytgcalls.exceptions import NoActiveGroupCall
 import config
 from WinxMusic import HELPABLE, LOGGER, app, userbot
 from WinxMusic.core.call import Winx
-from WinxMusic.utils.cache.cache_manager import CacheManager
+from WinxMusic.misc import sudo
 from WinxMusic.utils.database import get_banned_users, get_gbanned
 from config import BANNED_USERS
 
 logger = LOGGER("WinxMusic")
 loop = asyncio.get_event_loop()
-
-cache_manager = CacheManager(max_size=100, ttl=3600)
 
 
 async def init():
@@ -34,6 +32,7 @@ async def init():
             BANNED_USERS.add(user_id)
     except Exception:
         pass
+    await sudo()
     await app.start()
     for mod in app.load_plugins_from("WinxMusic/plugins"):
         if mod and hasattr(mod, "__MODULE__") and mod.__MODULE__:
@@ -58,7 +57,9 @@ async def init():
 
         req = os.path.join("xtraplugins", "requirements.txt")
         if os.path.exists(req):
-            result = await app.run_shell_command(["pip", "install", "-r", req])
+            result = await app.run_shell_command(
+                ["uv", "pip", "install", "--system", "-r", req]
+            )
             if result["returncode"] != 0:
                 logger.error(f"Error installing requirements: {result['stderr']}")
 
@@ -86,8 +87,13 @@ async def init():
     await idle()
     await app.stop()
     await userbot.stop()
+    await Winx.stop()
+
+
+def main():
+    loop.run_until_complete(init())
+    LOGGER("WinxMusic").info("Stopping WinxMusic! GoodBye")
 
 
 if __name__ == "__main__":
-    loop.run_until_complete(init())
-    LOGGER("WinxMusic").info("Stopping WinxMusic! GoodBye")
+    main()

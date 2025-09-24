@@ -4,13 +4,13 @@ from pyrogram.types import Message
 from WinxMusic import app
 from WinxMusic.core.call import Winx
 from WinxMusic.utils.database import is_music_playing, music_on
-from WinxMusic.utils.decorators import admin_rights_check
+from WinxMusic.utils.decorators import AdminRightsCheck
 from config import BANNED_USERS
 from strings import command
 
 
 @app.on_message(command("RESUME_COMMAND") & filters.group & ~BANNED_USERS)
-@admin_rights_check
+@AdminRightsCheck
 async def resume_com(cli, message: Message, _, chat_id):
     if not len(message.command) == 1:
         return await message.reply_text(_["general_2"])

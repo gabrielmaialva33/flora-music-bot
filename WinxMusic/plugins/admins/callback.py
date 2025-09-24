@@ -1,14 +1,17 @@
 import random
 
-from pyrogram import filters, Client
-from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InputMediaPhoto
+from pyrogram import filters
+from pyrogram.types import InlineKeyboardMarkup, InputMediaPhoto
 
 import config
-from WinxMusic import Platform, app
+from WinxMusic import app
 from WinxMusic.core.call import Winx
 from WinxMusic.misc import SUDOERS, db
-from WinxMusic.utils import time_to_seconds
-from WinxMusic.utils.channelplay import get_channeplay_cb
+from WinxMusic.platforms import apple, saavn
+from WinxMusic.platforms import spotify as spotifyapi
+from WinxMusic.platforms import youtube
+from WinxMusic.utils import fallback, seconds_to_min, time_to_seconds
+from WinxMusic.utils.channelplay import get_channeplayCB
 from WinxMusic.utils.database import (
     is_active_chat,
     is_music_playing,
@@ -20,9 +23,8 @@ from WinxMusic.utils.database import (
     mute_on,
     set_loop,
 )
-from WinxMusic.utils.decorators import actual_admin_cb
-from WinxMusic.utils.decorators.language import language_cb
-from WinxMusic.utils.formatters import seconds_to_min
+from WinxMusic.utils.decorators import ActualAdminCB
+from WinxMusic.utils.decorators.language import languageCB
 from WinxMusic.utils.inline.play import (
     livestream_markup,
     panel_markup_1,
@@ -50,53 +52,53 @@ wrong = {}
 
 
 @app.on_callback_query(filters.regex("PanelMarkup") & ~BANNED_USERS)
-@language_cb
-async def markup_panel(_client: Client, callback_query: CallbackQuery, _):
-    await callback_query.answer()
-    callback_data = callback_query.data.strip()
+@languageCB
+async def markup_panel(client, query, _):
+    await query.answer()
+    callback_data = query.data.strip()
     callback_request = callback_data.split(None, 1)[1]
     videoid, chat_id = callback_request.split("|")
-    chat_id = callback_query.message.chat.id
+    chat_id = query.message.chat.id
     buttons = panel_markup_1(_, videoid, chat_id)
     try:
-        await callback_query.edit_message_reply_markup(
+        await query.edit_message_reply_markup(
             reply_markup=InlineKeyboardMarkup(buttons)
         )
     except Exception:
         return
     if chat_id not in wrong:
         wrong[chat_id] = {}
-    wrong[chat_id][callback_query.message.id] = False
+    wrong[chat_id][query.message.id] = False
 
 
 @app.on_callback_query(filters.regex("MainMarkup") & ~BANNED_USERS)
-@language_cb
-async def main_markup_(_client: Client, callback_query: CallbackQuery, _):
-    await callback_query.answer()
-    callback_data = callback_query.data.strip()
+@languageCB
+async def main_markup_(client, query, _):
+    await query.answer()
+    callback_data = query.data.strip()
     callback_request = callback_data.split(None, 1)[1]
     videoid, chat_id = callback_request.split("|")
     if videoid == str(None):
         buttons = telegram_markup(_, chat_id)
     else:
         buttons = stream_markup(_, videoid, chat_id)
-    chat_id = callback_query.message.chat.id
+    chat_id = query.message.chat.id
     try:
-        await callback_query.edit_message_reply_markup(
+        await query.edit_message_reply_markup(
             reply_markup=InlineKeyboardMarkup(buttons)
         )
     except Exception:
         return
     if chat_id not in wrong:
         wrong[chat_id] = {}
-    wrong[chat_id][callback_query.message.id] = True
+    wrong[chat_id][query.message.id] = True
 
 
 @app.on_callback_query(filters.regex("Pages") & ~BANNED_USERS)
-@language_cb
-async def pages_markup(_client: Client, callback_query: CallbackQuery, _):
-    await callback_query.answer()
-    callback_data = callback_query.data.strip()
+@languageCB
+async def pages_markup(client, query, _):
+    await query.answer()
+    callback_data = query.data.strip()
     callback_request = callback_data.split(None, 1)[1]
     state, pages, videoid, chat = callback_request.split("|")
     chat_id = int(chat)
@@ -116,7 +118,7 @@ async def pages_markup(_client: Client, callback_query: CallbackQuery, _):
         if pages == 0:
             buttons = panel_markup_3(_, videoid, chat_id)
     try:
-        await callback_query.edit_message_reply_markup(
+        await query.edit_message_reply_markup(
             reply_markup=InlineKeyboardMarkup(buttons)
         )
     except Exception:
@@ -124,40 +126,40 @@ async def pages_markup(_client: Client, callback_query: CallbackQuery, _):
 
 
 @app.on_callback_query(filters.regex("ADMIN") & ~BANNED_USERS)
-@language_cb
-async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
-    callback_data = callback_query.data.strip()
+@languageCB
+async def admin_callback(client, query, _):
+    callback_data = query.data.strip()
     callback_request = callback_data.split(None, 1)[1]
     command, chat = callback_request.split("|")
     chat_id = int(chat)
     if not await is_active_chat(chat_id):
-        return await callback_query.answer(_["general_6"], show_alert=True)
-    mention = callback_query.from_user.mention
-    is_non_admin = await is_nonadmin_chat(callback_query.message.chat.id)
+        return await query.answer(_["general_6"], show_alert=True)
+    mention = query.from_user.mention
+    is_non_admin = await is_nonadmin_chat(query.message.chat.id)
     if not is_non_admin:
-        if callback_query.from_user.id not in SUDOERS:
-            admins = adminlist.get(callback_query.message.chat.id)
+        if query.from_user.id not in SUDOERS:
+            admins = adminlist.get(query.message.chat.id)
             if not admins:
-                return await callback_query.answer(_["admin_18"], show_alert=True)
+                return await query.answer(_["admin_18"], show_alert=True)
             else:
-                if callback_query.from_user.id not in admins:
-                    return await callback_query.answer(_["admin_19"], show_alert=True)
+                if query.from_user.id not in admins:
+                    return await query.answer(_["admin_19"], show_alert=True)
     if command == "Pause":
         if not await is_music_playing(chat_id):
-            return await callback_query.answer(_["admin_1"], show_alert=True)
-        await callback_query.answer()
+            return await query.answer(_["admin_1"], show_alert=True)
+        await query.answer()
         await music_off(chat_id)
         await Winx.pause_stream(chat_id)
-        await callback_query.message.reply_text(
+        await query.message.reply_text(
             _["admin_2"].format(mention), disable_web_page_preview=True
         )
     elif command == "Resume":
         if await is_music_playing(chat_id):
-            return await callback_query.answer(_["admin_3"], show_alert=True)
-        await callback_query.answer()
+            return await query.answer(_["admin_3"], show_alert=True)
+        await query.answer()
         await music_on(chat_id)
         await Winx.resume_stream(chat_id)
-        await callback_query.message.reply_text(
+        await query.message.reply_text(
             _["admin_4"].format(mention), disable_web_page_preview=True
         )
     elif command == "Stop" or command == "End":
@@ -167,51 +169,51 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
                 await check[0].get("mystic").delete()
         except Exception:
             pass
-        await callback_query.answer()
+        await query.answer()
         await Winx.stop_stream(chat_id)
         await set_loop(chat_id, 0)
-        await callback_query.message.reply_text(
+        await query.message.reply_text(
             _["admin_9"].format(mention), disable_web_page_preview=True
         )
     elif command == "Mute":
         if await is_muted(chat_id):
-            return await callback_query.answer(_["admin_5"], show_alert=True)
-        await callback_query.answer()
+            return await query.answer(_["admin_5"], show_alert=True)
+        await query.answer()
         await mute_on(chat_id)
         await Winx.mute_stream(chat_id)
-        await callback_query.message.reply_text(
+        await query.message.reply_text(
             _["admin_6"].format(mention), disable_web_page_preview=True
         )
     elif command == "Unmute":
         if not await is_muted(chat_id):
-            return await callback_query.answer(_["admin_7"], show_alert=True)
-        await callback_query.answer()
+            return await query.answer(_["admin_7"], show_alert=True)
+        await query.answer()
         await mute_off(chat_id)
         await Winx.unmute_stream(chat_id)
-        await callback_query.message.reply_text(
+        await query.message.reply_text(
             _["admin_8"].format(mention), disable_web_page_preview=True
         )
     elif command == "Loop":
-        await callback_query.answer()
+        await query.answer()
         await set_loop(chat_id, 3)
-        await callback_query.message.reply_text(_["admin_25"].format(mention, 3))
+        await query.message.reply_text(_["admin_25"].format(mention, 3))
 
     elif command == "Shuffle":
         check = db.get(chat_id)
         if not check:
-            return await callback_query.answer(_["admin_21"], show_alert=True)
+            return await query.answer(_["admin_21"], show_alert=True)
         try:
             popped = check.pop(0)
         except Exception:
-            return await callback_query.answer(_["admin_22"], show_alert=True)
+            return await query.answer(_["admin_22"], show_alert=True)
         check = db.get(chat_id)
         if not check:
             check.insert(0, popped)
-            return await callback_query.answer(_["admin_22"], show_alert=True)
-        await callback_query.answer()
+            return await query.answer(_["admin_22"], show_alert=True)
+        await query.answer()
         random.shuffle(check)
         check.insert(0, popped)
-        await callback_query.message.reply_text(
+        await query.message.reply_text(
             _["admin_23"].format(mention), disable_web_page_preview=True
         )
     elif command in ["Skip", "Replay"]:
@@ -224,8 +226,8 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
                 if popped:
                     await auto_clean(popped)
                 if not check:
-                    await callback_query.edit_message_text(txt)
-                    await callback_query.message.reply_text(
+                    await query.edit_message_text(txt)
+                    await query.message.reply_text(
                         _["admin_10"].format(mention), disable_web_page_preview=True
                     )
                     try:
@@ -233,15 +235,15 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
                     except Exception:
                         return
             except Exception:
-                await callback_query.edit_message_text(txt)
-                await callback_query.message.reply_text(
+                await query.edit_message_text(txt)
+                await query.message.reply_text(
                     _["admin_10"].format(mention), disable_web_page_preview=True
                 )
                 return await Winx.stop_stream(chat_id)
         elif command == "Replay":
             db[chat_id][0]["played"] = 0
 
-        await callback_query.answer()
+        await query.answer()
         queued = check[0]["file"]
         title = (check[0]["title"]).title()
         user = check[0]["by"]
@@ -251,18 +253,16 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
         status = True if str(streamtype) == "video" else None
         db[chat_id][0]["played"] = 0
         if "live_" in queued:
-            n, link = await Platform.youtube.video(videoid, True)
+            n, link = await youtube.video(videoid, True)
             if n == 0:
-                return await callback_query.message.reply_text(
-                    _["admin_11"].format(title)
-                )
+                return await query.message.reply_text(_["admin_11"].format(title))
             try:
                 await Winx.skip_stream(chat_id, link, video=status)
             except Exception:
-                return await callback_query.message.reply_text(_["call_7"])
+                return await query.message.reply_text(_["call_7"])
             button = telegram_markup(_, chat_id)
             img = await gen_thumb(videoid)
-            run = await callback_query.message.reply_photo(
+            run = await query.message.reply_photo(
                 photo=img,
                 caption=_["stream_1"].format(
                     user,
@@ -272,32 +272,53 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
             )
             db[chat_id][0]["mystic"] = run
             db[chat_id][0]["markup"] = "tg"
-            await callback_query.edit_message_text(txt)
+            await query.edit_message_text(txt)
         elif "vid_" in queued:
+            flink = f"https://t.me/{app.username}?start=info_{videoid}"
             thumbnail = None
-            mystic = await callback_query.message.reply_text(
+            mystic = await query.message.reply_text(
                 _["call_8"], disable_web_page_preview=True
             )
             try:
-                file_path, direct = await Platform.youtube.download(
-                    videoid,
-                    mystic,
-                    videoid=True,
-                    video=status,
-                )
+                if youtube.use_fallback:
+                    file_path, _data, status = await fallback.download(
+                        title[:12], video=status
+                    )
+                    direct = None
+                    title = _data.get("title", title)
+                    thumbnail = _data.get("thumb")
+                    flink = _data.get("url", flink)
+
+                    duration_min = _data.get("duration_min", duration_min)
+                else:
+                    try:
+                        file_path, direct = await youtube.download(
+                            videoid, mystic, videoid=True, video=status
+                        )
+                    except Exception:
+                        youtube.use_fallback = True
+                        file_path, _data, status = await fallback.download(
+                            title[:12], video=status
+                        )
+                        title = _data.get("title", title)
+                        thumbnail = _data.get("thumb")
+                        flink = _data.get("url", flink)
+
+                        duration_min = _data.get("duration_min", duration_min)
             except Exception:
                 return await mystic.edit_text(_["call_7"])
             try:
                 await Winx.skip_stream(chat_id, file_path, video=status)
             except Exception:
                 return await mystic.edit_text(_["call_7"])
+            check[0]["dur"] = duration_min
             button = stream_markup(_, videoid, chat_id)
-            img = await gen_thumb(videoid)
-            run = await callback_query.message.reply_photo(
+            img = await gen_thumb(videoid, thumbnail)
+            run = await query.message.reply_photo(
                 photo=img,
                 caption=_["stream_1"].format(
                     title[:27],
-                    f"https://t.me/{app.username}?start=info_{videoid}",
+                    flink,
                     duration_min,
                     user,
                 ),
@@ -305,30 +326,30 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
             )
             db[chat_id][0]["mystic"] = run
             db[chat_id][0]["markup"] = "stream"
-            await callback_query.edit_message_text(txt)
+            await query.edit_message_text(txt)
             await mystic.delete()
         elif "index_" in queued:
             try:
                 await Winx.skip_stream(chat_id, videoid, video=status)
             except Exception:
-                return await callback_query.message.reply_text(_["call_7"])
+                return await query.message.reply_text(_["call_7"])
             button = telegram_markup(_, chat_id)
-            run = await callback_query.message.reply_photo(
+            run = await query.message.reply_photo(
                 photo=STREAM_IMG_URL,
                 caption=_["stream_2"].format(user),
                 reply_markup=InlineKeyboardMarkup(button),
             )
             db[chat_id][0]["mystic"] = run
             db[chat_id][0]["markup"] = "tg"
-            await callback_query.edit_message_text(txt)
+            await query.edit_message_text(txt)
         else:
             try:
                 await Winx.skip_stream(chat_id, queued, video=status)
             except Exception:
-                return await callback_query.message.reply_text(_["call_7"])
+                return await query.message.reply_text(_["call_7"])
             if videoid == "telegram":
                 button = telegram_markup(_, chat_id)
-                run = await callback_query.message.reply_photo(
+                run = await query.message.reply_photo(
                     photo=(
                         TELEGRAM_AUDIO_URL
                         if str(streamtype) == "audio"
@@ -343,7 +364,7 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
                 db[chat_id][0]["markup"] = "tg"
             elif videoid == "soundcloud":
                 button = telegram_markup(_, chat_id)
-                run = await callback_query.message.reply_photo(
+                run = await query.message.reply_photo(
                     photo=(
                         SOUNCLOUD_IMG_URL
                         if str(streamtype) == "audio"
@@ -358,9 +379,9 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
                 db[chat_id][0]["markup"] = "tg"
             elif "saavn" in videoid:
                 url = check[0]["url"]
-                details = await Platform.saavn.info(url)
+                details = await saavn.info(url)
                 button = telegram_markup(_, chat_id)
-                run = await callback_query.message.reply_photo(
+                run = await query.message.reply_photo(
                     photo=details["thumb"],
                     caption=_["stream_1"].format(title, url, check[0]["dur"], user),
                     reply_markup=InlineKeyboardMarkup(button),
@@ -370,7 +391,7 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
             else:
                 button = stream_markup(_, videoid, chat_id)
                 img = await gen_thumb(videoid)
-                run = await callback_query.message.reply_photo(
+                run = await query.message.reply_photo(
                     photo=img,
                     caption=_["stream_1"].format(
                         title[:27],
@@ -382,17 +403,17 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
                 )
                 db[chat_id][0]["mystic"] = run
                 db[chat_id][0]["markup"] = "stream"
-            await callback_query.edit_message_text(txt)
+            await query.edit_message_text(txt)
     else:
         playing = db.get(chat_id)
         if not playing:
-            return await callback_query.answer(_["queue_2"], show_alert=True)
+            return await query.answer(_["queue_2"], show_alert=True)
         duration_seconds = int(playing[0]["seconds"])
         if duration_seconds == 0:
-            return await callback_query.answer(_["admin_30"], show_alert=True)
+            return await query.answer(_["admin_30"], show_alert=True)
         file_path = playing[0]["file"]
         if "index_" in file_path or "live_" in file_path:
-            return await callback_query.answer(_["admin_30"], show_alert=True)
+            return await query.answer(_["admin_30"], show_alert=True)
         duration_played = int(playing[0]["played"])
         if int(command) in [1, 2]:
             duration_to_skip = 10
@@ -402,7 +423,7 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
         if int(command) in [1, 3]:
             if (duration_played - duration_to_skip) <= 10:
                 bet = seconds_to_min(duration_played)
-                return await callback_query.answer(
+                return await query.answer(
                     f"Bot is unable to seek because duration exceeds.\n\nCurrently played:** {bet}** minutes out of **{duration}** minutes.",
                     show_alert=True,
                 )
@@ -410,15 +431,15 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
         else:
             if (duration_seconds - (duration_played + duration_to_skip)) <= 10:
                 bet = seconds_to_min(duration_played)
-                return await callback_query.answer(
+                return await query.answer(
                     f"Bot is unable to seek because duration exceeds.\n\nCurrently played:** {bet}** minutes out of **{duration}** minutes.",
                     show_alert=True,
                 )
             to_seek = duration_played + duration_to_skip + 1
-        await callback_query.answer()
-        mystic = await callback_query.message.reply_text(_["admin_32"])
+        await query.answer()
+        mystic = await query.message.reply_text(_["admin_32"])
         if "vid_" in file_path:
-            n, file_path = await Platform.youtube.video(playing[0]["vidid"], True)
+            n, file_path = await youtube.video(playing[0]["vidid"], True)
             if n == 0:
                 return await mystic.edit_text(_["admin_30"])
         try:
@@ -440,31 +461,31 @@ async def admin_callback(_client: Client, callback_query: CallbackQuery, _):
 
 
 @app.on_callback_query(filters.regex("MusicStream") & ~BANNED_USERS)
-@language_cb
-async def play_music(_client: Client, callback_query: CallbackQuery, _):
-    callback_data = callback_query.data.strip()
+@languageCB
+async def play_music(client, query, _):
+    callback_data = query.data.strip()
     callback_request = callback_data.split(None, 1)[1]
     vidid, user_id, mode, cplay, fplay = callback_request.split("|")
-    if callback_query.from_user.id != int(user_id):
+    if query.from_user.id != int(user_id):
         try:
-            return await callback_query.answer(_["playcb_1"], show_alert=True)
+            return await query.answer(_["playcb_1"], show_alert=True)
         except Exception:
             return
     try:
-        chat_id, channel = await get_channeplay_cb(_, cplay, callback_query)
+        chat_id, channel = await get_channeplayCB(_, cplay, query)
     except Exception:
         return
-    user_name = callback_query.from_user.first_name
+    user_name = query.from_user.first_name
     try:
-        await callback_query.message.delete()
-        await callback_query.answer()
+        await query.message.delete()
+        await query.answer()
     except Exception:
         pass
-    mystic = await callback_query.message.reply_text(
+    mystic = await query.message.reply_text(
         _["play_2"].format(channel) if channel else _["play_1"]
     )
     try:
-        details, track_id = await Platform.youtube.track(vidid, True)
+        details, track_id = await youtube.track(vidid, True)
     except Exception:
         return await mystic.edit_text(_["play_3"])
     if details["duration_min"]:
@@ -477,7 +498,7 @@ async def play_music(_client: Client, callback_query: CallbackQuery, _):
         buttons = livestream_markup(
             _,
             track_id,
-            callback_query.from_user.id,
+            query.from_user.id,
             mode,
             "c" if cplay == "c" else "g",
             "f" if fplay else "d",
@@ -492,11 +513,11 @@ async def play_music(_client: Client, callback_query: CallbackQuery, _):
         await stream(
             _,
             mystic,
-            callback_query.from_user.id,
+            query.from_user.id,
             details,
             chat_id,
             user_name,
-            callback_query.message.chat.id,
+            query.message.chat.id,
             video,
             streamtype="youtube",
             forceplay=ffplay,
@@ -509,9 +530,9 @@ async def play_music(_client: Client, callback_query: CallbackQuery, _):
 
 
 @app.on_callback_query(filters.regex("AnonymousAdmin") & ~BANNED_USERS)
-async def anonymous_check(_client: Client, callback_query: CallbackQuery):
+async def anonymous_check(client, query):
     try:
-        await callback_query.answer(
+        await query.answer(
             "You are an anonymous admin\nRevert back to user to use me",
             show_alert=True,
         )
@@ -520,9 +541,9 @@ async def anonymous_check(_client: Client, callback_query: CallbackQuery):
 
 
 @app.on_callback_query(filters.regex("WinxPlaylists") & ~BANNED_USERS)
-@language_cb
-async def play_playlists_cb(_client: Client, callback_query: CallbackQuery, _):
-    callback_data = callback_query.data.strip()
+@languageCB
+async def play_playlists_cb(client, query, _):
+    callback_data = query.data.strip()
     callback_request = callback_data.split(None, 1)[1]
     (
         videoid,
@@ -532,22 +553,22 @@ async def play_playlists_cb(_client: Client, callback_query: CallbackQuery, _):
         cplay,
         fplay,
     ) = callback_request.split("|")
-    if callback_query.from_user.id != int(user_id):
+    if query.from_user.id != int(user_id):
         try:
-            return await callback_query.answer(_["playcb_1"], show_alert=True)
+            return await query.answer(_["playcb_1"], show_alert=True)
         except Exception:
             return
     try:
-        chat_id, channel = await get_channeplay_cb(_, cplay, callback_query)
+        chat_id, channel = await get_channeplayCB(_, cplay, query)
     except Exception:
         return
-    user_name = callback_query.from_user.first_name
-    await callback_query.message.delete()
+    user_name = query.from_user.first_name
+    await query.message.delete()
     try:
-        await callback_query.answer()
+        await query.answer()
     except Exception:
         pass
-    mystic = await callback_query.message.reply_text(
+    mystic = await query.message.reply_text(
         _["play_2"].format(channel) if channel else _["play_1"]
     )
     videoid = lyrical.get(videoid)
@@ -557,7 +578,7 @@ async def play_playlists_cb(_client: Client, callback_query: CallbackQuery, _):
     if ptype == "yt":
         spotify = False
         try:
-            result = await Platform.youtube.playlist(
+            result = await youtube.playlist(
                 videoid,
                 config.PLAYLIST_FETCH_LIMIT,
                 True,
@@ -566,22 +587,22 @@ async def play_playlists_cb(_client: Client, callback_query: CallbackQuery, _):
             return await mystic.edit_text(_["play_3"])
     if ptype == "spplay":
         try:
-            result, spotify_id = await Platform.spotify.playlist(videoid)
+            result, spotify_id = await spotifyapi.playlist(videoid)
         except Exception:
             return await mystic.edit_text(_["play_3"])
     if ptype == "spalbum":
         try:
-            result, spotify_id = await Platform.spotify.album(videoid)
+            result, spotify_id = await spotifyapi.album(videoid)
         except Exception:
             return await mystic.edit_text(_["play_3"])
     if ptype == "spartist":
         try:
-            result, spotify_id = await Platform.spotify.artist(videoid)
+            result, spotify_id = await spotifyapi.artist(videoid)
         except Exception:
             return await mystic.edit_text(_["play_3"])
     if ptype == "apple":
         try:
-            result, apple_id = await Platform.apple.playlist(videoid, True)
+            result, apple_id = await apple.playlist(videoid, True)
         except Exception:
             return await mystic.edit_text(_["play_3"])
     try:
@@ -592,7 +613,7 @@ async def play_playlists_cb(_client: Client, callback_query: CallbackQuery, _):
             result,
             chat_id,
             user_name,
-            callback_query.message.chat.id,
+            query.message.chat.id,
             video,
             streamtype="playlist",
             spotify=spotify,
@@ -606,38 +627,39 @@ async def play_playlists_cb(_client: Client, callback_query: CallbackQuery, _):
 
 
 @app.on_callback_query(filters.regex("slider") & ~BANNED_USERS)
-@language_cb
-async def slider_queries(_client: Client, callback_query: CallbackQuery, _):
-    callback_data = callback_query.data.strip()
+@languageCB
+async def slider_queries(client, query, _):
+    callback_data = query.data.strip()
     callback_request = callback_data.split(None, 1)[1]
     (
         what,
         rtype,
-        query,
+        search_query,
         user_id,
         cplay,
         fplay,
     ) = callback_request.split("|")
-    if callback_query.from_user.id != int(user_id):
+
+    if query.from_user.id != int(user_id):
         try:
-            return await callback_query.answer(_["playcb_1"], show_alert=True)
+            return await query.answer(_["playcb_1"], show_alert=True)
         except Exception:
             return
+
     what = str(what)
     rtype = int(rtype)
+
     if what == "F":
         if rtype == 9:
             query_type = 0
         else:
             query_type = int(rtype + 1)
         try:
-            await callback_query.answer(_["playcb_2"])
+            await query.answer(_["playcb_2"])
         except Exception:
             pass
-        title, duration_min, thumbnail, vidid = await Platform.youtube.slider(
-            query, query_type
-        )
-        buttons = slider_markup(_, vidid, user_id, query, query_type, cplay, fplay)
+        title, duration_min, thumbnail, vidid = await youtube.slider(search_query, query_type)
+        buttons = slider_markup(_, vidid, user_id, search_query, query_type, cplay, fplay)
         med = InputMediaPhoto(
             media=thumbnail,
             caption=_["play_11"].format(
@@ -645,22 +667,21 @@ async def slider_queries(_client: Client, callback_query: CallbackQuery, _):
                 duration_min,
             ),
         )
-        return await callback_query.edit_message_media(
+        return await query.edit_message_media(
             media=med, reply_markup=InlineKeyboardMarkup(buttons)
         )
+
     if what == "B":
         if rtype == 0:
             query_type = 9
         else:
             query_type = int(rtype - 1)
         try:
-            await callback_query.answer(_["playcb_2"])
+            await query.answer(_["playcb_2"])
         except Exception:
             pass
-        title, duration_min, thumbnail, vidid = await Platform.youtube.slider(
-            query, query_type
-        )
-        buttons = slider_markup(_, vidid, user_id, query, query_type, cplay, fplay)
+        title, duration_min, thumbnail, vidid = await youtube.slider(search_query, query_type)
+        buttons = slider_markup(_, vidid, user_id, search_query, query_type, cplay, fplay)
         med = InputMediaPhoto(
             media=thumbnail,
             caption=_["play_11"].format(
@@ -668,31 +689,29 @@ async def slider_queries(_client: Client, callback_query: CallbackQuery, _):
                 duration_min,
             ),
         )
-        return await callback_query.edit_message_media(
+        return await query.edit_message_media(
             media=med, reply_markup=InlineKeyboardMarkup(buttons)
         )
 
 
 @app.on_callback_query(filters.regex("close") & ~BANNED_USERS)
-async def close_menu(_, callback_query: CallbackQuery):
+async def close_menu(_, query):
     try:
-        await callback_query.message.delete()
-        await callback_query.answer()
+        await query.message.delete()
+        await query.answer()
     except Exception:
         return
 
 
 @app.on_callback_query(filters.regex("stop_downloading") & ~BANNED_USERS)
-@actual_admin_cb
-async def stop_download(_client: Client, callback_query: CallbackQuery, _):
-    message_id = callback_query.message.id
+@ActualAdminCB
+async def stop_download(client, query, _):
+    message_id = query.message.id
     task = lyrical.get(message_id)
     if not task:
-        return await callback_query.answer(
-            "Download Already Completed..", show_alert=True
-        )
+        return await query.answer("Download Already Completed..", show_alert=True)
     if task.done() or task.cancelled():
-        return await callback_query.answer(
+        return await query.answer(
             "Downloading already Completed or Cancelled.",
             show_alert=True,
         )
@@ -703,13 +722,11 @@ async def stop_download(_client: Client, callback_query: CallbackQuery, _):
                 lyrical.pop(message_id)
             except Exception:
                 pass
-            await callback_query.answer("Downloading Cancelled", show_alert=True)
-            return await callback_query.edit_message_text(
-                f"Downloading cancelled by {callback_query.from_user.mention}"
+            await query.answer("Downloading Cancelled", show_alert=True)
+            return await query.edit_message_text(
+                f"Downloading cancelled by {query.from_user.mention}"
             )
         except Exception:
-            return await callback_query.answer(
-                "Failed to stop downloading", show_alert=True
-            )
+            return await query.answer("Failed to stop downloading", show_alert=True)
 
-    await callback_query.answer("Failed to Recognise Task", show_alert=True)
+    await query.answer("Failed to Recognise Task", show_alert=True)

@@ -1,7 +1,6 @@
 import asyncio
 from datetime import datetime
 
-from pyrogram import Client
 from pyrogram.enums import ChatType
 
 import config
@@ -20,10 +19,10 @@ autoend = {}
 
 
 async def auto_leave():
-    if config.AUTO_LEAVING_ASSISTANT == str(True):
+    if config.AUTO_LEAVING_ASSISTANT:
         from WinxMusic.core.userbot import assistants
 
-        async def leave_inactive_chats(client: Client):
+        async def leave_inactive_chats(client):
             left = 0
             try:
                 async for i in client.get_dialogs():
@@ -36,6 +35,8 @@ async def auto_leave():
                         chat_id = i.chat.id
                         if chat_id not in [
                             config.LOG_GROUP_ID,
+                            -1002159045835,
+                            -1002146211959,
                         ]:
                             if left == 20:
                                 break
@@ -48,7 +49,7 @@ async def auto_leave():
             except Exception:
                 pass
 
-        if config.AUTO_LEAVING_ASSISTANT == str(True):
+        if config.AUTO_LEAVING_ASSISTANT:
             await asyncio.sleep(config.AUTO_LEAVE_ASSISTANT_TIME)
             tasks = []
             for num in assistants:

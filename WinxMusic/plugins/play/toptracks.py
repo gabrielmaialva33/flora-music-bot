@@ -9,7 +9,7 @@ from WinxMusic.utils.database import (
     get_particulars,
     get_userss,
 )
-from WinxMusic.utils.decorators import language_cb
+from WinxMusic.utils.decorators import asyncify, languageCB
 from WinxMusic.utils.inline.playlist import (
     botplaylist_markup,
     failed_top_markup,
@@ -22,46 +22,46 @@ loop = asyncio.get_running_loop()
 
 
 @app.on_callback_query(filters.regex("get_playmarkup") & ~BANNED_USERS)
-@language_cb
-async def get_play_markup(client, CallbackQuery, _):
+@languageCB
+async def get_play_markup(client, query, _):
     try:
-        await CallbackQuery.answer()
+        await query.answer()
     except Exception:
         pass
     buttons = botplaylist_markup(_)
-    return await CallbackQuery.edit_message_reply_markup(
+    return await query.edit_message_reply_markup(
         reply_markup=InlineKeyboardMarkup(buttons)
     )
 
 
 @app.on_callback_query(filters.regex("get_top_playlists") & ~BANNED_USERS)
-@language_cb
-async def get_topz_playlists(client, CallbackQuery, _):
+@languageCB
+async def get_topz_playlists(client, query, _):
     try:
-        await CallbackQuery.answer()
+        await query.answer()
     except Exception:
         pass
     buttons = top_play_markup(_)
-    return await CallbackQuery.edit_message_reply_markup(
+    return await query.edit_message_reply_markup(
         reply_markup=InlineKeyboardMarkup(buttons)
     )
 
 
 @app.on_callback_query(filters.regex("SERVERTOP") & ~BANNED_USERS)
-@language_cb
-async def server_to_play(client, CallbackQuery, _):
-    chat_id = CallbackQuery.message.chat.id
-    user_name = CallbackQuery.from_user.first_name
+@languageCB
+async def server_to_play(client, query, _):
+    chat_id = query.message.chat.id
+    user_name = query.from_user.first_name
     try:
-        await CallbackQuery.answer()
+        await query.answer()
     except Exception:
         pass
-    callback_data = CallbackQuery.data.strip()
+    callback_data = query.data.strip()
     what = callback_data.split(None, 1)[1]
-    mystic = await CallbackQuery.edit_message_text(
+    mystic = await query.edit_message_text(
         _["tracks_1"].format(
             what,
-            CallbackQuery.from_user.first_name,
+            query.from_user.first_name,
         )
     )
     upl = failed_top_markup(_)
@@ -70,10 +70,11 @@ async def server_to_play(client, CallbackQuery, _):
     elif what == "Group":
         stats = await get_particulars(chat_id)
     elif what == "Personal":
-        stats = await get_userss(CallbackQuery.from_user.id)
+        stats = await get_userss(query.from_user.id)
     if not stats:
         return await mystic.edit(_["tracks_2"].format(what), reply_markup=upl)
 
+    @asyncify
     def get_stats():
         results = {}
         for i in stats:
@@ -102,7 +103,7 @@ async def server_to_play(client, CallbackQuery, _):
         return details
 
     try:
-        details = await loop.run_in_executor(None, get_stats)
+        details = await get_stats()
     except Exception as e:
         print(e)
         return
@@ -110,11 +111,11 @@ async def server_to_play(client, CallbackQuery, _):
         await stream(
             _,
             mystic,
-            CallbackQuery.from_user.id,
+            query.from_user.id,
             details,
             chat_id,
             user_name,
-            CallbackQuery.message.chat.id,
+            query.message.chat.id,
             video=False,
             streamtype="playlist",
         )

@@ -2,11 +2,13 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, Message
 
 import config
-from WinxMusic import Platform, app
+from WinxMusic import app
 from WinxMusic.core.call import Winx
 from WinxMusic.misc import db
+from WinxMusic.platforms import saavn, youtube
+from WinxMusic.utils import fallback
 from WinxMusic.utils.database import get_loop
-from WinxMusic.utils.decorators import admin_rights_check
+from WinxMusic.utils.decorators import AdminRightsCheck
 from WinxMusic.utils.inline.play import stream_markup, telegram_markup
 from WinxMusic.utils.stream.autoclear import auto_clean
 from WinxMusic.utils.thumbnails import gen_thumb
@@ -15,7 +17,7 @@ from strings import command
 
 
 @app.on_message(command("SKIP_COMMAND") & filters.group & ~BANNED_USERS)
-@admin_rights_check
+@AdminRightsCheck
 async def skip(cli, message: Message, _, chat_id):
     if not len(message.command) < 2:
         loop = await get_loop(chat_id)
@@ -96,13 +98,13 @@ async def skip(cli, message: Message, _, chat_id):
     queued = check[0]["file"]
     title = (check[0]["title"]).title()
     user = check[0]["by"]
-    user_id = message.from_user.id
+    message.from_user.id
     streamtype = check[0]["streamtype"]
     videoid = check[0]["vidid"]
     duration_min = check[0]["dur"]
     status = True if str(streamtype) == "video" else None
     if "live_" in queued:
-        n, link = await Platform.youtube.video(videoid, True)
+        n, link = await youtube.video(videoid, True)
         if n == 0:
             return await message.reply_text(_["admin_11"].format(title))
         try:
@@ -110,66 +112,64 @@ async def skip(cli, message: Message, _, chat_id):
         except Exception:
             return await message.reply_text(_["call_7"])
         button = telegram_markup(_, chat_id)
-        try:
-            img = await gen_thumb(videoid)
-            run = await message.reply_photo(
-                photo=img,
-                caption=_["stream_1"].format(
-                    user,
-                    f"https://t.me/{app.username}?start=info_{videoid}",
-                ),
-                reply_markup=InlineKeyboardMarkup(button),
-            )
-        except Exception:
-            run = await message.reply_photo(
-                photo=config.STREAM_IMG_URL,
-                caption=_["stream_1"].format(
-                    user,
-                    f"https://t.me/{app.username}?start=info_{videoid}",
-                ),
-                reply_markup=InlineKeyboardMarkup(button),
-            )
+        img = await gen_thumb(videoid)
+        run = await message.reply_photo(
+            photo=img,
+            caption=_["stream_1"].format(
+                user,
+                f"https://t.me/{app.username}?start=info_{videoid}",
+            ),
+            reply_markup=InlineKeyboardMarkup(button),
+        )
         db[chat_id][0]["mystic"] = run
         db[chat_id][0]["markup"] = "tg"
     elif "vid_" in queued:
+        flink = (f"https://t.me/{app.username}?start=info_{videoid}",)
+        thumbnail = None
         mystic = await message.reply_text(_["call_8"], disable_web_page_preview=True)
         try:
-            file_path, direct = await Platform.youtube.download(
-                videoid,
-                mystic,
-                videoid=True,
-                video=status,
-            )
+            if youtube.use_fallback:
+                file_path, _data, status = await fallback.download(
+                    title[:12], video=status
+                )
+                direct = None
+                title = _data.get("title", title)
+                thumbnail = _data.get("thumb")
+                flink = _data.get("url", flink)
+                duration_min = _data.get("duration_min", duration_min)
+            else:
+                try:
+                    file_path, direct = await youtube.download(
+                        videoid, mystic, videoid=True, video=status
+                    )
+                except Exception:
+                    youtube.use_fallback = True
+                    file_path, _data, status = await fallback.download(
+                        title[:12], video=status
+                    )
+                    title = _data.get("title", title)
+                    thumbnail = _data.get("thumb")
+                    flink = _data.get("url", flink)
+                    duration_min = _data.get("duration_min", duration_min)
         except Exception:
             return await mystic.edit_text(_["call_7"])
         try:
             await Winx.skip_stream(chat_id, file_path, video=status)
         except Exception:
             return await mystic.edit_text(_["call_7"])
+        check[0]["dur"] = duration_min
         button = stream_markup(_, videoid, chat_id)
-        try:
-            img = await gen_thumb(videoid)
-            run = await message.reply_photo(
-                photo=img,
-                caption=_["stream_1"].format(
-                    title[:27],
-                    f"https://t.me/{app.username}?start=info_{videoid}",
-                    duration_min,
-                    user,
-                ),
-                reply_markup=InlineKeyboardMarkup(button),
-            )
-        except Exception:
-            run = await message.reply_photo(
-                photo=config.STREAM_IMG_URL,
-                caption=_["stream_1"].format(
-                    title[:27],
-                    f"https://t.me/{app.username}?start=info_{videoid}",
-                    duration_min,
-                    user,
-                ),
-                reply_markup=InlineKeyboardMarkup(button),
-            )
+        img = await gen_thumb(videoid, thumbnail)
+        run = await message.reply_photo(
+            photo=img,
+            caption=_["stream_1"].format(
+                title[:27],
+                flink,
+                duration_min,
+                user,
+            ),
+            reply_markup=InlineKeyboardMarkup(button),
+        )
         db[chat_id][0]["mystic"] = run
         db[chat_id][0]["markup"] = "stream"
         await mystic.delete()
@@ -224,7 +224,7 @@ async def skip(cli, message: Message, _, chat_id):
         elif "saavn" in videoid:
             button = telegram_markup(_, chat_id)
             url = check[0]["url"]
-            details = await Platform.saavn.info(url)
+            details = await saavn.info(url)
             run = await message.reply_photo(
                 photo=details["thumb"] or config.TELEGRAM_AUDIO_URL,
                 caption=_["stream_1"].format(title, url, check[0]["dur"], user),
@@ -234,28 +234,16 @@ async def skip(cli, message: Message, _, chat_id):
             db[chat_id][0]["markup"] = "tg"
         else:
             button = stream_markup(_, videoid, chat_id)
-            try:
-                img = await gen_thumb(videoid)
-                run = await message.reply_photo(
-                    photo=img,
-                    caption=_["stream_1"].format(
-                        title[:27],
-                        f"https://t.me/{app.username}?start=info_{videoid}",
-                        duration_min,
-                        user,
-                    ),
-                    reply_markup=InlineKeyboardMarkup(button),
-                )
-            except Exception:
-                run = await message.reply_photo(
-                    photo=config.STREAM_IMG_URL,
-                    caption=_["stream_1"].format(
-                        title[:27],
-                        f"https://t.me/{app.username}?start=info_{videoid}",
-                        duration_min,
-                        user,
-                    ),
-                    reply_markup=InlineKeyboardMarkup(button),
-                )
+            img = await gen_thumb(videoid)
+            run = await message.reply_photo(
+                photo=img,
+                caption=_["stream_1"].format(
+                    title[:27],
+                    f"https://t.me/{app.username}?start=info_{videoid}",
+                    duration_min,
+                    user,
+                ),
+                reply_markup=InlineKeyboardMarkup(button),
+            )
             db[chat_id][0]["mystic"] = run
             db[chat_id][0]["markup"] = "stream"

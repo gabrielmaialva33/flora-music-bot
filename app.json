@@ -1,7 +1,7 @@
 {
   "name": "WinxMusic",
   "description": "Telegram Group Calls streaming bot with some useful features, written in Python with Pyrogram and Py-Tgcalls. Supporting platforms like Youtube, Spotify, Resso, AppleMusic, Soundcloud and M3u8 Links.",
-  "logo": "https://64.media.tumblr.com/b20a9df719f8420ac7aa02ece2cb1774/5f8ef1a042cf9e6b-7f/s540x810/eba21bbdb525e72f84be27d439c156b4dfa6b31a.gifv",
+  "logo": "https://graph.org/file/c0e014ff34f34d1056627.png",
   "keywords": [
     "python3",
     "telegram",
@@ -28,14 +28,9 @@
       "value": "",
       "required": true
     },
-    "COOKIE_LINK": {
-      "description": "You can paste your cookies to https://batbin.me, save them, and get a link to paste here",
-      "value": "",
-      "required": false
-    },
     "EXTRA_PLUGINS": {
       "description": "if You want to load extra plugins with music plugins so fill True  if you don't want to load extra plugins so Fill False",
-      "value": "True",
+      "value": "False",
       "required": false
     },
     "MONGO_DB_URI": {

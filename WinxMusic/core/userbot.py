@@ -7,6 +7,7 @@ from functools import wraps
 from pyrogram import Client, StopPropagation
 from pyrogram.errors import (
     ChatSendMediaForbidden,
+    ChatSendPhotosForbidden,
     ChatWriteForbidden,
     FloodWait,
     MessageIdInvalid,
@@ -21,7 +22,7 @@ assistants = []
 assistantids = []
 
 
-class Userbot(Client):
+class Userbot:
     def __init__(self):
         self.clients = [
             Client(
@@ -63,10 +64,6 @@ class Userbot(Client):
             for handler, group in self.handlers:
                 client.add_handler(handler, group)
 
-            # await client.join_chat("@cinewinxy")
-            # await client.join_chat("@cinewinxcoments")
-            # await client.join_chat("@canalclubdaswinx")
-
         except Exception as e:
             LOGGER(__name__).error(
                 f"Assistant Account {index} failed with error: {str(e)}. Exiting..."
@@ -99,10 +96,11 @@ class Userbot(Client):
                     )
                     await asyncio.sleep(e.value)
                 except (
-                    ChatWriteForbidden,
-                    ChatSendMediaForbidden,
-                    MessageNotModified,
-                    MessageIdInvalid,
+                        ChatWriteForbidden,
+                        ChatSendMediaForbidden,
+                        ChatSendPhotosForbidden,
+                        MessageNotModified,
+                        MessageIdInvalid,
                 ):
                     pass
                 except StopPropagation:

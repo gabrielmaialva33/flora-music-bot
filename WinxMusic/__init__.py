@@ -1,31 +1,22 @@
-import config
+import asyncio as _asyncio
+
+import uvloop as _uvloop
+
+_asyncio.set_event_loop_policy(_uvloop.EventLoopPolicy())  # noqa
+
 from WinxMusic.core.bot import WinxBot
 from WinxMusic.core.dir import dirr
 from WinxMusic.core.git import git
 from WinxMusic.core.userbot import Userbot
-from WinxMusic.misc import dbb, heroku, sudo
+from WinxMusic.misc import dbb, heroku
 
 from .logging import LOGGER
-
-# Pyrogram Client
-
-app = WinxBot(
-    "WinxMusic",
-    api_id=config.API_ID,
-    api_hash=config.API_HASH,
-    bot_token=config.BOT_TOKEN,
-    sleep_threshold=240,
-    max_concurrent_transmissions=5,
-    workers=50,
-)
-
-userbot = Userbot()
 
 # Directories
 dirr()
 
 # Check Git Updates
-# git()
+git()
 
 # Initialize Memory DB
 dbb()
@@ -33,10 +24,7 @@ dbb()
 # Heroku APP
 heroku()
 
-# Load Sudo Users from DB
-sudo()
+app = WinxBot()
+userbot = Userbot()
 
-from .platforms import PlaTForms
-
-Platform = PlaTForms()
 HELPABLE = {}

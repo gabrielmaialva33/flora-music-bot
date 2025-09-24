@@ -1,9 +1,10 @@
 from pyrogram.errors import ChannelPrivate
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from WinxMusic import Platform, app
+from WinxMusic import app
 from WinxMusic.core.call import Winx
 from WinxMusic.misc import SUDOERS
+from WinxMusic.platforms import youtube
 from WinxMusic.utils.database import (
     get_assistant,
     get_cmode,
@@ -22,7 +23,7 @@ from strings import get_string
 links = {}
 
 
-def play_wrapper(command):
+def PlayWrapper(command):
     async def wrapper(client, message):
         language = await get_lang(message.chat.id)
         _ = get_string(language)
@@ -43,7 +44,7 @@ def play_wrapper(command):
             if message.from_user.id not in SUDOERS:
                 return
 
-        if PRIVATE_BOT_MODE == str(True):
+        if PRIVATE_BOT_MODE:
             if not await is_served_private_chat(message.chat.id):
                 await message.reply_text(
                     "**PRIVATE MUSIC BOT**\n\nOnly For Authorized chats from the owner ask my owner to allow your chat first."
@@ -65,7 +66,7 @@ def play_wrapper(command):
             if message.reply_to_message
             else None
         )
-        url = await Platform.youtube.url(message)
+        url = await youtube.url(message)
         if audio_telegram is None and video_telegram is None and url is None:
             if len(message.command) < 2:
                 if "stream" in message.command:

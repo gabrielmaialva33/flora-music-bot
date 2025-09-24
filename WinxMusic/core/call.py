@@ -1,13 +1,16 @@
 import asyncio
-from typing import Union
+import logging
+import traceback
 
 from ntgcalls import TelegramServerError
+from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import (
     ChannelsTooMuch,
     ChatAdminRequired,
     FloodWait,
     InviteRequestSent,
     UserAlreadyParticipant,
+    UserNotParticipant,
 )
 from pyrogram.types import InlineKeyboardMarkup
 from pytgcalls import PyTgCalls, filters
@@ -20,12 +23,15 @@ from pytgcalls.types import (
 )
 
 import config
-from WinxMusic import LOGGER, Platform, app, userbot
+from WinxMusic import app, userbot
 from WinxMusic.core.userbot import assistants
 from WinxMusic.misc import db
+from WinxMusic.platforms import saavn, youtube
+from WinxMusic.utils import fallback
 from WinxMusic.utils.database import (
     add_active_chat,
     add_active_video_chat,
+    get_active_chats,
     get_assistant,
     get_audio_bitrate,
     get_lang,
@@ -45,6 +51,7 @@ from WinxMusic.utils.thumbnails import gen_thumb
 from strings import get_string
 
 links = {}
+logger = logging.getLogger(__name__)
 
 
 async def _clear_(chat_id):
@@ -84,11 +91,14 @@ class Call:
         assistant = await group_assistant(self, chat_id)
         await assistant.unmute(chat_id)
 
-    async def stop_stream(self, chat_id: int):
+    async def leave_call(self, chat_id):
         assistant = await group_assistant(self, chat_id)
+        await assistant.leave_call(chat_id)
+
+    async def stop_stream(self, chat_id: int):
         try:
             await _clear_(chat_id)
-            await assistant.leave_call(chat_id)
+            await self.leave_call(chat_id)
         except Exception:
             pass
 
@@ -107,11 +117,11 @@ class Call:
             pass
 
     async def skip_stream(
-        self,
-        chat_id: int,
-        link: str,
-        video: Union[bool, str] = None,
-        image: Union[bool, str] = None,
+            self,
+            chat_id: int,
+            link: str,
+            video: bool | str = None,
+            image: bool | str = None,
     ):
         assistant = await group_assistant(self, chat_id)
         audio_stream_quality = await get_audio_bitrate(chat_id)
@@ -123,7 +133,7 @@ class Call:
                 audio_parameters=audio_stream_quality,
                 video_parameters=video_stream_quality,
             )
-        elif image and config.PRIVATE_BOT_MODE == str(True):
+        elif image and config.PRIVATE_BOT_MODE:
             stream = MediaStream(
                 image,
                 audio_path=link,
@@ -181,6 +191,18 @@ class Call:
         except Exception:
             _ = get_string("pt")
         try:
+            try:
+                get = await app.get_chat_member(chat_id, userbot.id)
+            except ChatAdminRequired:
+                raise AssistantErr(_["call_1"])
+            if get.status in [ChatMemberStatus.BANNED, ChatMemberStatus.RESTRICTED]:
+                try:
+                    await app.unban_chat_member(chat_id, userbot.id)
+                except Exception:
+                    raise AssistantErr(_["call_2"].format(userbot.username, userbot.id))
+        except UserNotParticipant:
+            pass
+        try:
             chat = await app.get_chat(chat_id)
         except ChatAdminRequired:
             raise AssistantErr(_["call_1"])
@@ -220,7 +242,7 @@ class Call:
             except Exception as e:
                 raise AssistantErr(_["call_3"].format(type(e).__name__))
             await asyncio.sleep(1)
-            raise AssistantErr(_["call_6"].format(app.mention))
+            # raise AssistantErr(_["call_6"].format(app.mention))
         except UserAlreadyParticipant:
             pass
         except ChannelsTooMuch:
@@ -247,12 +269,12 @@ class Call:
             raise AssistantErr(_["call_3"].format(type(e).__name__))
 
     async def join_call(
-        self,
-        chat_id: int,
-        original_chat_id: int,
-        link,
-        video: Union[bool, str] = None,
-        image: Union[bool, str] = None,
+            self,
+            chat_id: int,
+            original_chat_id: int,
+            link,
+            video: bool | str = None,
+            image: bool | str = None,
     ):
         assistant = await group_assistant(self, chat_id)
         audio_stream_quality = await get_audio_bitrate(chat_id)
@@ -264,7 +286,7 @@ class Call:
                 audio_parameters=audio_stream_quality,
                 video_parameters=video_stream_quality,
             )
-        elif image and config.PRIVATE_BOT_MODE == str(True):
+        elif image and config.PRIVATE_BOT_MODE:
             stream = MediaStream(
                 image,
                 audio_path=link,
@@ -280,19 +302,21 @@ class Call:
 
         try:
             await assistant.play(
-                chat_id=chat_id,
+                chat_id,
                 stream=stream,
                 config=call_config,
             )
         except Exception:
+            traceback.print_exc()
             await self.join_chat(chat_id)
             try:
                 await assistant.play(
-                    chat_id=chat_id,
+                    chat_id,
                     stream=stream,
                     config=call_config,
                 )
-            except Exception as e:
+            except Exception:
+                traceback.print_exc()
                 raise AssistantErr(
                     "**No Active Voice Chat Found**\n\nPlease make sure group's voice chat is enabled. If already enabled, please end it and start fresh voice chat again and if the problem continues, try /restart"
                 )
@@ -347,12 +371,12 @@ class Call:
             audio_stream_quality = await get_audio_bitrate(chat_id)
             video_stream_quality = await get_video_bitrate(chat_id)
             videoid = check[0]["vidid"]
-            userid = check[0].get("user_id")
+            check[0].get("user_id")
             check[0]["played"] = 0
             video = True if str(streamtype) == "video" else False
             call_config = GroupCallConfig(auto_start=False)
             if "live_" in queued:
-                n, link = await Platform.youtube.video(videoid, True)
+                n, link = await youtube.video(videoid, True)
                 if n == 0:
                     return await app.send_message(
                         original_chat_id,
@@ -366,10 +390,10 @@ class Call:
                     )
                 else:
                     try:
-                        image = await Platform.youtube.thumbnail(videoid, True)
+                        image = await youtube.thumbnail(videoid, True)
                     except Exception:
                         image = None
-                    if image and config.PRIVATE_BOT_MODE == str(True):
+                    if image and config.PRIVATE_BOT_MODE:
                         stream = MediaStream(
                             image,
                             audio_path=link,
@@ -406,17 +430,42 @@ class Call:
                 db[chat_id][0]["markup"] = "tg"
             elif "vid_" in queued:
                 mystic = await app.send_message(original_chat_id, _["call_8"])
+                flink = f"https://t.me/{app.username}?start=info_{videoid}"
+                thumbnail = None
                 try:
-                    file_path, direct = await Platform.youtube.download(
-                        videoid,
-                        mystic,
-                        videoid=True,
-                        video=True if str(streamtype) == "video" else False,
-                    )
+                    if youtube.use_fallback:
+                        file_path, _data, video = await fallback.download(
+                            title[:12],
+                            video=video,
+                        )
+                        direct = None
+                        title = _data.get("title", title)
+                        thumbnail = _data.get("thumb")
+                        flink = _data.get("url", flink)
+                        check[0]["dur"] = _data.get("duration_min", check[0]["dur"])
+                    else:
+                        try:
+                            file_path, direct = await youtube.download(
+                                videoid,
+                                mystic,
+                                videoid=True,
+                                video=video,
+                            )
+                        except Exception:
+                            youtube.use_fallback = True
+                            file_path, _data, video = await fallback.download(
+                                title[:12],
+                                video=(True if str(streamtype) == "video" else False),
+                            )
+                            title = _data.get("title", title)
+                            thumbnail = _data.get("thumb")
+                            flink = _data.get("url", flink)
+                            check[0]["dur"] = _data.get("duration_min", check[0]["dur"])
                 except Exception:
                     return await mystic.edit_text(
                         _["call_7"], disable_web_page_preview=True
                     )
+
                 if video:
                     stream = MediaStream(
                         file_path,
@@ -425,10 +474,10 @@ class Call:
                     )
                 else:
                     try:
-                        image = await Platform.youtube.thumbnail(videoid, True)
+                        image = await youtube.thumbnail(videoid, True)
                     except Exception:
                         image = None
-                    if image and config.PRIVATE_BOT_MODE == str(True):
+                    if image and config.PRIVATE_BOT_MODE:
                         stream = MediaStream(
                             image,
                             audio_path=file_path,
@@ -448,7 +497,7 @@ class Call:
                         original_chat_id,
                         text=_["call_7"],
                     )
-                img = await gen_thumb(videoid)
+                img = await gen_thumb(videoid, thumbnail)
                 button = stream_markup(_, videoid, chat_id)
                 await mystic.delete()
                 run = await app.send_photo(
@@ -456,7 +505,7 @@ class Call:
                     photo=img,
                     caption=_["stream_1"].format(
                         title[:27],
-                        f"https://t.me/{app.username}?start=info_{videoid}",
+                        flink,
                         check[0]["dur"],
                         user,
                     ),
@@ -503,11 +552,11 @@ class Call:
 
                 elif "saavn" in videoid:
                     url = check[0].get("url")
-                    details = await Platform.saavn.info(url)
+                    details = await saavn.info(url)
                     image = details["thumb"]
                 else:
                     try:
-                        image = await Platform.youtube.thumbnail(videoid, True)
+                        image = await youtube.thumbnail(videoid, True)
                     except Exception:
                         image = None
                 if video:
@@ -517,7 +566,7 @@ class Call:
                         video_parameters=video_stream_quality,
                     )
                 else:
-                    if image and config.PRIVATE_BOT_MODE == str(True):
+                    if image and config.PRIVATE_BOT_MODE:
                         stream = MediaStream(
                             image,
                             audio_path=queued,
@@ -600,13 +649,19 @@ class Call:
         if pings:
             return str(round(sum(pings) / len(pings), 3))
         else:
-            LOGGER(__name__).error("No active clients for ping calculation.")
+            logger.error("No active clients for ping calculation.")
             return "No active clients"
 
     async def start(self):
         """Starts all PyTgCalls instances for the existing userbot clients."""
-        LOGGER(__name__).info(f"Starting PyTgCall Clients")
+        logger.info("Starting PyTgCall Clients")
         await asyncio.gather(*[c.start() for c in self.calls])
+
+    async def stop(self):
+        t = []
+        for x in await get_active_chats():
+            t.append(self.leave_call(x))
+        await asyncio.gather(*t, return_exceptions=True)
 
     async def decorators(self):
         for call in self.calls:
@@ -617,10 +672,7 @@ class Call:
 
             @call.on_update(filters.stream_end())
             async def stream_end_handler(client, update: StreamEnded):
-                if update.stream_type not in [
-                    StreamEnded.Type.AUDIO,
-                    StreamEnded.Type.VIDEO,
-                ]:
+                if not update.stream_type == StreamEnded.Type.AUDIO:
                     return
                 await self.change_stream(client, update.chat_id)
 

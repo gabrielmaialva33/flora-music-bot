@@ -5,10 +5,10 @@ import shutil
 import socket
 from datetime import datetime
 
+import aiofiles
+import aiohttp
 import dotenv
 import heroku3
-import requests
-import urllib3
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError
 from pyrogram import filters
@@ -19,36 +19,31 @@ import config
 from WinxMusic import app
 from WinxMusic.core.call import Winx
 from WinxMusic.misc import HAPP, SUDOERS, XCB, db
+from WinxMusic.utils import pastebin
 from WinxMusic.utils.database import (
     get_active_chats,
     get_cmode,
     remove_active_chat,
     remove_active_video_chat,
 )
-from WinxMusic.utils.decorators import admin_actual
+from WinxMusic.utils.decorators import AdminActual, asyncify
 from WinxMusic.utils.decorators.language import language
-from WinxMusic.utils.pastebin import WinxBin
 from config import BANNED_USERS
 from strings import command
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
-async def is_heroku():
+@asyncify
+def is_heroku():
     return "heroku" in socket.getfqdn()
-
-
-async def paste_neko(code: str):
-    return await WinxBin(code)
 
 
 @app.on_message(command("GETLOG_COMMAND") & SUDOERS)
 @language
 async def log_(client, message, _):
     async def _get_log():
-        log = open(config.LOG_FILE_NAME)
-        lines = log.readlines()
-        log.close()
+        async with aiofiles.open(config.LOG_FILE_NAME) as f:
+            lines = await f.readlines()
+
         data = ""
         try:
             NUMB = int(message.text.split(None, 1)[1])
@@ -56,7 +51,7 @@ async def log_(client, message, _):
             NUMB = 100
         for x in lines[-NUMB:]:
             data += x
-        link = await WinxBin(data)
+        link = await pastebin.paste(data)
         return link
 
     try:
@@ -66,7 +61,7 @@ async def log_(client, message, _):
                     return await message.reply_text(await _get_log())
                 return await message.reply_text(_["heroku_1"])
             data = HAPP.get_log()
-            link = await WinxBin(data)
+            link = await pastebin.paste(data)
             return await message.reply_text(link)
         else:
             if os.path.exists(config.LOG_FILE_NAME):
@@ -166,7 +161,7 @@ async def set_var(client, message, _):
 @app.on_message(command("USAGE_COMMAND") & SUDOERS)
 @language
 async def usage_dynos(client, message, _):
-    ### Credits CatUserbot
+    # Credits CatUserbot
     if await is_heroku():
         if HAPP is None:
             return await message.reply_text(_["heroku_1"])
@@ -186,10 +181,12 @@ async def usage_dynos(client, message, _):
         "Accept": "application/vnd.heroku+json; version=3.account-quotas",
     }
     path = "/accounts/" + account_id + "/actions/get-quota"
-    r = requests.get("https://api.heroku.com" + path, headers=headers)
-    if r.status_code != 200:
-        return await dyno.edit("Unable to fetch.")
-    result = r.json()
+    url = "https://api.heroku.com" + path
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, headers=headers) as r:
+            if r.status != 200:
+                return await dyno.edit("Unable to fetch.")
+            result = await r.json()
     quota = result["account_quota"]
     quota_used = result["quota_used"]
     remaining_quota = quota - quota_used
@@ -242,21 +239,24 @@ async def update_(client, message, _):
         verification = str(checks.count())
     if verification == "":
         return await response.edit("Bot is up to date")
-    ordinal = lambda format: "%d%s" % (
-        format,
-        "tsnrhtdd"[(format // 10 % 10 != 1) * (format % 10 < 4) * format % 10:: 4],
-    )
+
+    def ordinal(format):
+        return "%d%s" % (
+            format,
+            "tsnrhtdd"[(format // 10 % 10 != 1) * (format % 10 < 4) * format % 10:: 4],
+        )
+
     updates = "".join(
         f"<b>➣ #{info.count()}: <a href={REPO_}/commit/{info}>{info.summary}</a> By -> {info.author}</b>\n\t\t\t\t<b>➥ Commited On:</b> {ordinal(int(datetime.fromtimestamp(info.committed_date).strftime('%d')))} {datetime.fromtimestamp(info.committed_date).strftime('%b')}, {datetime.fromtimestamp(info.committed_date).strftime('%Y')}\n\n"
         for info in repo.iter_commits(f"HEAD..origin/{config.UPSTREAM_BRANCH}")
     )
-    _update_response_ = "**A new upadte is available for the Bot! **\n\n➣ Pushing upadtes Now\n\n__**Updates:**__\n"
+    _update_response_ = "**A new update is available for the Bot! **\n\n➣ Pushing updates Now\n\n__**Updates:**__\n"
     _final_updates_ = f"{_update_response_} {updates}"
 
     if len(_final_updates_) > 4096:
-        url = await WinxBin(updates)
+        url = await pastebin.paste(updates)
         nrs = await response.edit(
-            f"**A new upadte is available for the Bot!**\n\n➣ Pushing upadtes Now\n\n__**Updates:**__\n\n[Check Upadtes]({url})",
+            f"**A new update is available for the Bot!**\n\n➣ Pushing updates Now\n\n__**Updates:**__\n\n[Check Updates]({url})",
             disable_web_page_preview=True,
         )
     else:
@@ -269,7 +269,7 @@ async def update_(client, message, _):
             try:
                 await app.send_message(
                     chat_id=int(x),
-                    text="{0} Is upadted herself\n\nYou can start playing after 15-20 Seconds".format(
+                    text="{} Is upadted herself\n\nYou can start playing after 15-20 Seconds".format(
                         app.mention
                     ),
                 )
@@ -297,18 +297,18 @@ async def update_(client, message, _):
             )
             return await app.send_message(
                 chat_id=config.LOGGER_ID,
-                text="An exception occurred #updater due to : <code>{0}</code>".format(
+                text="An exception occurred #updater due to : <code>{}</code>".format(
                     err
                 ),
             )
     else:
-        os.system("pip3 install --no-cache-dir -U -r requirements.txt")
+        # os.system("uv pip install --no-cache-dir -r requirements.txt")
         os.system(f"kill -9 {os.getpid()} && python3 -m WinxMusic")
         exit()
 
 
 @app.on_message(command("REBOOT_COMMAND") & filters.group & ~BANNED_USERS)
-@admin_actual
+@AdminActual
 async def reboot(client, message: Message, _):
     mystic = await message.reply_text(
         f"Please Wait... \nRebooting{app.mention} For Your Chat."

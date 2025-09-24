@@ -38,7 +38,7 @@ async def activevc(_, message: Message):
             await _clear_(x)
             continue
     if not text:
-        await mystic.edit_text("🔍 No active Chats Found")
+        await mystic.edit_text("No active Chats Found")
     else:
         await mystic.edit_text(
             f"**Active Voice Chat's:-**\n\n{text}",

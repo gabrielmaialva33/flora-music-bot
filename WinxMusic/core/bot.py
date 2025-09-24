@@ -1,7 +1,3 @@
-import uvloop
-
-uvloop.install()
-
 import asyncio
 import importlib.util
 import os
@@ -13,6 +9,7 @@ from pyrogram import Client, StopPropagation, errors
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import (
     ChatSendMediaForbidden,
+    ChatSendPhotosForbidden,
     ChatWriteForbidden,
     FloodWait,
     MessageIdInvalid,
@@ -29,7 +26,6 @@ from pyrogram.types import (
 )
 
 import config
-
 from ..logging import LOGGER
 
 
@@ -37,7 +33,15 @@ class WinxBot(Client):
     def __init__(self, *args, **kwargs):
         LOGGER(__name__).info("Starting Bot...")
 
-        super().__init__(*args, **kwargs)
+        super().__init__(
+            "WinxMusic",
+            api_id=config.API_ID,
+            api_hash=config.API_HASH,
+            bot_token=config.BOT_TOKEN,
+            sleep_threshold=240,
+            max_concurrent_transmissions=5,
+            workers=50,
+        )
         self.loaded_plug_counts = 0
 
     def on_message(self, filters=None, group=0):
@@ -45,17 +49,21 @@ class WinxBot(Client):
             @wraps(func)
             async def wrapper(client, message):
                 try:
-                    await func(client, message)
+                    if asyncio.iscoroutinefunction(func):
+                        await func(client, message)
+                    else:
+                        func(client, message)
                 except FloodWait as e:
                     LOGGER(__name__).warning(
                         f"FloodWait: Sleeping for {e.value} seconds."
                     )
                     await asyncio.sleep(e.value)
                 except (
-                    ChatWriteForbidden,
-                    ChatSendMediaForbidden,
-                    MessageNotModified,
-                    MessageIdInvalid,
+                        ChatWriteForbidden,
+                        ChatSendMediaForbidden,
+                        ChatSendPhotosForbidden,
+                        MessageNotModified,
+                        MessageIdInvalid,
                 ):
                     pass
                 except StopPropagation:
@@ -97,7 +105,7 @@ class WinxBot(Client):
         get_me = await self.get_me()
         self.username = get_me.username
         self.id = get_me.id
-        self.name = get_me.first_name
+        self.name = get_me.full_name
         self.mention = get_me.mention
 
         try:
@@ -116,10 +124,10 @@ class WinxBot(Client):
             )
             LOGGER(__name__).error("Error details:", exc_info=True)
             exit()
-        if config.SET_CMDS == str(True):
+        if config.SET_CMDS:
             try:
                 await self._set_default_commands()
-            except Exception as e:
+            except Exception:
                 LOGGER(__name__).warning("Failed to set commands:", exc_info=True)
 
         try:
@@ -129,7 +137,7 @@ class WinxBot(Client):
                 exit()
         except Exception:
             pass
-        LOGGER(__name__).info(f"FloraBot started as {self.name}")
+        LOGGER(__name__).info(f"MusicBot started as {self.name}")
 
     async def _set_default_commands(self):
         private_commands = [
@@ -189,7 +197,7 @@ class WinxBot(Client):
         LOG_GROUP_ID = (
             f"@{config.LOG_GROUP_ID}"
             if isinstance(config.LOG_GROUP_ID, str)
-            and not config.LOG_GROUP_ID.startswith("@")
+               and not config.LOG_GROUP_ID.startswith("@")
             else config.LOG_GROUP_ID
         )
 
@@ -273,11 +281,3 @@ class WinxBot(Client):
             "stdout": stdout.decode().strip() if stdout else None,
             "stderr": stderr.decode().strip() if stderr else None,
         }
-
-    async def stop(self):
-        LOGGER(__name__).info("Bot is shutting down")
-        await self.send_message(
-            config.LOG_GROUP_ID,
-            text=f"🛑 <u><b>{self.mention} Bot Desligado :</b></u>\n\n🆔 <b>ID</b>: <code>{self.id}</code>\n📛 <b>Nome</b>: {self.name}\n🔗 <b>Nome de usuário:</b> @{self.username}",
-        )
-        await super().stop()

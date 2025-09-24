@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 from bson import ObjectId
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import AsyncMongoClient as AsyncIOMotorClient
 from pymongo.errors import OperationFailure
 from pyrogram import filters
 from pyrogram.errors import FloodWait
@@ -62,7 +62,7 @@ async def export_database(client, message):
         return
     if MONGO_DB_URI is None:
         return await message.reply_text(
-            "**Due to some privacy Issue, You can't Import/Export when you are using Yukki Database\n\n Please Fill Your MONGO_DB_URI in vars to use this features**"
+            "**Due to some privacy Issue, You can't Import/Export when you are using Winx Database\n\n Please Fill Your MONGO_DB_URI in vars to use this features**"
         )
     mystic = await message.reply_text("Exporting Your mongodatabase...")
     _mongo_async_ = AsyncIOMotorClient(MONGO_DB_URI)
@@ -80,7 +80,6 @@ async def export_database(client, message):
 
         file_path = await ex_port(db, db_name)
         try:
-
             await app.send_document(
                 message.chat.id, file_path, caption=f"MᴏɴɢᴏDB ʙᴀᴄᴋᴜᴘ ᴅᴀᴛᴀ ғᴏʀ {db_name}"
             )
@@ -127,7 +126,7 @@ async def import_database(client, message):
         return
     if MONGO_DB_URI is None:
         return await message.reply_text(
-            "**Due to some privacy Issue, You can't Import/Export when you are using Yukki Database\n\n Please Fill Your MONGO_DB_URI in vars to use this features**"
+            "**Due to some privacy Issue, You can't Import/Export when you are using Winx Database\n\n Please Fill Your MONGO_DB_URI in vars to use this features**"
         )
 
     if not message.reply_to_message or not message.reply_to_message.document:
@@ -146,9 +145,9 @@ async def import_database(client, message):
     file_path = await message.reply_to_message.download(progress=progress)
 
     try:
-        with open(file_path, "r") as backup_file:
+        with open(file_path) as backup_file:
             data = json.load(backup_file)
-    except (json.JSONDecodeError, IOError):
+    except (json.JSONDecodeError, OSError):
         return await edit_or_reply(
             mystic, "Invalid Data Format Please Provide A Valid Exported File"
         )

@@ -1,10 +1,15 @@
+# This aeval and sh module is taken from < https://github.com/TheHamkerCat/WilliamButcherBot >
+# Credit goes to TheHamkerCat.
+#
+
 import asyncio
+import contextlib
 import os
-import sys
 import traceback
 from io import StringIO
 from time import time
 
+import aiofiles
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
@@ -12,20 +17,14 @@ from WinxMusic import app
 from WinxMusic.misc import SUDOERS
 
 
-## -------- end of required imports to run this script
-
-## ------ Below are some optional Imports you can remove it if is imported  you don't need to import it when using eval command
-
-
-## end
-
-
 async def aexec(code, client, message):
-    local_vars = {}
+    local_vars = {
+        "__builtins__": __builtins__,  # DON'T REMOVE THIS
+        "app": app,
+    }
     exec(
         "async def __aexec(client, message): "
         + "".join(f"\n {a}" for a in code.split("\n")),
-        globals(),
         local_vars,
     )
     __aexec_func = local_vars["__aexec"]
@@ -42,23 +41,22 @@ async def executor(client: app, message: Message):
     if len(message.command) < 2:
         return await message.reply(text="<b>Give me something to exceute</b>")
     try:
-        cmd = message.text.split(" ", maxsplit=1)[1]
+        cmd = message.text.markdown.split(" ", maxsplit=1)[1]
     except IndexError:
         return await message.delete()
     t1 = time()
-    old_stderr = sys.stderr
-    old_stdout = sys.stdout
-    redirected_output = sys.stdout = StringIO()
-    redirected_error = sys.stderr = StringIO()
+    redirected_output = redirected_error = StringIO()
     stdout, stderr, exc = None, None, None
-    try:
-        await aexec(cmd, client, message)
-    except Exception:
-        exc = traceback.format_exc()
+    with (
+        contextlib.redirect_stdout(redirected_output),
+        contextlib.redirect_stderr(redirected_error),
+    ):
+        try:
+            await aexec(cmd, client, message)
+        except Exception:
+            exc = traceback.format_exc()
     stdout = redirected_output.getvalue()
     stderr = redirected_error.getvalue()
-    sys.stdout = old_stdout
-    sys.stderr = old_stderr
     evaluation = "\n"
     if exc:
         evaluation += exc
@@ -71,8 +69,8 @@ async def executor(client: app, message: Message):
     final_output = f"<b>RESULTS:</b>\n<pre language='python'>{evaluation}</pre>"
     if len(final_output) > 4096:
         filename = "output.txt"
-        with open(filename, "w+", encoding="utf8") as out_file:
-            out_file.write(str(evaluation))
+        async with aiofiles.open(filename, "w+", encoding="utf8") as out_file:
+            await out_file.write(str(evaluation))
         t2 = time()
         keyboard = InlineKeyboardMarkup(
             [
@@ -118,20 +116,20 @@ async def runtime_func_cq(_, cq):
 
 
 @app.on_callback_query(filters.regex("forceclose"))
-async def forceclose_command(_, CallbackQuery):
-    callback_data = CallbackQuery.data.strip()
+async def forceclose_command(_, query):
+    callback_data = query.data.strip()
     callback_request = callback_data.split(None, 1)[1]
     query, user_id = callback_request.split("|")
-    if CallbackQuery.from_user.id != int(user_id):
+    if query.from_user.id != int(user_id):
         try:
-            return await CallbackQuery.answer(
+            return await query.answer(
                 "This is not for you stay away from here", show_alert=True
             )
         except Exception:
             return
-    await CallbackQuery.message.delete()
+    await query.message.delete()
     try:
-        await CallbackQuery.answer()
+        await query.answer()
     except Exception:
         return
 
@@ -144,7 +142,7 @@ async def shellrunner(_, message: Message):
     if len(message.command) < 2:
         return await message.reply("<b>Give some commands like:</b>\n/sh git pull")
 
-    text = message.text.split(None, 1)[1]
+    text = message.text.markdown.split(None, 1)[1]
     output = ""
 
     async def run_command(command):
@@ -156,14 +154,8 @@ async def shellrunner(_, message: Message):
             )
             stdout, stderr = await process.communicate()
             return stdout.decode().strip(), stderr.decode().strip()
-        except Exception as err:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            errors = traceback.format_exception(
-                etype=exc_type,
-                value=exc_obj,
-                tb=exc_tb,
-            )
-            return None, "".join(errors)
+        except Exception:
+            return None, traceback.format_exc()
 
     if "\n" in text:
         commands = text.split("\n")
@@ -185,8 +177,8 @@ async def shellrunner(_, message: Message):
         output = "<b>OUTPUT :</b>\n<code>None</code>"
 
     if len(output) > 4096:
-        with open("output.txt", "w+") as file:
-            file.write(output)
+        async with aiofiles.open("output.txt", "w+") as file:
+            await file.write(output)
         await app.send_document(
             message.chat.id,
             "output.txt",

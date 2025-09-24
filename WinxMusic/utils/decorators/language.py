@@ -9,7 +9,7 @@ from WinxMusic.utils.database import (
 from strings import get_string
 
 
-def language(mystic: callable):
+def language(mystic):
     async def wrapper(_, message, **kwargs):
         try:
             language = await get_lang(message.chat.id)
@@ -31,28 +31,28 @@ def language(mystic: callable):
     return wrapper
 
 
-def language_cb(mystic: callable):
-    async def wrapper(_, CallbackQuery, **kwargs):
+def languageCB(mystic):
+    async def wrapper(_, query, **kwargs):
         try:
-            language = await get_lang(CallbackQuery.message.chat.id)
+            language = await get_lang(query.message.chat.id)
             language = get_string(language)
         except Exception:
             language = get_string("pt")
         if not await is_maintenance():
-            if CallbackQuery.from_user.id not in SUDOERS:
-                if CallbackQuery.message.chat.type == ChatType.PRIVATE:
-                    return await CallbackQuery.answer(
+            if query.from_user.id not in SUDOERS:
+                if query.message.chat.type == ChatType.PRIVATE:
+                    return await query.answer(
                         language["maint_4"],
                         show_alert=True,
                     )
                 return
 
-        return await mystic(_, CallbackQuery, language)
+        return await mystic(_, query, language)
 
     return wrapper
 
 
-def language_start(mystic: callable):
+def LanguageStart(mystic):
     async def wrapper(_, message, **kwargs):
         try:
             language = await get_lang(message.chat.id)
