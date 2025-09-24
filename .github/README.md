@@ -107,7 +107,7 @@ Together, we can make **WinxMusic** and **WinxMusicBot** even better!
 
 ## 🙏 Acknowledgments
 
-A huge thank you to [**Team Winx**](https://github.com/TeamWinx) for creating the original [**WinxMusicBot
+A huge thank you to [**Team Winx**](https://t.me/canalclubdaswinx) for creating the original [**WinxMusicBot
 **](https://github.com/gabrielmaialva33/flora-music-bot), the foundation of this project. Though the original is now
 inactive, its
 legacy lives on.
