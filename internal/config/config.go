@@ -30,6 +30,8 @@ var (
 	SpotifyClientSecret string
 	FallenAPIURL        string
 	FallenAPIKey        string
+	BetomatoToken       string
+	BetomatoBaseURL     string
 	DefaultLang         string
 	DurationLimit       int
 	LeaveOnDemoted      bool
@@ -100,6 +102,8 @@ func loadConfig() {
 	SpotifyClientSecret = getString("SPOTIFY_CLIENT_SECRET", "")
 	FallenAPIURL = getString("FALLEN_API_URL", "https://beta.fallenapi.fun")
 	FallenAPIKey = getString("FALLEN_API_KEY", "")
+	BetomatoToken = getString("BETOMATO_TOKEN", "")
+	BetomatoBaseURL = getString("BETOMATO_BASE_URL", "https://edge.betomato.com")
 
 	DefaultLang = getString("DEFAULT_LANG", "ptbr")
 	DurationLimit = int(getInt64("DURATION_LIMIT", 4200)) // In seconds
