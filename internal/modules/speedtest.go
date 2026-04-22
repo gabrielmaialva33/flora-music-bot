@@ -11,23 +11,23 @@ import (
 )
 
 func init() {
-	helpTexts["/speedtest"] = `<i>Run server network speed test.</i>
+	helpTexts["/speedtest"] = `<i>Roda um teste de velocidade de rede no servidor.</i>
 
-<u>Usage:</u>
-<b>/speedtest</b> or <b>/spt</b> — Test network speed
+<u>Uso:</u>
+<b>/speedtest</b> ou <b>/spt</b> — Testa a velocidade da rede
 
-<b>📊 Results Include:</b>
-• Download speed (Mbps)
-• Upload speed (Mbps)
-• Server location
-• Latency (ms)
-• ISP information
+<b>📊 Resultados incluem:</b>
+• Velocidade de download (Mbps)
+• Velocidade de upload (Mbps)
+• Localização do servidor
+• Latência (ms)
+• Info do ISP
 
-<b>🔒 Restrictions:</b>
-• <b>Sudo users</b> only
+<b>🔒 Restrições:</b>
+• Apenas <b>sudoers</b>
 
-<b>⚠️ Note:</b>
-Test may take 30-60 seconds to complete.`
+<b>⚠️ Observação:</b>
+O teste pode levar de 30-60 segundos pra terminar.`
 }
 
 func sptHandle(m *telegram.NewMessage) error {

@@ -17,20 +17,20 @@ import (
 )
 
 func init() {
-	helpTexts["/ping"] = `<i>Check bot responsiveness and system stats.</i>
+	helpTexts["/ping"] = `<i>Checa a responsividade do bot e estatísticas do sistema.</i>
 
-<u>Usage:</u>
-<b>/ping</b> — Get bot status
+<u>Uso:</u>
+<b>/ping</b> — Pega o status do bot
 
-<b>📊 Information Shown:</b>
-• Response latency (ms)
+<b>📊 Informações exibidas:</b>
+• Latência de resposta (ms)
 • Uptime
-• RAM usage
-• CPU usage
-• Disk usage
+• Uso de RAM
+• Uso de CPU
+• Uso de disco
 
-<b>💡 Use Case:</b>
-Check if bot is responsive and view system health.`
+<b>💡 Caso de uso:</b>
+Ver se o bot tá responsivo e checar a saúde do sistema.`
 }
 
 func formatUptime(d time.Duration) string {

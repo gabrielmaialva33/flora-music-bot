@@ -18,42 +18,42 @@ import (
 )
 
 func init() {
-	helpTexts["/sh"] = `<i>Execute shell commands on server.</i>
+	helpTexts["/sh"] = `<i>Executa comandos shell no servidor.</i>
 
-<u>Usage:</u>
-<b>/sh [command]</b> — Run shell command
+<u>Uso:</u>
+<b>/sh [comando]</b> — Roda o comando shell
 
-<b>🔒 Restrictions:</b>
-• <b>Owner only</b> command
+<b>🔒 Restrições:</b>
+• Comando apenas pro <b>dono</b>
 
-<b>⚠️ Warning:</b>
-Direct system access - extremely powerful.`
+<b>⚠️ Aviso:</b>
+Acesso direto ao sistema - extremamente poderoso.`
 	helpTexts["/bash"] = helpTexts["/sh"]
 	helpTexts["/shell"] = helpTexts["/sh"]
 
 	helpTexts["/eval"] = helpTexts["/ev"]
-	helpTexts["/ev"] = `<i>Execute Go code dynamically (eval mode).</i>
+	helpTexts["/ev"] = `<i>Executa código Go dinamicamente (modo eval).</i>
 
-<u>Usage:</u>
-<b>/eval [code]</b> — Run Go code
+<u>Uso:</u>
+<b>/eval [código]</b> — Roda o código Go
 
-<b>🔒 Restrictions:</b>
-• <b>Owner only</b> command
+<b>🔒 Restrições:</b>
+• Comando apenas pro <b>dono</b>
 
-<b>⚠️ Warning:</b>
-Powerful command - use with caution.`
+<b>⚠️ Aviso:</b>
+Comando poderoso - usa com cuidado.`
 
-	helpTexts["/json"] = `<i>Get JSON representation of message/user/chat.</i>
+	helpTexts["/json"] = `<i>Pega a representação JSON de mensagem/usuário/chat.</i>
 
-<u>Usage:</u>
-<b>/json</b> — Current message JSON
-<b>/json -s</b> — Sender JSON
-<b>/json -c</b> — Chat JSON
-<b>/json -m</b> — Media JSON
-<b>/json [reply] -f</b> — File JSON
+<u>Uso:</u>
+<b>/json</b> — JSON da mensagem atual
+<b>/json -s</b> — JSON do sender
+<b>/json -c</b> — JSON do chat
+<b>/json -m</b> — JSON da mídia
+<b>/json [responda] -f</b> — JSON do arquivo
 
-<b>💡 Use Case:</b>
-Debugging and development.`
+<b>💡 Caso de uso:</b>
+Debug e desenvolvimento.`
 }
 
 func shellHandle(m *telegram.NewMessage) error {

@@ -8,21 +8,21 @@ import (
 )
 
 func init() {
-	helpTexts["/active"] = `<i>Show all active voice chat sessions.</i>
+	helpTexts["/active"] = `<i>Mostra todas as sessões de chat de voz ativas.</i>
 
-<u>Usage:</u>
-<b>/active</b> or <b>/ac</b> — List active chats
+<u>Uso:</u>
+<b>/active</b> ou <b>/ac</b> — Lista os chats ativos
 
-<b>📊 Information Shown:</b>
-• Total active chats
-• Active NTGCalls connections
-• Broken/stale sessions
+<b>📊 Informações exibidas:</b>
+• Total de chats ativos
+• Conexões NTGCalls ativas
+• Sessões quebradas/velhas
 
-<b>🔒 Restrictions:</b>
-• <b>Sudo users</b> only
+<b>🔒 Restrições:</b>
+• Apenas <b>sudoers</b>
 
-<b>💡 Use Case:</b>
-Monitor bot usage and identify issues.`
+<b>💡 Caso de uso:</b>
+Monitorar o uso do bot e identificar problemas.`
 
 	keys := []string{"/ac", "/activevc", "/activevoice"}
 	for _, k := range keys {

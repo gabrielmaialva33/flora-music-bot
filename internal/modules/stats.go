@@ -17,20 +17,20 @@ import (
 )
 
 func init() {
-	helpTexts["/stats"] = `<i>View detailed bot statistics.</i>
+	helpTexts["/stats"] = `<i>Mostra estatísticas detalhadas do bot.</i>
 
-<u>Usage:</u>
-<b>/stats</b> — Show statistics
+<u>Uso:</u>
+<b>/stats</b> — Mostra as estatísticas
 
-<b>📊 Information Shown:</b>
-• System stats (OS, CPU, RAM, disk)
-• Go runtime stats (memory, GC)
-• Server resources
-• Served chats count
-• Served users count
+<b>📊 Informações exibidas:</b>
+• Stats do sistema (OS, CPU, RAM, disco)
+• Stats do runtime Go (memória, GC)
+• Recursos do servidor
+• Contagem de chats atendidos
+• Contagem de usuários atendidos
 
-<b>🔒 Restrictions:</b>
-• <b>Sudo users</b> only`
+<b>🔒 Restrições:</b>
+• Apenas <b>sudoers</b>`
 }
 
 func statsHandler(m *telegram.NewMessage) error {

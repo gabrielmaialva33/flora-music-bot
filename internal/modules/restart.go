@@ -15,22 +15,22 @@ import (
 )
 
 func init() {
-	helpTexts["/restart"] = `<i>Restart the bot process.</i>
+	helpTexts["/restart"] = `<i>Reinicia o processo do bot.</i>
 
-<u>Usage:</u>
-<b>/restart</b> — Restart bot
+<u>Uso:</u>
+<b>/restart</b> — Reinicia o bot
 
-<b>⚙️ Behavior:</b>
-• Stops all active rooms
-• Notifies all active chats
-• Restarts bot process
-• Clears download cache
+<b>⚙️ Comportamento:</b>
+• Para todas as rooms ativas
+• Notifica todos os chats ativos
+• Reinicia o processo do bot
+• Limpa o cache de download
 
-<b>🔒 Restrictions:</b>
-• <b>Owner only</b> command
+<b>🔒 Restrições:</b>
+• Comando apenas pro <b>dono</b>
 
-<b>⚠️ Warning:</b>
-All playback will be interrupted. Bot will be offline for a few seconds.`
+<b>⚠️ Aviso:</b>
+Todo playback vai ser interrompido. O bot vai ficar offline por alguns segundos.`
 }
 
 func handleRestart(m *tg.NewMessage) error {
