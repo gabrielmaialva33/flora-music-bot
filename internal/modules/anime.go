@@ -610,4 +610,3 @@ func decodeB64(s string) (string, error) {
 	}
 	return string(b), nil
 }
-
