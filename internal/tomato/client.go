@@ -6,9 +6,12 @@
 package tomato
 
 import (
+	"context"
 	"errors"
-	"fmt"
+	"net"
+	"net/url"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -76,10 +79,10 @@ func (c *Client) Feed() (*FeedResponse, error) {
 		SetResult(out).
 		Get("/v2/animes/feed")
 	if err != nil {
-		return nil, err
+		return nil, wrapTransportErr(err)
 	}
 	if resp.IsError() {
-		return nil, fmt.Errorf("feed: %s", resp.Status())
+		return nil, statusErr(resp.StatusCode())
 	}
 	return out, nil
 }
@@ -102,10 +105,10 @@ func (c *Client) Search(query string, page int) (*SearchResponse, error) {
 		SetResult(out).
 		Post("/v2/content/search")
 	if err != nil {
-		return nil, err
+		return nil, wrapTransportErr(err)
 	}
 	if resp.IsError() {
-		return nil, fmt.Errorf("search: %s", resp.Status())
+		return nil, statusErr(resp.StatusCode())
 	}
 	return out, nil
 }
@@ -119,12 +122,12 @@ func (c *Client) Anime(animeID int) (*AnimeResponse, error) {
 	resp, err := c.http.R().
 		SetHeader("Request-Time", c.reqTime()).
 		SetResult(out).
-		Get(fmt.Sprintf("/v2/anime/%d", animeID))
+		Get("/v2/anime/" + strconv.Itoa(animeID))
 	if err != nil {
-		return nil, err
+		return nil, wrapTransportErr(err)
 	}
 	if resp.IsError() {
-		return nil, fmt.Errorf("anime: %s", resp.Status())
+		return nil, statusErr(resp.StatusCode())
 	}
 	return out, nil
 }
@@ -151,12 +154,12 @@ func (c *Client) SeasonEpisodes(
 			"order": order,
 		}).
 		SetResult(out).
-		Post(fmt.Sprintf("/season/%d/episodes", seasonID))
+		Post("/season/" + strconv.Itoa(seasonID) + "/episodes")
 	if err != nil {
-		return nil, err
+		return nil, wrapTransportErr(err)
 	}
 	if resp.IsError() {
-		return nil, fmt.Errorf("season: %s", resp.Status())
+		return nil, statusErr(resp.StatusCode())
 	}
 	return out, nil
 }
@@ -171,17 +174,68 @@ func (c *Client) EpisodeStream(episodeID int) (*EpisodeStreamResponse, error) {
 		SetHeader("User-Agent", "tomato-android").
 		SetHeader("Content-Type", "application/json").
 		SetResult(out).
-		Get(fmt.Sprintf("/v2/anime/episode/%d/stream", episodeID))
+		Get("/v2/anime/episode/" + strconv.Itoa(episodeID) + "/stream")
 	if err != nil {
-		return nil, err
+		return nil, wrapTransportErr(err)
 	}
 	if resp.IsError() {
-		return nil, fmt.Errorf("stream: %s", resp.Status())
+		return nil, statusErr(resp.StatusCode())
 	}
 	return out, nil
 }
 
-// ErrNotConfigured is returned when BETOMATO_TOKEN is empty.
-var ErrNotConfigured = errors.New(
-	"tomato: BETOMATO_TOKEN is not configured",
+// Sentinel errors. Callers should use errors.Is to branch and
+// render a user-facing message (see modules/anime.go:friendlyErr).
+//
+// All error strings intentionally avoid leaking the upstream URL,
+// HTTP verb or raw response body.
+var (
+	ErrNotConfigured = errors.New("tomato: BETOMATO_TOKEN is not configured")
+	ErrTimeout       = errors.New("tomato: request timed out")
+	ErrTransport     = errors.New("tomato: network error")
+	ErrAuth          = errors.New("tomato: authentication failed")
+	ErrNotFound      = errors.New("tomato: resource not found")
+	ErrUnavailable   = errors.New("tomato: service unavailable")
+	ErrProtocol      = errors.New("tomato: unexpected response")
 )
+
+// wrapTransportErr converts a raw resty/net error into a sentinel.
+// This hides the upstream URL from anything that logs err.Error().
+func wrapTransportErr(err error) error {
+	if err == nil {
+		return nil
+	}
+	if errors.Is(err, context.DeadlineExceeded) {
+		return ErrTimeout
+	}
+	var nerr net.Error
+	if errors.As(err, &nerr) && nerr.Timeout() {
+		return ErrTimeout
+	}
+	// Strip the URL wrapped by net/http / resty so the string stays generic
+	var uerr *url.Error
+	if errors.As(err, &uerr) {
+		lowered := strings.ToLower(uerr.Err.Error())
+		if strings.Contains(lowered, "deadline") ||
+			strings.Contains(lowered, "timeout") {
+			return ErrTimeout
+		}
+	}
+	return ErrTransport
+}
+
+// statusErr maps an HTTP status code to a sentinel error.
+func statusErr(code int) error {
+	switch {
+	case code == 401 || code == 403:
+		return ErrAuth
+	case code == 404:
+		return ErrNotFound
+	case code >= 500:
+		return ErrUnavailable
+	case code >= 400:
+		return ErrProtocol
+	default:
+		return ErrProtocol
+	}
+}

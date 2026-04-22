@@ -2,6 +2,7 @@ package modules
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"html"
 	"strconv"
@@ -14,6 +15,31 @@ import (
 	state "main/internal/core/models"
 	"main/internal/tomato"
 )
+
+// friendlyErr translates a tomato client error into a user-facing
+// Telegram message. The raw error is logged separately — this never
+// leaks the upstream URL or HTTP details to end users.
+func friendlyErr(err error) string {
+	switch {
+	case errors.Is(err, tomato.ErrNotConfigured):
+		return "⚙️ <b>TomatoAnimes não configurado.</b>\n" +
+			"Define <code>BETOMATO_TOKEN</code> no <code>.env</code> e reinicia o bot."
+	case errors.Is(err, tomato.ErrAuth):
+		return "🔒 <b>Sessão do TomatoAnimes expirou.</b>\n" +
+			"Atualiza o <code>BETOMATO_TOKEN</code> no <code>.env</code> e reinicia."
+	case errors.Is(err, tomato.ErrNotFound):
+		return "🔍 <b>Conteúdo não encontrado.</b>"
+	case errors.Is(err, tomato.ErrTimeout):
+		return "⏱ <b>O servidor demorou pra responder.</b>\nTenta de novo em instantes."
+	case errors.Is(err, tomato.ErrUnavailable):
+		return "⚠️ <b>Servidor indisponível.</b>\nVolta mais tarde."
+	case errors.Is(err, tomato.ErrTransport):
+		return "🌐 <b>Sem conexão com o servidor.</b>\nCheca a rede e tenta de novo."
+	case errors.Is(err, tomato.ErrProtocol):
+		return "🤖 <b>Resposta inesperada do servidor.</b>\nTenta de novo."
+	}
+	return "❌ <b>Algo deu errado.</b> Tenta de novo."
+}
 
 // ---------- help ----------
 
@@ -122,7 +148,8 @@ func animeCB(cb *tg.CallbackQuery) error {
 func renderHome(m *tg.NewMessage, cb *tg.CallbackQuery) error {
 	feed, err := tomato.Default().Feed()
 	if err != nil {
-		return replyErr(m, cb, "❌ Erro ao carregar feed: "+err.Error())
+		gologging.ErrorF("anime: feed failed: %v", err)
+		return replyErr(m, cb, friendlyErr(err))
 	}
 
 	var b strings.Builder
@@ -191,7 +218,8 @@ func renderSearch(
 	}
 	res, err := tomato.Default().Search(query, page)
 	if err != nil {
-		return replyErr(m, cb, "❌ Erro na busca: "+err.Error())
+		gologging.ErrorF("anime: search %q failed: %v", query, err)
+		return replyErr(m, cb, friendlyErr(err))
 	}
 	if len(res.Result) == 0 {
 		return replyErr(
@@ -270,7 +298,8 @@ func renderSearch(
 func renderAnime(cb *tg.CallbackQuery, animeID int) error {
 	a, err := tomato.Default().Anime(animeID)
 	if err != nil {
-		return replyErr(nil, cb, "❌ Erro ao abrir anime: "+err.Error())
+		gologging.ErrorF("anime: detail %d failed: %v", animeID, err)
+		return replyErr(nil, cb, friendlyErr(err))
 	}
 
 	d := a.AnimeDetails
@@ -324,7 +353,8 @@ func renderEpisodes(
 ) error {
 	res, err := tomato.Default().SeasonEpisodes(seasonID, page, "ASC")
 	if err != nil {
-		return replyErr(nil, cb, "❌ Erro ao carregar episódios: "+err.Error())
+		gologging.ErrorF("anime: season %d page %d failed: %v", seasonID, page, err)
+		return replyErr(nil, cb, friendlyErr(err))
 	}
 	if len(res.Data) == 0 {
 		return replyErr(nil, cb, "😕 Nenhum episódio encontrado nessa temporada.")
@@ -415,7 +445,8 @@ func performPlay(cb *tg.CallbackQuery, episodeID int, quality string) error {
 
 	s, err := tomato.Default().EpisodeStream(episodeID)
 	if err != nil {
-		return replyErr(nil, cb, "❌ Erro ao gerar stream: "+err.Error())
+		gologging.ErrorF("anime: stream ep %d failed: %v", episodeID, err)
+		return replyErr(nil, cb, friendlyErr(err))
 	}
 
 	url, label := pickStream(s.Streams, quality)
@@ -425,9 +456,10 @@ func performPlay(cb *tg.CallbackQuery, episodeID int, quality string) error {
 
 	ass, err := core.Assistants.ForChat(chatID)
 	if err != nil {
+		gologging.ErrorF("anime: ForChat(%d) failed: %v", chatID, err)
 		return replyErr(nil, cb,
-			"❌ Não consegui resolver o assistente pra esse grupo:\n<code>"+
-				html.EscapeString(err.Error())+"</code>")
+			"❌ <b>Não consegui resolver o assistente pra esse grupo.</b>\n\n"+
+				"Confere se pelo menos uma <code>STRING_SESSIONS</code> está ativa.")
 	}
 	room, _ := core.GetRoom(chatID, ass, true)
 
@@ -452,10 +484,11 @@ func performPlay(cb *tg.CallbackQuery, episodeID int, quality string) error {
 	if err := room.Play(track, url, false); err != nil {
 		gologging.ErrorF("anime: room.Play failed for ep %d: %v", episodeID, err)
 		return replyErr(nil, cb,
-			"❌ Não consegui iniciar a reprodução.\n\n"+
-				"Certifica que o <b>chat de vídeo</b> está ativo e o assistente "+
-				"(<b>@"+ass.Self.Username+"</b>) é membro do grupo.\n\n"+
-				"<i>Detalhe:</i> <code>"+html.EscapeString(err.Error())+"</code>")
+			"❌ <b>Não consegui iniciar a reprodução.</b>\n\n"+
+				"Confere se:\n"+
+				"• O <b>chat de vídeo</b> está ativo no grupo\n"+
+				"• O assistente <b>@"+ass.Self.Username+"</b> é membro\n"+
+				"• O grupo permite streaming de vídeo")
 	}
 
 	// ---------- Now-playing card ----------
