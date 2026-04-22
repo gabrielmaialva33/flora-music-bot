@@ -15,40 +15,40 @@ import (
 
 func init() {
 	helpTexts["/addauth"] = fmt.Sprintf(
-		`<i>Grant permission to a regular user to control playback and other admin-level features without making them a Telegram admin.</i>
+		`<i>Dá permissão pra um usuário comum controlar o playback e outras features de admin sem precisar torná-lo admin do Telegram.</i>
 
-<u>Usage:</u>
-<b>/addauth [reply to user]</b> — Add a user by replying to their message.  
-<b>/addauth &lt;user_id / username&gt;</b> — Add a user directly by ID or @username.
+<u>Uso:</u>
+<b>/addauth [responda ao usuário]</b> — Adiciona um usuário respondendo a mensagem dele.
+<b>/addauth &lt;user_id / username&gt;</b> — Adiciona direto pelo ID ou @username.
 
-<b>⚙️ Notes:</b>
-• Only <b>chat admins</b> can use this command.  
-• Auth users can control playback with commands like <code>/pause</code>, <code>/resume</code>, <code>/skip</code>, <code>/seek</code>, <code>/mute</code>, etc.  
-• 🤖 Bots cannot be added as auth users.  
-• 🔢 You can have up to <b>%d</b> auth users per chat.  
-• 👑 The <b>Bot Owner</b>, <b>Assistant</b>, and all <b>Sudoers</b> are <b>already authorized by default</b> — they do not appear in the list and cannot be removed.
+<b>⚙️ Observações:</b>
+• Só <b>admins do chat</b> podem usar esse comando.
+• Usuários autorizados podem controlar o playback com comandos tipo <code>/pause</code>, <code>/resume</code>, <code>/skip</code>, <code>/seek</code>, <code>/mute</code>, etc.
+• 🤖 Bots não podem ser adicionados como usuários autorizados.
+• 🔢 Você pode ter até <b>%d</b> usuários autorizados por chat.
+• 👑 O <b>Dono do Bot</b>, o <b>Assistente</b> e todos os <b>Sudoers</b> já são <b>autorizados por padrão</b> — eles não aparecem na lista e não podem ser removidos.
 
-For related commands, see <code>/delauth</code> and <code>/authlist</code>.`,
+Pra comandos relacionados, veja <code>/delauth</code> e <code>/authlist</code>.`,
 		config.MaxAuthUsers,
 	)
 
-	helpTexts["/delauth"] = `<i>Revoke permission from a user who was previously authorized to control playback.</i>
+	helpTexts["/delauth"] = `<i>Revoga a permissão de um usuário que foi autorizado anteriormente a controlar o playback.</i>
 
-<u>Usage:</u>
-<b>/delauth [reply to user]</b> — Remove by replying to their message.  
-<b>/delauth &lt;user_id / username&gt; </b>— Remove by ID or @username.
+<u>Uso:</u>
+<b>/delauth [responda ao usuário]</b> — Remove respondendo a mensagem dele.
+<b>/delauth &lt;user_id / username&gt; </b>— Remove pelo ID ou @username.
 
-<b>⚙️ Notes:</b>
-• Only <b>chat admins</b> can use this command.  
-• Use this to revoke access from misbehaving users.  
-• To check who’s currently authorized, use <code>/authlist</code>.`
+<b>⚙️ Observações:</b>
+• Só <b>admins do chat</b> podem usar esse comando.
+• Use pra tirar acesso de usuários que tão zoando.
+• Pra ver quem tá autorizado agora, usa <code>/authlist</code>.`
 
-	helpTexts["/authlist"] = `<u>Usage:</u>
-<b>/authlist</b> - <i>Displays all users currently authorized to control playback in this chat.</i>
+	helpTexts["/authlist"] = `<u>Uso:</u>
+<b>/authlist</b> - <i>Mostra todos os usuários autorizados a controlar o playback nesse chat.</i>
 
-<b>⚙️ Notes:</b>
-• Anyone in the chat can use this command.  
-• Shows only manually added auth users — the Owner, Assistant, and Sudoers are not listed but are always authorized.`
+<b>⚙️ Observações:</b>
+• Qualquer um do chat pode usar esse comando.
+• Mostra só os usuários autorizados manualmente — o Dono, o Assistente e os Sudoers não aparecem na lista mas sempre têm autorização.`
 }
 
 func addAuthHandler(m *telegram.NewMessage) error {

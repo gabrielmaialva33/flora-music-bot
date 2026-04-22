@@ -91,36 +91,36 @@ type BroadcastFlags struct {
 }
 
 func init() {
-	helpTexts["broadcast"] = `<i>Broadcast a message to all served chats and users.</i>
+	helpTexts["broadcast"] = `<i>Transmite uma mensagem pra todos os chats e usuários atendidos.</i>
 
-<u>Usage:</u>
-<b>/broadcast [flags] [text] </b> — Broadcast text message.
-<b>/broadcast [flags] [reply to message]</b> — Broadcast the replied message.
-<b>/broadcast -cancel</b> — Cancel ongoing broadcast.
+<u>Uso:</u>
+<b>/broadcast [flags] [texto] </b> — Transmite uma mensagem de texto.
+<b>/broadcast [flags] [responda a uma mensagem]</b> — Transmite a mensagem respondida.
+<b>/broadcast -cancel</b> — Cancela o broadcast em andamento.
 
 <blockquote>
 <b>📋 Flags:</b>
-• <code>--nochat</code> — Exclude groups from broadcast
-• <code>--nouser</code> — Exclude users from broadcast
-• <code>--copy</code> — Remove forwarded tag, when broadcasting a replied message (copy mode)
-• <code>--limit [n]</code> — Limit total messages sent (default: 0 = no limit)
-• <code>--delay [seconds]</code> — Delay between messages (default: 1.5s)
-• <code>--pin</code> — Pin the message (silent)
-• <code>--pinloud</code> — Pin the message (with notification)
+• <code>--nochat</code> — Exclui grupos do broadcast
+• <code>--nouser</code> — Exclui usuários do broadcast
+• <code>--copy</code> — Remove a tag de encaminhado ao transmitir uma mensagem respondida (modo cópia)
+• <code>--limit [n]</code> — Limita o total de mensagens enviadas (padrão: 0 = sem limite)
+• <code>--delay [segundos]</code> — Delay entre mensagens (padrão: 1.5s)
+• <code>--pin</code> — Fixa a mensagem (silencioso)
+• <code>--pinloud</code> — Fixa a mensagem (com notificação)
 
-• <code>-cancel</code> - Cancel a ongoing broadcast.
+• <code>-cancel</code> - Cancela um broadcast em andamento.
 </blockquote>
 <blockquote>
-<b>📌 Examples:</b>
-/broadcast -nochat -delay 2 Important announcement
-/broadcast -copy -nochat -pin [reply to message]
-/broadcast -limit 10 -delay 3 Limited broadcast
+<b>📌 Exemplos:</b>
+/broadcast -nochat -delay 2 Aviso importante
+/broadcast -copy -nochat -pin [responda a uma mensagem]
+/broadcast -limit 10 -delay 3 Broadcast limitado
 </blockquote>
-<b>⚠️ Notes:</b>
-• Only the <b>owner</b> can use this command
-• After every 30 messages, there's an automatic 7.5s pause
-• You can cancel ongoing broadcasts using the inline button or <code>/broadcast -cancel</code>
-• Only one broadcast can run at a time`
+<b>⚠️ Observações:</b>
+• Só o <b>dono</b> pode usar esse comando
+• A cada 30 mensagens tem uma pausa automática de 7.5s
+• Pode cancelar broadcasts em andamento usando o botão inline ou <code>/broadcast -cancel</code>
+• Só um broadcast pode rodar por vez`
 
 	helpTexts["gcast"] = helpTexts["broadcast"]
 	helpTexts["bcast"] = helpTexts["broadcast"]

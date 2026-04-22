@@ -15,29 +15,29 @@ import (
 )
 
 func init() {
-	helpTexts["/maintenance"] = `<i>Toggle maintenance mode.</i>
+	helpTexts["/maintenance"] = `<i>Liga/desliga o modo de manutenção.</i>
 
-<u>Usage:</u>
-<b>/maintenance</b> — Show current status
-<b>/maintenance on [reason]</b> — Enable maintenance
-<b>/maintenance off</b> — Disable maintenance
+<u>Uso:</u>
+<b>/maintenance</b> — Mostra o status atual
+<b>/maintenance on [motivo]</b> — Ativa a manutenção
+<b>/maintenance off</b> — Desativa a manutenção
 
-<b>⚙️ Behavior When Active:</b>
-• Stops all active rooms
-• Blocks non-owner/sudo commands
-• Shows maintenance message to users
+<b>⚙️ Comportamento quando ativo:</b>
+• Para todas as rooms ativas
+• Bloqueia comandos de quem não for dono/sudoer
+• Mostra mensagem de manutenção pros usuários
 
-<b>🔒 Restrictions:</b>
-• <b>Owner only</b> command
+<b>🔒 Restrições:</b>
+• Comando apenas pro <b>dono</b>
 
-<b>💡 Examples:</b>
-<code>/maintenance on Server upgrade</code>
+<b>💡 Exemplos:</b>
+<code>/maintenance on Upgrade do servidor</code>
 <code>/maintenance off</code>
 
-<b>⚠️ Notes:</b>
-• Owner and sudoers can still use bot
-• All rooms are destroyed when enabled
-• Users see maintenance message with reason`
+<b>⚠️ Observações:</b>
+• Dono e sudoers continuam podendo usar o bot
+• Todas as rooms são destruídas quando ativado
+• Usuários veem a mensagem de manutenção com o motivo`
 	helpTexts["/maint"] = helpTexts["/maintenance"]
 }
 

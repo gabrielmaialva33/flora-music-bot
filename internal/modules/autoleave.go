@@ -24,18 +24,18 @@ var (
 
 func init() {
 	helpTexts["autoleave"] = fmt.Sprintf(
-		`<i>Automatically makes the assistant leave inactive or unnecessary chats every 10 minutes.</i>
+		`<i>Faz o assistente sair automaticamente de chats inativos ou desnecessários a cada 10 minutos.</i>
 
-<u>Usage:</u>
-<b>/autoleave </b>— Shows current auto-leave status (enabled/disabled).  
-<b>/autoleave enable</b> — Enable auto-leave mode.  
-<b>/autoleave disable</b> — Disable auto-leave mode.
+<u>Uso:</u>
+<b>/autoleave </b>— Mostra o status atual do auto-leave (ativado/desativado).
+<b>/autoleave enable</b> — Ativa o modo auto-leave.
+<b>/autoleave disable</b> — Desativa o modo auto-leave.
 
-<b>🧠 Details:</b>
-Once enabled, the bot checks all joined groups/channels every <b>10 minutes</b> and leaves up to <b>%d chats per cycle</b> that are not in the active room  list.
+<b>🧠 Detalhes:</b>
+Quando ativado, o bot checa todos os grupos/canais onde tá a cada <b>10 minutos</b> e sai de até <b>%d chats por ciclo</b> que não estão na lista de rooms ativas.
 
-<b>⚠️ Restrictions:</b>
-This command can only be used by <b>owners</b> or <b>sudo users</b>.`,
+<b>⚠️ Restrições:</b>
+Esse comando só pode ser usado pelo <b>dono</b> ou <b>sudoers</b>.`,
 		limit,
 	)
 }

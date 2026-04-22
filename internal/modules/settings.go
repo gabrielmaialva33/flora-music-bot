@@ -11,23 +11,23 @@ import (
 )
 
 func init() {
-	helpTexts["/playmode"] = `<i>Control who can use the /play command in this chat.</i>
+	helpTexts["/playmode"] = `<i>Controla quem pode usar o comando /play nesse chat.</i>
 
-<u>Usage:</u>
-<b>/playmode [enable|disable]</b> — Set play mode restriction
+<u>Uso:</u>
+<b>/playmode [enable|disable]</b> — Define a restrição do modo play
 
-<b>⚙️ Options:</b>
-• <b>enable</b> — Only admins and authorized users can play
-• <b>disable</b> — Everyone can play (default)`
+<b>⚙️ Opções:</b>
+• <b>enable</b> — Só admins e usuários autorizados podem tocar
+• <b>disable</b> — Qualquer um pode tocar (padrão)`
 
-	cmdDeleteHelp := `<i>Toggle automatic deletion of bot commands in this chat.</i>
+	cmdDeleteHelp := `<i>Liga/desliga a exclusão automática dos comandos do bot nesse chat.</i>
 
-<u>Usage:</u>
-<b>/cmddelete [enable|disable]</b> — Set command deletion status
+<u>Uso:</u>
+<b>/cmddelete [enable|disable]</b> — Define o status de exclusão dos comandos
 
-<b>⚙️ Options:</b>
-• <b>enable</b> — Commands will be deleted after being handled
-• <b>disable</b> — Commands will remain in the chat (default)`
+<b>⚙️ Opções:</b>
+• <b>enable</b> — Comandos são deletados depois de processados
+• <b>disable</b> — Comandos ficam no chat (padrão)`
 
 	helpTexts["/cmddelete"] = cmdDeleteHelp
 	helpTexts["/commanddelete"] = cmdDeleteHelp

@@ -26,28 +26,28 @@ const (
 var logClearMutex sync.Mutex
 
 func init() {
-	helpTexts["/logs"] = `<i>Download or view bot logs.</i>
+	helpTexts["/logs"] = `<i>Baixa ou visualiza os logs do bot.</i>
 
-<u>Usage:</u>
-<b>/logs</b> — Send current log file or show content
-<b>/logs [n]</b> — Get last N lines from recent logs
-<b>/logs -old [n]</b> — Get first N lines from oldest logs
-<b>/logs -clear</b> — Clear current log file
+<u>Uso:</u>
+<b>/logs</b> — Envia o arquivo de log atual ou mostra o conteúdo
+<b>/logs [n]</b> — Pega as últimas N linhas dos logs recentes
+<b>/logs -old [n]</b> — Pega as primeiras N linhas dos logs mais antigos
+<b>/logs -clear</b> — Limpa o arquivo de log atual
 
-<b>📋 Examples:</b>
-• <code>/logs</code> — Get full current log
-• <code>/logs 50</code> — Last 50 lines from recent
-• <code>/logs 100</code> — Last 100 lines from recent
-• <code>/logs -old 50</code> — First 50 lines from oldest
-• <code>/logs -clear</code> — Delete current log
+<b>📋 Exemplos:</b>
+• <code>/logs</code> — Pega o log atual inteiro
+• <code>/logs 50</code> — Últimas 50 linhas dos recentes
+• <code>/logs 100</code> — Últimas 100 linhas dos recentes
+• <code>/logs -old 50</code> — Primeiras 50 linhas dos mais antigos
+• <code>/logs -clear</code> — Deleta o log atual
 
-<b>🔒 Restrictions:</b>
-• <b>Sudo users only</b>
+<b>🔒 Restrições:</b>
+• Apenas <b>sudoers</b>
 
-<b>⚠️ Notes:</b>
-• If content < 2000 chars, shows as code preview
-• Otherwise sends as file
-• N can be any positive number (default: 50)`
+<b>⚠️ Observações:</b>
+• Se o conteúdo for < 2000 caracteres, mostra como preview de código
+• Senão envia como arquivo
+• N pode ser qualquer número positivo (padrão: 50)`
 }
 
 func logsHandler(m *tg.NewMessage) error {
