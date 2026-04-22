@@ -507,15 +507,15 @@ func Init(bot *telegram.Client, assistants *core.AssistantManager) {
 	for _, cmd := range cplayCommands {
 		baseCmd := "/" + cmd[2:] // Remove 'c' prefix
 		if baseHelp, exists := helpTexts[baseCmd]; exists {
-			helpTexts[cmd] = fmt.Sprintf(`<i>Channel play variant of %s</i>
+			helpTexts[cmd] = fmt.Sprintf(`<i>Variante de channel play de %s</i>
 
-<b>⚙️ Requires:</b>
-First configure channel using: <code>/channelplay --set [channel_id]</code>
+<b>⚙️ Requer:</b>
+Primeiro configura o canal usando: <code>/channelplay --set [channel_id]</code>
 
 %s
 
-<b>💡 Note:</b>
-This command affects the linked channel's voice chat, not the current group.`, baseCmd, baseHelp)
+<b>💡 Observação:</b>
+Esse comando afeta o chat de voz do canal vinculado, não o grupo atual.`, baseCmd, baseHelp)
 		}
 	}
 }

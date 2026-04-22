@@ -11,22 +11,22 @@ import (
 )
 
 func init() {
-	helpTexts["/nothumb"] = `<i>Toggle thumbnail/artwork display in playback messages.</i>
+	helpTexts["/nothumb"] = `<i>Liga/desliga a exibição de thumbnail/capa nas mensagens de playback.</i>
 
-<u>Usage:</u>
-<b>/nothumb</b> — Show current status
-<b>/nothumb [enable|disable]</b> — Change setting
+<u>Uso:</u>
+<b>/nothumb</b> — Mostra o status atual
+<b>/nothumb [enable|disable]</b> — Muda a configuração
 
-<b>⚙️ Behavior:</b>
-• <b>Disabled (default):</b> Shows track artwork/thumbnail
-• <b>Enabled:</b> Hides artwork, text-only messages
+<b>⚙️ Comportamento:</b>
+• <b>Desativado (padrão):</b> Mostra a capa/thumbnail da faixa
+• <b>Ativado:</b> Esconde a capa, mensagens só de texto
 
-<b>💡 Examples:</b>
-<code>/nothumb enable</code> — Disable thumbnails
-<code>/nothumb disable</code> — Enable thumbnails
+<b>💡 Exemplos:</b>
+<code>/nothumb enable</code> — Desativa as thumbnails
+<code>/nothumb disable</code> — Ativa as thumbnails
 
-<b>⚠️ Note:</b>
-This setting affects all future playback messages in this chat.`
+<b>⚠️ Observação:</b>
+Essa config afeta todas as mensagens de playback futuras nesse chat.`
 }
 
 func nothumbHandler(m *tg.NewMessage) error {

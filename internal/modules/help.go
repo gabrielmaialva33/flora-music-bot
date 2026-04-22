@@ -11,21 +11,21 @@ import (
 )
 
 func init() {
-	helpTexts["/help"] = fmt.Sprintf(`ℹ️ <b>Help Command</b>
-<i>Displays general bot help or detailed information about a specific command.</i>
+	helpTexts["/help"] = fmt.Sprintf(`ℹ️ <b>Comando de Ajuda</b>
+<i>Mostra a ajuda geral do bot ou informações detalhadas sobre um comando específico.</i>
 
-<u>Usage:</u>
-<code>/help</code> — Show the main help menu.  
-<code>/help &lt;command&gt;</code> — Show help for a specific command.
+<u>Uso:</u>
+<code>/help</code> — Mostra o menu principal de ajuda.
+<code>/help &lt;comando&gt;</code> — Mostra a ajuda pra um comando específico.
 
-<b>💡 Tip:</b> You can view help for any command directly by adding a <code>-h</code> or <code>--help</code> flag, e.g. <code>/play -h</code>
+<b>💡 Dica:</b> Você pode ver a ajuda de qualquer comando direto adicionando a flag <code>-h</code> ou <code>--help</code>, ex: <code>/play -h</code>
 
-<b>⚠️ Note:</b> Some commands are <b>restricted</b> to specific contexts (like <b>Groups</b>, <b>Admins</b>, <b>Sudoers</b>, or the <b>Owner</b>).  
-If you try using <code>-h</code> or <code>--help</code> inside a restricted chat or PM, the bot may not respond.  
-To still view help for those commands, use the global format instead:
-<code>/help &lt;command&gt;</code>
+<b>⚠️ Observação:</b> Alguns comandos são <b>restritos</b> a contextos específicos (tipo <b>Grupos</b>, <b>Admins</b>, <b>Sudoers</b> ou o <b>Dono</b>).
+Se você tentar usar <code>-h</code> ou <code>--help</code> em um chat restrito ou PM, o bot pode não responder.
+Pra ainda ver a ajuda desses comandos, usa o formato global:
+<code>/help &lt;comando&gt;</code>
 
-For more info, visit our <a href="%s">Support Chat</a>.`, config.SupportChat)
+Pra mais infos, visita nosso <a href="%s">Chat de Suporte</a>.`, config.SupportChat)
 }
 
 func helpHandler(m *tg.NewMessage) error {

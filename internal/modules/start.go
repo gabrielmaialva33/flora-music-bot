@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	helpTexts["/start"] = `<i>Start the bot and show main menu.</i>`
+	helpTexts["/start"] = `<i>Inicia o bot e mostra o menu principal.</i>`
 }
 
 func startHandler(m *tg.NewMessage) error {

@@ -12,18 +12,18 @@ import (
 )
 
 func init() {
-	helpTexts["bug"] = `<i>Report a bug, issue, or unexpected behavior directly to the bot developers.</i>
+	helpTexts["bug"] = `<i>Reporta um bug, problema ou comportamento inesperado direto pros devs do bot.</i>
 
-<u>Usage:</u>
-<b>/bug &lt;description&gt;</b> — Send a bug report with a short explanation.  
-<b>Reply + /bug</b> — Report a specific message or media as a bug.
+<u>Uso:</u>
+<b>/bug &lt;descrição&gt;</b> — Envia um report com uma explicação curta.
+<b>Responda + /bug</b> — Reporta uma mensagem ou mídia específica como bug.
 
-<b>🧠 Details:</b>
-When used, the bot automatically forwards your report (and the replied message if any) to the <b>owner</b> and <b>logger channels</b>.  
-Flood protection is applied — you can only send one report every <b>5 minutes</b> per chat.
+<b>🧠 Detalhes:</b>
+Quando usado, o bot encaminha automaticamente seu report (e a mensagem respondida, se tiver) pro <b>dono</b> e pros <b>canais de log</b>.
+Tem proteção contra flood — você só pode mandar um report a cada <b>5 minutos</b> por chat.
 
-<b>⚠️ Note:</b>  
-Reports are logged for debugging purposes only. Misuse (like spam) may restrict your access to this command.`
+<b>⚠️ Observação:</b>
+Os reports são logados só pra debug. Uso indevido (tipo spam) pode restringir seu acesso a esse comando.`
 }
 
 func bugHandler(m *telegram.NewMessage) error {
