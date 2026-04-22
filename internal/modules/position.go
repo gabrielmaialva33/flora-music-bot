@@ -10,19 +10,19 @@ import (
 )
 
 func init() {
-	helpTexts["/position"] = `<i>Show current playback position and track info.</i>
+	helpTexts["/position"] = `<i>Mostra a posição atual do playback e info da faixa.</i>
 
-<u>Usage:</u>
-<b>/position</b> — Show position
+<u>Uso:</u>
+<b>/position</b> — Mostra a posição
 
-<b>📊 Information Displayed:</b>
-• Current track title
-• Current position (MM:SS)
-• Total duration (MM:SS)
-• Playback speed (if not 1.0x)
+<b>📊 Informações exibidas:</b>
+• Título da faixa atual
+• Posição atual (MM:SS)
+• Duração total (MM:SS)
+• Velocidade do playback (se não for 1.0x)
 
-<b>💡 Use Case:</b>
-Quick position check without full queue display.`
+<b>💡 Caso de uso:</b>
+Checagem rápida de posição sem mostrar a fila inteira.`
 }
 
 func positionHandler(m *tg.NewMessage) error {

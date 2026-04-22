@@ -13,23 +13,23 @@ import (
 )
 
 func init() {
-	helpTexts["/skip"] = `<i>Skip the currently playing track and play the next in queue.</i>
+	helpTexts["/skip"] = `<i>Pula a faixa que tá tocando e toca a próxima da fila.</i>
 
-<u>Usage:</u>
-<b>/skip</b> — Skip current track
+<u>Uso:</u>
+<b>/skip</b> — Pula a faixa atual
 
-<b>⚙️ Behavior:</b>
-• Downloads next track in queue
-• Starts playback automatically
-• If queue is empty and loop is 0, stops playback
+<b>⚙️ Comportamento:</b>
+• Baixa a próxima faixa da fila
+• Começa o playback automaticamente
+• Se a fila tiver vazia e o loop for 0, para o playback
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar
 
-<b>⚠️ Notes:</b>
-• Cannot be undone
-• If no tracks in queue, playback stops
-• Loop count affects skip behavior`
+<b>⚠️ Observações:</b>
+• Não dá pra desfazer
+• Se não tiver faixa na fila, o playback para
+• A contagem de loop afeta o comportamento do skip`
 }
 
 func skipHandler(m *telegram.NewMessage) error {

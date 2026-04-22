@@ -12,23 +12,23 @@ import (
 )
 
 func init() {
-	helpTexts["/mute"] = `<i>Mute the audio output in voice chat.</i>
+	helpTexts["/mute"] = `<i>Muta a saída de áudio do chat de voz.</i>
 
-<u>Usage:</u>
-<b>/mute</b> — Mute indefinitely
-<b>/mute [seconds]</b> — Mute with auto-unmute timer
+<u>Uso:</u>
+<b>/mute</b> — Muta por tempo indeterminado
+<b>/mute [segundos]</b> — Muta com timer de auto-unmute
 
 <b>⚙️ Features:</b>
-• Audio continues playing (progress tracked)
-• Auto-unmute timer support (5-3600 seconds)
+• O áudio continua tocando (progresso é registrado)
+• Suporte a timer de auto-unmute (5-3600 segundos)
 
-<b>💡 Examples:</b>
-<code>/mute</code> — Mute until manual unmute
-<code>/mute 60</code> — Mute for 60 seconds
+<b>💡 Exemplos:</b>
+<code>/mute</code> — Muta até dar unmute manual
+<code>/mute 60</code> — Muta por 60 segundos
 
-<b>⚠️ Notes:</b>
-• Track continues playing in background
-• Use <code>/unmute</code> to restore audio`
+<b>⚠️ Observações:</b>
+• A faixa continua tocando em background
+• Usa <code>/unmute</code> pra voltar o áudio`
 }
 
 func muteHandler(m *tg.NewMessage) error {

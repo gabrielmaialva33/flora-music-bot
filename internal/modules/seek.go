@@ -10,60 +10,60 @@ import (
 )
 
 func init() {
-	helpTexts["/seek"] = `<i>Seek forward in the currently playing track.</i>
+	helpTexts["/seek"] = `<i>Pula pra frente na faixa que tá tocando.</i>
 
-<u>Usage:</u>
-<b>/seek [seconds]</b> — Skip forward by specified seconds
+<u>Uso:</u>
+<b>/seek [segundos]</b> — Pula pra frente a quantidade de segundos
 
 <b>⚙️ Features:</b>
-• Jump ahead in current track
-• Position tracking updated
-• Cannot seek past track end (10s buffer)
+• Pula pra frente na faixa atual
+• O tracking da posição é atualizado
+• Não dá pra passar do fim da faixa (buffer de 10s)
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar
 
-<b>💡 Examples:</b>
-<code>/seek 30</code> — Skip forward 30 seconds
-<code>/seek 120</code> — Skip forward 2 minutes
+<b>💡 Exemplos:</b>
+<code>/seek 30</code> — Pula 30 segundos pra frente
+<code>/seek 120</code> — Pula 2 minutos pra frente
 
-<b>⚠️ Notes:</b>
-• Minimum: any positive value
-• Maximum: track_duration - current_position - 10 seconds`
+<b>⚠️ Observações:</b>
+• Mínimo: qualquer valor positivo
+• Máximo: duração_da_faixa - posição_atual - 10 segundos`
 
-	helpTexts["/seekback"] = `<i>Seek backward in the currently playing track.</i>
+	helpTexts["/seekback"] = `<i>Volta pra trás na faixa que tá tocando.</i>
 
-<u>Usage:</u>
-<b>/seekback [seconds]</b> — Go back by specified seconds
+<u>Uso:</u>
+<b>/seekback [segundos]</b> — Volta a quantidade de segundos
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar
 
-<b>💡 Examples:</b>
-<code>/seekback 15</code> — Go back 15 seconds
-<code>/seekback 60</code> — Go back 1 minute
+<b>💡 Exemplos:</b>
+<code>/seekback 15</code> — Volta 15 segundos
+<code>/seekback 60</code> — Volta 1 minuto
 `
 
-	helpTexts["/jump"] = `<i>Jump to a specific position in the track.</i>
+	helpTexts["/jump"] = `<i>Pula pra uma posição específica na faixa.</i>
 
-<u>Usage:</u>
-<b>/jump [seconds]</b> — Jump to exact position
+<u>Uso:</u>
+<b>/jump [segundos]</b> — Pula pra posição exata
 
 <b>⚙️ Features:</b>
-• Absolute position seeking
-• Precise time control
-• 10-second buffer from end
+• Seek de posição absoluta
+• Controle preciso de tempo
+• Buffer de 10 segundos do final
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar
 
-<b>💡 Examples:</b>
-<code>/jump 90</code> — Jump to 1:30
-<code>/jump 0</code> — Jump to start (same as /replay)
+<b>💡 Exemplos:</b>
+<code>/jump 90</code> — Pula pra 1:30
+<code>/jump 0</code> — Pula pro início (igual ao /replay)
 
-<b>⚠️ Notes:</b>
-• Position must be within track duration - 10 seconds
-• More precise than <code>/seek</code> and <code>/seekback</code>`
+<b>⚠️ Observações:</b>
+• A posição precisa estar dentro da duração da faixa - 10 segundos
+• Mais preciso que <code>/seek</code> e <code>/seekback</code>`
 }
 
 func seekHandler(m *telegram.NewMessage) error {

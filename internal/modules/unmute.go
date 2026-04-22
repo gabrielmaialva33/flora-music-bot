@@ -10,15 +10,15 @@ import (
 )
 
 func init() {
-	helpTexts["/unmute"] = `<i>Unmute the audio output in voice chat.</i>
+	helpTexts["/unmute"] = `<i>Desmuta a saída de áudio do chat de voz.</i>
 
-<u>Usage:</u>
-<b>/unmute</b> — Restore audio
+<u>Uso:</u>
+<b>/unmute</b> — Volta o áudio
 
-<b>⚙️ Behavior:</b>
-• Restores audio immediately
-• Cancels auto-unmute timer if active
-• Shows current playback info`
+<b>⚙️ Comportamento:</b>
+• Volta o áudio imediatamente
+• Cancela o timer de auto-unmute se tiver ativo
+• Mostra info do playback atual`
 }
 
 func unmuteHandler(m *tg.NewMessage) error {

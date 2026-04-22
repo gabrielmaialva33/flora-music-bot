@@ -13,33 +13,33 @@ import (
 )
 
 func init() {
-	helpTexts["/speed"] = `<i>Control playback speed (tempo).</i>
+	helpTexts["/speed"] = `<i>Controla a velocidade do playback (tempo).</i>
 
-<u>Usage:</u>
-<b>/speed</b> — Show current speed
-<b>/speed [multiplier]</b> — Set speed (0.5-4.0x)
-<b>/speed [multiplier] [seconds]</b> — Set with auto-reset timer
-<b>/speed normal</b> or <b>/speed reset</b> — Reset to 1.0x
+<u>Uso:</u>
+<b>/speed</b> — Mostra a velocidade atual
+<b>/speed [multiplicador]</b> — Define a velocidade (0.5-4.0x)
+<b>/speed [multiplicador] [segundos]</b> — Define com timer de auto-reset
+<b>/speed normal</b> ou <b>/speed reset</b> — Volta pra 1.0x
 
 <b>⚙️ Features:</b>
-• Range: 0.50x to 4.00x
-• Auto-reset timer (5-3600 seconds)
-• Pitch preservation
-• Real-time adjustment
+• Range: 0.50x até 4.00x
+• Timer de auto-reset (5-3600 segundos)
+• Preservação de pitch
+• Ajuste em tempo real
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar
 
-<b>💡 Examples:</b>
-<code>/speed 1.5</code> — Play 1.5x faster
-<code>/speed 0.75</code> — Play slower (0.75x)
-<code>/speed 2.0 300</code> — 2x speed for 5 minutes, then reset
-<code>/speed normal</code> — Reset to normal speed
+<b>💡 Exemplos:</b>
+<code>/speed 1.5</code> — Toca 1.5x mais rápido
+<code>/speed 0.75</code> — Toca mais devagar (0.75x)
+<code>/speed 2.0 300</code> — Velocidade 2x por 5 minutos, depois reseta
+<code>/speed normal</code> — Volta pra velocidade normal
 
-<b>⚠️ Notes:</b>
-• Speed affects duration calculations
-• Auto-reset only works for non-1.0x speeds
-• Suffix 'x' is optional: <code>1.5</code> = <code>1.5x</code>`
+<b>⚠️ Observações:</b>
+• A velocidade afeta os cálculos de duração
+• Auto-reset só funciona pra velocidades diferentes de 1.0x
+• Sufixo 'x' é opcional: <code>1.5</code> = <code>1.5x</code>`
 }
 
 func speedHandler(m *telegram.NewMessage) error {
