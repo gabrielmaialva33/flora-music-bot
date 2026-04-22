@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Laky-64/gologging"
 	tg "github.com/amarnathcjd/gogram/telegram"
@@ -16,6 +17,164 @@ import (
 	state "main/internal/core/models"
 	"main/internal/tomato"
 )
+
+// ---------- response caches (TTL-based) ----------
+//
+// The TomatoAnimes API is slow-ish and the /anime UI re-hits the same
+// endpoints on every button press. We cache each response in memory
+// for a short TTL so rapid back/forth navigation feels instant and the
+// upstream stays happy.
+
+const (
+	feedTTL   = 3 * time.Minute
+	animeTTL  = 15 * time.Minute
+	seasonTTL = 10 * time.Minute
+	streamTTL = 30 * time.Second // signed URLs expire quickly; keep short
+)
+
+var (
+	feedData  *tomato.FeedResponse
+	feedExp   time.Time
+	feedMu    sync.Mutex
+
+	animeRespCache = make(map[int]animeRespEntry)
+	animeRespMu    sync.Mutex
+
+	seasonRespCache = make(map[string]seasonRespEntry)
+	seasonRespMu    sync.Mutex
+
+	streamRespCache = make(map[int]streamRespEntry)
+	streamRespMu    sync.Mutex
+)
+
+type animeRespEntry struct {
+	data *tomato.AnimeResponse
+	exp  time.Time
+}
+type seasonRespEntry struct {
+	data *tomato.SeasonEpisodesResponse
+	exp  time.Time
+}
+type streamRespEntry struct {
+	data *tomato.EpisodeStreamResponse
+	exp  time.Time
+}
+
+func feedCached() (*tomato.FeedResponse, error) {
+	feedMu.Lock()
+	if feedData != nil && time.Now().Before(feedExp) {
+		d := feedData
+		feedMu.Unlock()
+		return d, nil
+	}
+	feedMu.Unlock()
+
+	data, err := tomato.Default().Feed()
+	if err != nil {
+		return nil, err
+	}
+	feedMu.Lock()
+	feedData = data
+	feedExp = time.Now().Add(feedTTL)
+	feedMu.Unlock()
+	return data, nil
+}
+
+func animeCached(id int) (*tomato.AnimeResponse, error) {
+	animeRespMu.Lock()
+	if e, ok := animeRespCache[id]; ok && time.Now().Before(e.exp) {
+		animeRespMu.Unlock()
+		return e.data, nil
+	}
+	animeRespMu.Unlock()
+
+	data, err := tomato.Default().Anime(id)
+	if err != nil {
+		return nil, err
+	}
+	animeRespMu.Lock()
+	animeRespCache[id] = animeRespEntry{data: data, exp: time.Now().Add(animeTTL)}
+	animeRespMu.Unlock()
+	return data, nil
+}
+
+func seasonEpsCached(
+	seasonID, page int,
+	order string,
+) (*tomato.SeasonEpisodesResponse, error) {
+	key := fmt.Sprintf("%d:%d:%s", seasonID, page, order)
+	seasonRespMu.Lock()
+	if e, ok := seasonRespCache[key]; ok && time.Now().Before(e.exp) {
+		seasonRespMu.Unlock()
+		return e.data, nil
+	}
+	seasonRespMu.Unlock()
+
+	data, err := tomato.Default().SeasonEpisodes(seasonID, page, order)
+	if err != nil {
+		return nil, err
+	}
+	seasonRespMu.Lock()
+	seasonRespCache[key] = seasonRespEntry{data: data, exp: time.Now().Add(seasonTTL)}
+	seasonRespMu.Unlock()
+	return data, nil
+}
+
+func streamCached(episodeID int) (*tomato.EpisodeStreamResponse, error) {
+	streamRespMu.Lock()
+	if e, ok := streamRespCache[episodeID]; ok && time.Now().Before(e.exp) {
+		streamRespMu.Unlock()
+		return e.data, nil
+	}
+	streamRespMu.Unlock()
+
+	data, err := tomato.Default().EpisodeStream(episodeID)
+	if err != nil {
+		return nil, err
+	}
+	streamRespMu.Lock()
+	streamRespCache[episodeID] = streamRespEntry{
+		data: data, exp: time.Now().Add(streamTTL),
+	}
+	streamRespMu.Unlock()
+	return data, nil
+}
+
+// ---------- in-flight lock (anti button-mash) ----------
+//
+// When a user spams the same button while we're still rendering, the
+// callback queue piles up — each extra click forces another API call
+// and another edit. Block it: one active callback per (chat, user),
+// the rest get a toast telling them to chill.
+
+var (
+	inFlight   = make(map[int64]map[int64]bool)
+	inFlightMu sync.Mutex
+)
+
+func tryLockUser(chatID, userID int64) bool {
+	inFlightMu.Lock()
+	defer inFlightMu.Unlock()
+	if inFlight[chatID] == nil {
+		inFlight[chatID] = make(map[int64]bool)
+	}
+	if inFlight[chatID][userID] {
+		return false
+	}
+	inFlight[chatID][userID] = true
+	return true
+}
+
+func unlockUser(chatID, userID int64) {
+	inFlightMu.Lock()
+	defer inFlightMu.Unlock()
+	if m, ok := inFlight[chatID]; ok {
+		delete(m, userID)
+		if len(m) == 0 {
+			delete(inFlight, chatID)
+		}
+	}
+}
 
 // ---------- in-memory caches ----------
 //
@@ -47,6 +206,33 @@ func lookupAnimeName(id int) string {
 	return animeNameCache[id]
 }
 
+// prefetchRailNames warms the anime-detail cache for every rail in
+// the home feed, one rail at a time in the background. Keeps API
+// pressure reasonable: at most 6 parallel requests via the same
+// limiter used by preloadAnimeNames.
+func prefetchRailNames(feed *tomato.FeedResponse) {
+	if feed == nil {
+		return
+	}
+	for _, sec := range feed.Data {
+		if (sec.Type != 3 && sec.Type != 5) || len(sec.Data) == 0 {
+			continue
+		}
+		var ids []int
+		for _, it := range sec.Data {
+			if it.AnimeID != 0 && lookupAnimeName(it.AnimeID) == "" {
+				ids = append(ids, it.AnimeID)
+			}
+			if len(ids) >= 12 {
+				break
+			}
+		}
+		if len(ids) > 0 {
+			preloadAnimeNames(ids)
+		}
+	}
+}
+
 // preloadAnimeNames fetches every anime's name in parallel (capped)
 // and caches them. Used to turn "#1234" into real titles before
 // rendering a rail.
@@ -63,7 +249,7 @@ func preloadAnimeNames(ids []int) {
 		go func(id int) {
 			defer wg.Done()
 			defer func() { <-sem }()
-			a, err := tomato.Default().Anime(id)
+			a, err := animeCached(id)
 			if err != nil {
 				gologging.DebugF("anime: preload %d failed: %v", id, err)
 				return
@@ -188,6 +374,25 @@ func animeCB(cb *tg.CallbackQuery) error {
 		return tg.ErrEndGroup
 	}
 
+	// Anti-mash: only one callback in flight per (chat, user). Repeated
+	// clicks while we're still rendering just get a friendly toast so
+	// we don't stack API requests and edits on top of each other.
+	chatID := cb.ChannelID()
+	var userID int64
+	if cb.Sender != nil {
+		userID = cb.Sender.ID
+	}
+	if parts[1] != "x" && parts[1] != "noop" {
+		if !tryLockUser(chatID, userID) {
+			cb.Answer(
+				"⏳ Calma aí, ainda processando o clique anterior…",
+				&tg.CallbackOptions{Alert: false},
+			)
+			return tg.ErrEndGroup
+		}
+		defer unlockUser(chatID, userID)
+	}
+
 	switch parts[1] {
 	case "h": // anime:h — home
 		cb.Answer("⏳ Carregando…")
@@ -297,7 +502,7 @@ func renderHome(m *tg.NewMessage, cb *tg.CallbackQuery) error {
 // renderHomeAt renders the home with the hero slot positioned at
 // `heroIdx` within the "Em alta" rail.
 func renderHomeAt(m *tg.NewMessage, cb *tg.CallbackQuery, heroIdx int) error {
-	feed, err := tomato.Default().Feed()
+	feed, err := feedCached()
 	if err != nil {
 		gologging.ErrorF("anime: feed failed: %v", err)
 		return replyErr(m, cb, friendlyErr(err))
@@ -326,6 +531,11 @@ func renderHomeAt(m *tg.NewMessage, cb *tg.CallbackQuery, heroIdx int) error {
 		}
 		preloadAnimeNames(heroIDs)
 	}
+
+	// Background prefetch of the other rails so their names are warm
+	// by the time the user drills into a category. Cache-aware calls
+	// are cheap when already populated.
+	go prefetchRailNames(feed)
 
 	// Pick current hero
 	var heroID int
@@ -406,7 +616,7 @@ func renderHomeAt(m *tg.NewMessage, cb *tg.CallbackQuery, heroIdx int) error {
 // renderRail shows all animes from a given feed rail (identified by its
 // title). Preloads names in parallel so the buttons display real titles.
 func renderRail(cb *tg.CallbackQuery, title string) error {
-	feed, err := tomato.Default().Feed()
+	feed, err := feedCached()
 	if err != nil {
 		gologging.ErrorF("anime: feed failed: %v", err)
 		return replyErr(nil, cb, friendlyErr(err))
@@ -562,11 +772,13 @@ func renderSearch(
 // The screen is repainted as a photo message (banner) with caption so
 // the user gets a cinematic card.
 func renderAnime(cb *tg.CallbackQuery, animeID int) error {
-	a, err := tomato.Default().Anime(animeID)
+	a, err := animeCached(animeID)
 	if err != nil {
 		gologging.ErrorF("anime: detail %d failed: %v", animeID, err)
 		return replyErr(nil, cb, friendlyErr(err))
 	}
+	// Keep the name cache in sync so rails render real titles.
+	cacheAnimeName(animeID, a.AnimeDetails.AnimeName)
 
 	d := a.AnimeDetails
 	// Cache cover URL for the now-playing screen to reuse later.
@@ -642,7 +854,7 @@ func renderEpisodes(
 	cb *tg.CallbackQuery,
 	animeID, seasonID, page int,
 ) error {
-	res, err := tomato.Default().SeasonEpisodes(seasonID, page, "ASC")
+	res, err := seasonEpsCached(seasonID, page, "ASC")
 	if err != nil {
 		gologging.ErrorF("anime: season %d page %d failed: %v", seasonID, page, err)
 		return replyErr(nil, cb, friendlyErr(err))
@@ -766,7 +978,7 @@ func performPlay(cb *tg.CallbackQuery, episodeID int, quality string) error {
 
 	cb.Answer("🎬 Preparando o player...")
 
-	s, err := tomato.Default().EpisodeStream(episodeID)
+	s, err := streamCached(episodeID)
 	if err != nil {
 		gologging.ErrorF("anime: stream ep %d failed: %v", episodeID, err)
 		return replyErr(nil, cb, friendlyErr(err))
