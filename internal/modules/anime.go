@@ -192,6 +192,10 @@ func animeCB(cb *tg.CallbackQuery) error {
 	case "h": // anime:h — home
 		cb.Answer("⏳ Carregando…")
 		return renderHome(nil, cb)
+	case "hero": // anime:hero:<idx> — rotate the home hero slot
+		idx, _ := strconv.Atoi(parts[2])
+		cb.Answer("")
+		return renderHomeAt(nil, cb, idx)
 	case "rail": // anime:rail:<b64title>
 		if len(parts) < 3 {
 			cb.Answer("🤔 Categoria inválida")
@@ -282,23 +286,100 @@ func sectionIcon(title string) string {
 
 // renderHome shows a category picker built from the feed rails.
 // Each rail becomes a button; clicking it opens renderRail with
-// preloaded anime names.
+// renderHome shows a Netflix-style hero carousel (1 anime at a time
+// navigable with ◂/▸) on top of a category grid. Hero position is
+// passed via callback (anime:hero:<idx>) and the "Em alta" rail drives
+// the slideshow.
 func renderHome(m *tg.NewMessage, cb *tg.CallbackQuery) error {
+	return renderHomeAt(m, cb, 0)
+}
+
+// renderHomeAt renders the home with the hero slot positioned at
+// `heroIdx` within the "Em alta" rail.
+func renderHomeAt(m *tg.NewMessage, cb *tg.CallbackQuery, heroIdx int) error {
 	feed, err := tomato.Default().Feed()
 	if err != nil {
 		gologging.ErrorF("anime: feed failed: %v", err)
 		return replyErr(m, cb, friendlyErr(err))
 	}
 
+	// Locate the trending rail. Falls back to any non-empty type 3 rail.
+	var trending *tomato.FeedSection
+	for i := range feed.Data {
+		if feed.Data[i].Type == 3 && len(feed.Data[i].Data) > 0 {
+			trending = &feed.Data[i]
+			break
+		}
+	}
+
+	// Preload names for the full trending rail so the hero caption is
+	// always rich. Capped at 8 to keep API load reasonable.
+	var heroIDs []int
+	if trending != nil {
+		for _, it := range trending.Data {
+			if it.AnimeID != 0 {
+				heroIDs = append(heroIDs, it.AnimeID)
+			}
+			if len(heroIDs) >= 8 {
+				break
+			}
+		}
+		preloadAnimeNames(heroIDs)
+	}
+
+	// Pick current hero
+	var heroID int
+	var heroThumb string
+	heroTotal := len(heroIDs)
+	if heroTotal > 0 {
+		if heroIdx < 0 {
+			heroIdx = heroTotal - 1
+		}
+		if heroIdx >= heroTotal {
+			heroIdx = 0
+		}
+		heroID = heroIDs[heroIdx]
+		heroThumb = trending.Data[heroIdx].Thumbnail
+	}
+
 	var b strings.Builder
-	b.WriteString("🍅 <b>TomatoAnimes</b>\n")
-	b.WriteString("<i>Escolha uma categoria ou busque um anime.</i>\n\n")
-	b.WriteString("<b>🔎 Pra buscar:</b> <code>/anime &lt;nome&gt;</code>")
+	b.WriteString("🍅 <b>TomatoAnimes</b>")
+	if heroID != 0 {
+		name := lookupAnimeName(heroID)
+		if name == "" {
+			name = fmt.Sprintf("Anime #%d", heroID)
+		}
+		fmt.Fprintf(
+			&b,
+			"\n\n🔥 <b>Em alta</b>  <i>(%d/%d)</i>\n🎬 <b>%s</b>",
+			heroIdx+1, heroTotal,
+			html.EscapeString(truncate(name, 80)),
+		)
+	}
+	b.WriteString("\n\n<i>Navegue pelo destaque acima ou abra uma categoria abaixo.</i>")
+	b.WriteString("\n<b>🔎 Pra buscar:</b> <code>/anime &lt;nome&gt;</code>")
 
 	kb := tg.NewKeyboard()
 
-	// 2-column grid of rails that actually have content.
-	row := make([]tg.KeyboardButton, 0, 2)
+	// Hero navigation row
+	if heroTotal > 1 {
+		kb.AddRow(
+			tg.Button.Data("◂", fmt.Sprintf("anime:hero:%d", heroIdx-1)),
+			tg.Button.Data(
+				"▶️ Ver detalhes",
+				fmt.Sprintf("anime:v:%d", heroID),
+			),
+			tg.Button.Data("▸", fmt.Sprintf("anime:hero:%d", heroIdx+1)),
+		)
+	} else if heroID != 0 {
+		kb.AddRow(tg.Button.Data(
+			"▶️ Ver detalhes",
+			fmt.Sprintf("anime:v:%d", heroID),
+		))
+	}
+
+	// Category grid (2-col)
+	var row []tg.KeyboardButton
 	for _, sec := range feed.Data {
 		if (sec.Type != 3 && sec.Type != 5) || len(sec.Data) == 0 || sec.Title == "" {
 			continue
@@ -317,11 +398,9 @@ func renderHome(m *tg.NewMessage, cb *tg.CallbackQuery) error {
 		kb.AddRow(row...)
 	}
 
-	kb.AddRow(
-		tg.Button.Data("❌ Fechar", "anime:x"),
-	)
+	kb.AddRow(tg.Button.Data("❌ Fechar", "anime:x"))
 
-	return sendOrEdit(m, cb, b.String(), "", kb.Build())
+	return sendOrEdit(m, cb, b.String(), heroThumb, kb.Build())
 }
 
 // renderRail shows all animes from a given feed rail (identified by its
