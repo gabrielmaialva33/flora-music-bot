@@ -7,6 +7,7 @@ import (
 	"html"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/Laky-64/gologging"
 	tg "github.com/amarnathcjd/gogram/telegram"
@@ -15,6 +16,49 @@ import (
 	state "main/internal/core/models"
 	"main/internal/tomato"
 )
+
+// ---------- in-memory caches ----------
+//
+// We cache episode thumbnails and anime cover URLs so the now-playing
+// screen can repaint with a rich visual without hitting the API again.
+// Both maps are small (a few dozen entries per active chat) and are
+// never flushed — memory cost is negligible.
+var (
+	epThumbCache   = make(map[int]string)
+	epThumbMu      sync.RWMutex
+	animeCoverCache = make(map[int]string)
+	animeCoverMu    sync.RWMutex
+)
+
+func cacheEpisodeThumb(id int, thumb string) {
+	if id == 0 || thumb == "" {
+		return
+	}
+	epThumbMu.Lock()
+	epThumbCache[id] = thumb
+	epThumbMu.Unlock()
+}
+
+func lookupEpisodeThumb(id int) string {
+	epThumbMu.RLock()
+	defer epThumbMu.RUnlock()
+	return epThumbCache[id]
+}
+
+func cacheAnimeCover(id int, cover string) {
+	if id == 0 || cover == "" {
+		return
+	}
+	animeCoverMu.Lock()
+	animeCoverCache[id] = cover
+	animeCoverMu.Unlock()
+}
+
+func lookupAnimeCover(id int) string {
+	animeCoverMu.RLock()
+	defer animeCoverMu.RUnlock()
+	return animeCoverCache[id]
+}
 
 // friendlyErr translates a tomato client error into a user-facing
 // Telegram message. The raw error is logged separately — this never
@@ -97,6 +141,7 @@ func animeCB(cb *tg.CallbackQuery) error {
 
 	switch parts[1] {
 	case "h": // anime:h — home
+		cb.Answer("⏳ Carregando…")
 		return renderHome(nil, cb)
 	case "s": // anime:s:<b64query>:<page>
 		if len(parts) < 4 {
@@ -105,9 +150,11 @@ func animeCB(cb *tg.CallbackQuery) error {
 		}
 		query, _ := decodeB64(parts[2])
 		page, _ := strconv.Atoi(parts[3])
+		cb.Answer("🔎 Buscando…")
 		return renderSearch(nil, cb, query, page)
 	case "v": // anime:v:<animeID>
 		id, _ := strconv.Atoi(parts[2])
+		cb.Answer("🎬 Abrindo…")
 		return renderAnime(cb, id)
 	case "ep": // anime:ep:<animeID>:<seasonID>:<page>
 		if len(parts) < 5 {
@@ -117,6 +164,7 @@ func animeCB(cb *tg.CallbackQuery) error {
 		animeID, _ := strconv.Atoi(parts[2])
 		seasonID, _ := strconv.Atoi(parts[3])
 		page, _ := strconv.Atoi(parts[4])
+		cb.Answer("📺 Carregando episódios…")
 		return renderEpisodes(cb, animeID, seasonID, page)
 	case "p": // anime:p:<episodeID> — auto-play in best quality
 		id, _ := strconv.Atoi(parts[2])
@@ -130,10 +178,14 @@ func animeCB(cb *tg.CallbackQuery) error {
 		return performPlay(cb, id, parts[3])
 	case "back": // anime:back:<animeID>
 		id, _ := strconv.Atoi(parts[2])
+		cb.Answer("🔙 Voltando…")
 		return renderAnime(cb, id)
 	case "x": // anime:x — close
 		cb.Answer("")
 		cb.Delete()
+		return tg.ErrEndGroup
+	case "noop": // anime:noop — pagination counter / dimmed arrows
+		cb.Answer("")
 		return tg.ErrEndGroup
 	}
 
@@ -203,7 +255,7 @@ func renderHome(m *tg.NewMessage, cb *tg.CallbackQuery) error {
 		tg.Button.Data("❌ Fechar", "anime:x"),
 	)
 
-	return sendOrEdit(m, cb, b.String(), kb.Build())
+	return sendOrEdit(m, cb, b.String(), "", kb.Build())
 }
 
 // renderSearch shows search results.
@@ -268,33 +320,32 @@ func renderSearch(
 		)
 	}
 
-	// pagination
-	navRow := []tg.KeyboardButton{}
-	if page > 0 {
-		navRow = append(navRow, tg.Button.Data(
-			"« Anterior",
-			fmt.Sprintf("anime:s:%s:%d", encodeB64(query), page-1),
-		))
+	// pagination row — API doesn't expose total pages, so we assume
+	// "there's more" whenever the response is full. Dim the forward arrow
+	// otherwise. The counter is approximate.
+	hasMore := len(res.Result) >= 40
+	approxTotal := page + 1
+	if hasMore {
+		approxTotal = page + 2
 	}
-	if len(res.Result) >= 40 { // heurística: se vieram muitos, provavelmente tem mais
-		navRow = append(navRow, tg.Button.Data(
-			"Próximo »",
-			fmt.Sprintf("anime:s:%s:%d", encodeB64(query), page+1),
-		))
-	}
-	if len(navRow) > 0 {
-		kb.AddRow(navRow...)
-	}
+	kb.AddRow(paginationRow(
+		page, approxTotal,
+		func(p int) string {
+			return fmt.Sprintf("anime:s:%s:%d", encodeB64(query), p)
+		},
+	)...)
 
 	kb.AddRow(
 		tg.Button.Data("🏠 Início", "anime:h"),
 		tg.Button.Data("❌ Fechar", "anime:x"),
 	)
 
-	return sendOrEdit(m, cb, b.String(), kb.Build())
+	return sendOrEdit(m, cb, b.String(), "", kb.Build())
 }
 
 // renderAnime shows the anime detail with seasons.
+// The screen is repainted as a photo message (banner) with caption so
+// the user gets a cinematic card.
 func renderAnime(cb *tg.CallbackQuery, animeID int) error {
 	a, err := tomato.Default().Anime(animeID)
 	if err != nil {
@@ -303,37 +354,61 @@ func renderAnime(cb *tg.CallbackQuery, animeID int) error {
 	}
 
 	d := a.AnimeDetails
+	// Cache cover URL for the now-playing screen to reuse later.
+	cover := d.AnimeBannerURL
+	if cover == "" {
+		cover = d.AnimeCapeURL
+	}
+	if cover == "" {
+		cover = d.AnimeCoverURL
+	}
+	cacheAnimeCover(animeID, cover)
+
 	var b strings.Builder
-	fmt.Fprintf(&b, "🎬 <b>%s</b>  <i>(%s)</i>\n\n", html.EscapeString(d.AnimeName), html.EscapeString(d.AnimeDate))
+	fmt.Fprintf(
+		&b, "🎬 <b>%s</b>  <i>(%s)</i>\n\n",
+		html.EscapeString(d.AnimeName),
+		html.EscapeString(d.AnimeDate),
+	)
 	if d.AnimeGenre != "" {
 		fmt.Fprintf(&b, "🏷 <b>Gêneros:</b> %s\n", html.EscapeString(d.AnimeGenre))
 	}
 	if d.AnimeParentalRating != "" {
 		fmt.Fprintf(&b, "🔞 <b>Classificação:</b> %s\n", html.EscapeString(d.AnimeParentalRating))
 	}
-	fmt.Fprintf(&b, "🎞 <b>Episódios:</b> %d\n", d.AnimeEpisodes)
+	fmt.Fprintf(&b, "🎞 <b>Episódios:</b> %d", d.AnimeEpisodes)
 	if d.DubAvailable {
-		b.WriteString("🗣 <b>Dublagem:</b> disponível ✅\n")
+		b.WriteString("  •  🗣 Dublagem ✅")
 	}
+	b.WriteString("\n")
 	if d.AnimeDescription != "" {
 		fmt.Fprintf(
 			&b, "\n<i>%s</i>\n",
-			html.EscapeString(truncate(d.AnimeDescription, 400)),
+			html.EscapeString(truncate(d.AnimeDescription, 380)),
 		)
 	}
 	b.WriteString("\n<b>📅 Escolha a temporada:</b>")
 
+	// Seasons in 2-column grid. Dubbed and legendada com ícones distintos.
 	kb := tg.NewKeyboard()
+	row := make([]tg.KeyboardButton, 0, 2)
 	for _, s := range a.AnimeSeasons {
 		icon := "📺"
 		if s.SeasonDubbed == 1 {
 			icon = "🗣"
 		}
-		label := fmt.Sprintf("%s %s", icon, truncate(s.SeasonName, 30))
-		kb.AddRow(tg.Button.Data(
+		label := fmt.Sprintf("%s %s", icon, truncate(s.SeasonName, 22))
+		row = append(row, tg.Button.Data(
 			label,
 			fmt.Sprintf("anime:ep:%d:%d:0", animeID, s.SeasonID),
 		))
+		if len(row) == 2 {
+			kb.AddRow(row...)
+			row = row[:0]
+		}
+	}
+	if len(row) > 0 {
+		kb.AddRow(row...)
 	}
 
 	kb.AddRow(
@@ -341,12 +416,13 @@ func renderAnime(cb *tg.CallbackQuery, animeID int) error {
 		tg.Button.Data("❌ Fechar", "anime:x"),
 	)
 
-	return sendOrEdit(nil, cb, b.String(), kb.Build())
+	return sendOrEdit(nil, cb, b.String(), cover, kb.Build())
 }
 
 const episodesPerPage = 10
 
-// renderEpisodes lists episodes for a season (paginated).
+// renderEpisodes lists episodes for a season as a 2-column grid with
+// numbered pagination. Thumbnails are cached for the now-playing screen.
 func renderEpisodes(
 	cb *tg.CallbackQuery,
 	animeID, seasonID, page int,
@@ -360,28 +436,32 @@ func renderEpisodes(
 		return replyErr(nil, cb, "😕 Nenhum episódio encontrado nessa temporada.")
 	}
 
-	var b strings.Builder
-	fmt.Fprintf(
-		&b,
-		"📺 <b>Episódios</b>  <i>(total: %d)</i>\n\n",
-		res.Episodes,
-	)
+	// Cache every episode thumbnail so performPlay can paint a rich card.
+	for _, ep := range res.Data {
+		cacheEpisodeThumb(ep.EpID, ep.EpThumbnail)
+	}
 
-	kb := tg.NewKeyboard()
 	start := page * episodesPerPage
 	end := start + episodesPerPage
 	if end > len(res.Data) {
 		end = len(res.Data)
 	}
-
-	// API might return the entire season — paginar local se for o caso
-	slice := res.Data
-	if end-start > 0 && end <= len(res.Data) && start < len(res.Data) {
+	var slice []tomato.Episode
+	if start < len(res.Data) {
 		slice = res.Data[start:end]
-	} else if start >= len(res.Data) {
-		slice = nil
 	}
 
+	totalPages := (len(res.Data) + episodesPerPage - 1) / episodesPerPage
+	if totalPages == 0 {
+		totalPages = 1
+	}
+
+	var b strings.Builder
+	fmt.Fprintf(
+		&b,
+		"📺 <b>Episódios</b>  <i>(%d no total • página %d/%d)</i>\n\n",
+		res.Episodes, page+1, totalPages,
+	)
 	for _, ep := range slice {
 		fmt.Fprintf(
 			&b,
@@ -389,38 +469,66 @@ func renderEpisodes(
 			ep.EpNumber,
 			html.EscapeString(truncate(ep.EpName, 60)),
 		)
-		label := fmt.Sprintf("▶️ Ep %d — %s", ep.EpNumber, truncate(ep.EpName, 30))
-		kb.AddRow(tg.Button.Data(
+	}
+
+	// Episode buttons in a 2-column grid.
+	kb := tg.NewKeyboard()
+	row := make([]tg.KeyboardButton, 0, 2)
+	for _, ep := range slice {
+		label := fmt.Sprintf("▶️ Ep %d", ep.EpNumber)
+		row = append(row, tg.Button.Data(
 			label,
 			fmt.Sprintf("anime:p:%d", ep.EpID),
 		))
+		if len(row) == 2 {
+			kb.AddRow(row...)
+			row = row[:0]
+		}
+	}
+	if len(row) > 0 {
+		kb.AddRow(row...)
 	}
 
-	// Navegação de páginas local (a API parece devolver tudo numa página)
-	totalPages := (len(res.Data) + episodesPerPage - 1) / episodesPerPage
-	nav := []tg.KeyboardButton{}
-	if page > 0 {
-		nav = append(nav, tg.Button.Data(
-			"« Anterior",
-			fmt.Sprintf("anime:ep:%d:%d:%d", animeID, seasonID, page-1),
-		))
-	}
-	if page < totalPages-1 {
-		nav = append(nav, tg.Button.Data(
-			"Próximo »",
-			fmt.Sprintf("anime:ep:%d:%d:%d", animeID, seasonID, page+1),
-		))
-	}
-	if len(nav) > 0 {
-		kb.AddRow(nav...)
-	}
+	// Smart pagination: [◂] [ · N/M · ] [▸]
+	kb.AddRow(paginationRow(
+		page, totalPages,
+		func(p int) string {
+			return fmt.Sprintf("anime:ep:%d:%d:%d", animeID, seasonID, p)
+		},
+	)...)
 
 	kb.AddRow(
 		tg.Button.Data("🔙 Temporadas", fmt.Sprintf("anime:back:%d", animeID)),
 		tg.Button.Data("🏠 Início", "anime:h"),
 	)
 
-	return sendOrEdit(nil, cb, b.String(), kb.Build())
+	return sendOrEdit(nil, cb, b.String(), lookupAnimeCover(animeID), kb.Build())
+}
+
+// paginationRow builds a Telegram pagination row with a centered counter
+// and prev/next arrows. Buttons outside the valid range are dimmed
+// (rendered as a no-op).
+func paginationRow(
+	current, total int,
+	hrefFn func(page int) string,
+) []tg.KeyboardButton {
+	if total <= 1 {
+		return nil
+	}
+
+	prev := tg.Button.Data("·", "anime:noop")
+	if current > 0 {
+		prev = tg.Button.Data("◂", hrefFn(current-1))
+	}
+	counter := tg.Button.Data(
+		fmt.Sprintf("· %d/%d ·", current+1, total),
+		"anime:noop",
+	)
+	next := tg.Button.Data("·", "anime:noop")
+	if current < total-1 {
+		next = tg.Button.Data("▸", hrefFn(current+1))
+	}
+	return []tg.KeyboardButton{prev, counter, next}
 }
 
 // performPlay resolves the episode stream, picks a quality and injects it
@@ -543,7 +651,13 @@ func performPlay(cb *tg.CallbackQuery, episodeID int, quality string) error {
 		tg.Button.Data("❌ Fechar", "anime:x"),
 	)
 
-	return sendOrEdit(nil, cb, b.String(), kb.Build())
+	// Prefer the episode thumbnail (cached from the season listing),
+	// otherwise fall back to the anime cover we've seen before.
+	thumb := lookupEpisodeThumb(episodeID)
+	if thumb == "" {
+		thumb = lookupAnimeCover(s.EpisodeAnimeID)
+	}
+	return sendOrEdit(nil, cb, b.String(), thumb, kb.Build())
 }
 
 // pickStream chooses a URL based on requested quality and returns
@@ -571,10 +685,14 @@ func pickStream(
 
 // ---------- helpers ----------
 
+// sendOrEdit replies with a fresh message (m) or edits the callback
+// message (cb). media is an optional photo URL. Since Telegram can't
+// always edit a text-only message into a photo message (or vice versa),
+// we fall back to delete+repost when Edit fails.
 func sendOrEdit(
 	m *tg.NewMessage,
 	cb *tg.CallbackQuery,
-	text string,
+	text, media string,
 	markup tg.ReplyMarkup,
 ) error {
 	opts := &tg.SendOptions{
@@ -582,10 +700,16 @@ func sendOrEdit(
 		ReplyMarkup: markup,
 		LinkPreview: false,
 	}
+	if media != "" {
+		opts.Media = media
+	}
 	if cb != nil {
-		cb.Answer("")
 		if _, err := cb.Edit(text, opts); err != nil {
-			gologging.DebugF("anime: cb.Edit failed: %v", err)
+			gologging.DebugF("anime: cb.Edit failed (%v) — reposting", err)
+			cb.Delete()
+			if _, err := cb.Client.SendMessage(cb.ChannelID(), text, opts); err != nil {
+				gologging.ErrorF("anime: repost failed: %v", err)
+			}
 		}
 		return tg.ErrEndGroup
 	}
