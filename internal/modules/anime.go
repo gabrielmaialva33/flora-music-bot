@@ -189,7 +189,26 @@ var (
 	animeCoverMu    sync.RWMutex
 	animeNameCache  = make(map[int]string)
 	animeNameMu     sync.RWMutex
+	// episodeID → seasonID, cached as we list season episodes so the
+	// now-playing screen can compute prev/next from the same list.
+	epSeasonCache = make(map[int]int)
+	epSeasonMu    sync.RWMutex
 )
+
+func cacheEpisodeSeason(epID, seasonID int) {
+	if epID == 0 || seasonID == 0 {
+		return
+	}
+	epSeasonMu.Lock()
+	epSeasonCache[epID] = seasonID
+	epSeasonMu.Unlock()
+}
+
+func lookupEpisodeSeason(epID int) int {
+	epSeasonMu.RLock()
+	defer epSeasonMu.RUnlock()
+	return epSeasonCache[epID]
+}
 
 func cacheAnimeName(id int, name string) {
 	if id == 0 || name == "" {
@@ -863,9 +882,11 @@ func renderEpisodes(
 		return replyErr(nil, cb, "😕 Nenhum episódio encontrado nessa temporada.")
 	}
 
-	// Cache every episode thumbnail so performPlay can paint a rich card.
+	// Cache every episode thumbnail AND its season mapping so the
+	// now-playing screen can compute prev/next inside the same season.
 	for _, ep := range res.Data {
 		cacheEpisodeThumb(ep.EpID, ep.EpThumbnail)
+		cacheEpisodeSeason(ep.EpID, ep.EpSeasonID)
 	}
 
 	start := page * episodesPerPage
@@ -1064,19 +1085,72 @@ func performPlay(cb *tg.CallbackQuery, episodeID int, quality string) error {
 		kb.AddRow(qRow...)
 	}
 
-	if s.EpisodeHasNext && s.NextEpisodeID > 0 {
-		kb.AddRow(tg.Button.Data(
-			"▶️ Próximo episódio",
-			fmt.Sprintf("anime:p:%d", s.NextEpisodeID),
+	// --- Episode navigation row ---
+	// Prefer the cached season episode list (populated when the user
+	// listed the season) so we can offer a real [◂ Anterior] too. Fall
+	// back to the API-supplied NextEpisodeID otherwise.
+	seasonID := lookupEpisodeSeason(episodeID)
+	var prevID, nextID, curIdx, totalEps int
+	if seasonID != 0 {
+		if res, err := seasonEpsCached(seasonID, 0, "ASC"); err == nil {
+			totalEps = len(res.Data)
+			for i, ep := range res.Data {
+				if ep.EpID == episodeID {
+					curIdx = i + 1
+					if i > 0 {
+						prevID = res.Data[i-1].EpID
+					}
+					if i+1 < len(res.Data) {
+						nextID = res.Data[i+1].EpID
+					}
+					break
+				}
+			}
+		}
+	}
+	if nextID == 0 && s.EpisodeHasNext && s.NextEpisodeID > 0 {
+		nextID = s.NextEpisodeID
+	}
+
+	navRow := []tg.KeyboardButton{}
+	if prevID > 0 {
+		navRow = append(navRow, tg.Button.Data(
+			"◂ Anterior",
+			fmt.Sprintf("anime:p:%d", prevID),
 		))
 	}
-	kb.AddRow(
+	if curIdx > 0 && totalEps > 0 {
+		navRow = append(navRow, tg.Button.Data(
+			fmt.Sprintf("· Ep %d/%d ·", curIdx, totalEps),
+			"anime:noop",
+		))
+	}
+	if nextID > 0 {
+		navRow = append(navRow, tg.Button.Data(
+			"Próximo ▸",
+			fmt.Sprintf("anime:p:%d", nextID),
+		))
+	}
+	if len(navRow) > 0 {
+		kb.AddRow(navRow...)
+	}
+
+	// Jump back to the episode list (same season) when possible.
+	bottom := []tg.KeyboardButton{}
+	if seasonID != 0 {
+		bottom = append(bottom, tg.Button.Data(
+			"📋 Episódios",
+			fmt.Sprintf("anime:ep:%d:%d:0", s.EpisodeAnimeID, seasonID),
+		))
+	}
+	bottom = append(bottom,
 		tg.Button.Data(
-			"🔙 Voltar",
+			"🔙 Temporadas",
 			fmt.Sprintf("anime:v:%d", s.EpisodeAnimeID),
 		),
 		tg.Button.Data("❌ Fechar", "anime:x"),
 	)
+	kb.AddRow(bottom...)
 
 	// Prefer the episode thumbnail (cached from the season listing),
 	// otherwise fall back to the anime cover we've seen before.
