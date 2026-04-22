@@ -1,0 +1,1042 @@
+name: 🇧🇷 Português (Brasil)
+CONFIRM_RESUME_BTN: ▶️ Retomar
+CONFIRM_UNMUTE_BTN: 🔊 Ativar som
+CONFIRM_STOP_BTN: ⏹️ Parar
+ADD_ME_BTN: ⚡ Adicione-me ao seu grupo
+BROADCAST_CANCEL_BTN: 🚫 Cancelar transmissão
+CLOSE_BTN: Fechar
+DOWNLOAD_CANCEL_BTN: 🚦 Cancelar download
+GC_HELP_BTN: 📒 Comandos
+START_HELP_BTN: ❓ Ajuda e Comandos
+UPDATES_BTN: 📢 Atualizações
+SUPPORT_BTN: 💬 Suporte
+HELP_ADMINS_BTN: 🛠 Administradores
+HELP_PUBLIC_BTN: 🌍 Público
+HELP_OWNER_BTN: 👑 Proprietário
+HELP_SUDOERS_BTN: ⚡ Sudoers
+BACK_BTN: ⬅️ Voltar
+invalid_bool: |-
+  ⚠️ <b>Valor inválido.</b>
+  Use 'habilitar' ou 'desabilitar'.
+active_chats_info: |-
+  📊 <b>Chats ativos:</b>
+
+  Há <i>{count}</i> chats ativos em todo o sistema do bot.
+active_chats_info_with_broken: |-
+  📊 <b>Chats ativos:</b>
+
+  Há <i>{count}</i> chats ativos em todo o sistema do bot, mas <i>{broken}</i> deles podem ter problemas de exibição.
+assistant_restricted_warning: |-
+  ⚠️ <b>Assistente restrito</b>
+
+  O assistente {assistant} (ID: <code>{id}</code>) foi <b>banido</b> ou está restrito neste chat.
+  Não consigo tocar música, gerenciar a fila nem limpar faixas enquanto isso continuar.
+
+  <i>Desbane o assistente para restaurar todos os recursos de música 🎵</i>
+auth_no_user: |-
+  ⚠️ Forneça um usuário - use:
+  {cmd} [user_id] ou responda à mensagem de um usuário.
+user_extract_fail: '⚠️ Não foi possível obter esse usuário: <i>{error}</i>'
+auth_limit_reached: ⚠️ Este chat atingiu o limite máximo de usuários autorizados ({limit}). Remova alguém antes de adicionar um novo.
+already_authed: ⚠️ Esse usuário já está autorizado – não há necessidade de adicioná-lo novamente.
+cannot_authorize_user: |-
+  ⚠️ Este usuário não pode ser autorizado.
+  O proprietário do bot, o próprio bot ou você mesmo não exigem autorização.
+addauth_user_is_admin: ⚠️ Este usuário já é administrador do chat. Nenhuma autorização é necessária.
+addauth_bot_user: 🤖 Você não pode adicionar um bot à lista de autenticação – os usuários autores devem ser humanos!
+addauth_add_fail: '❌ Falha ao adicionar usuário autorizado: {error}'
+addauth_success_with_count: |-
+  ✅ Adicionado {user}.
+  Agora, usuários autorizados {count}/{limit}.
+addauth_success: ✅ {user} adicionado com sucesso à lista de usuários autorizados.
+bot_added_normal: 🎵 Obrigada por me adicionar! Use /play [música] para começar a tocar música.
+bot_added_maintenance: ⚠️ Estou em manutenção e volto em breve. Obrigada pela sua paciência! ⏰
+maint_reason_generic: '<i>📝 Razão: {reason}</i>'
+bot_demotion_goodbye: |-
+  <b>⚠️ Permissão perdida</b>
+
+  Fui <b>removida da administração</b> e não consigo mais realizar minhas tarefas.
+  Sem as permissões necessárias, não posso funcionar aqui, então <i>vou sair do chat agora</i>.
+
+  <b>Adeus 👋</b>
+broadcast_already_running: |-
+  ⚠️ Já está rolando uma transmissão.
+
+  Aguarde a conclusão ou cancele primeiro usando:
+  • <code>/broadcast -cancel</code>
+  • Ou clique no botão Cancelar na mensagem de progresso
+broadcast_parse_failed: |-
+  ❌ Falha ao analisar o comando de transmissão:
+  <code>{error}</code>
+broadcast_no_content: |-
+  ⚠️ Nenhum conteúdo foi fornecido para a transmissão.
+
+  <b>Uso:</b> <code>{cmd} [texto ou responda a uma mensagem]</code>
+
+  <b>Exemplo:</b>
+  <code>{cmd} Olá, pessoal!</code>
+broadcast_fetch_chats_failed: |-
+  ❌ Falha ao buscar bate-papos atendidos:
+  <code>{error}</code>
+broadcast_fetch_users_failed: |-
+  ❌ Falha ao buscar usuários atendidos:
+  <code>{error}</code>
+broadcast_no_targets: |-
+  ⚠️ Nenhum alvo encontrado para transmissão.
+
+  Certifique-se de não ter excluído todos os alvos com sinalizadores.
+broadcast_initializing: |-
+  📡 Inicializando transmissão...
+
+  Por favor, espere...
+broadcast_cancelled_header: 🚫 Transmissão cancelada
+broadcast_completed_header: ✅ Transmissão concluída
+broadcast_progress_header: 📡 Transmissão...
+broadcast_total_chats: '📊 Total de bate-papos: {done}/{total} ({progress}%)'
+broadcast_total_users: '👥 Total de usuários: {done}/{total} ({progress}%)'
+broadcast_failed_chats: '❌ Bate-papos com falha: {count}'
+broadcast_failed_users: '❌ Usuários com falha: {count}'
+broadcast_delay: '⏱ Atraso: {delay}s'
+broadcast_elapsed: '⏰ Decorrido: {elapsed}'
+broadcast_eta: '⏳ ETA: {eta}'
+broadcast_success_rate: '✨ Taxa de sucesso: {rate}% ({sent}/{total})'
+broadcast_not_running: ℹ️ Nenhuma transmissão está em andamento no momento.
+broadcast_cancel_success: 🚫 Transmissão cancelada com sucesso.
+broadcast_cancel_owner_only: ⚠️ Somente o proprietário pode cancelar as transmissões.
+broadcast_cancel_none_running: ℹ️ Nenhuma transmissão está em andamento no momento.
+broadcast_cancel_done: 🚫 Transmissão cancelada.
+cplay_id_not_set: |-
+  ⚠️ ID do cplay não definido.
+  Use <code>/cplay --set &lt;chat_id&gt;</code> para configurá-lo.
+cplay_usage: <b>Uso:</b> <code>/cplay --set &lt;channel_id&gt;</code>
+cplay_invalid_chat_id: <b>ID de bate-papo inválido:</b> Forneça um ID inteiro válido para o canal.
+cplay_resolve_peer_fail: <b>Falha ao resolver peer:</b> Não foi possível buscar detalhes do canal. Certifique-se de que posso acessar este canal.
+cplay_invalid_target: <b>Destino inválido:</b> O ID fornecido não é um canal válido.
+cplay_channel_not_accessible: <b>Canal não acessível:</b> Não foi possível recuperar informações do canal. Certifique-se de que sou administradora no canal de destino.
+cplay_save_error: <b>Erro:</b> Falha ao salvar as configurações do CPlay.
+cplay_enabled: ✅ <b>Reprodução em canal ativada.</b> Todos os comandos <code>/c</code> agora funcionarão no canal <code>{channel_id}</code>.
+invalid_request: ⚠️ Solicitação inválida.
+unknown_action: ⚠️ Ação desconhecida.
+download_cancelled: ✅ Download cancelado.
+no_download_to_cancel: ℹ️ Sem download para cancelar.
+cb_pause_success: ⏸️ Faixa pausada em {position}
+cb_pause_message: |-
+  <b>⏸️ Faixa pausada</b>
+
+  <b>▫ Faixa:</b> <a href="{url}">{title}</a>
+  <b>▫ Posição:</b> {position} / {duration}
+  <b>▫ Pausado por:</b> {user}
+cb_already_playing: ℹ️ A faixa já está tocando.
+cb_resume_failed: ❌ Falha ao retomar a reprodução.
+cb_resume_success: ▶️ Retomada em {position}.
+cb_resume_message: |-
+  <b>🎵 Tocando agora:</b>
+
+  <b>▫ Faixa:</b> <a href="{url}">{title}</a>
+  <b>▫ Duração:</b> {duration}
+  <b>▫ Resumido por:</b> {user}
+cb_replaying: 🔁 <b>Reproduzindo a faixa atual...</b>
+cb_replay_failed: ❌ Falha ao reproduzir a faixa.
+cb_replay_success: 🔁 Faixa reproduzida.
+cb_replay_edited: 🔁 Faixa reproduzida por {user}.
+cb_skip_queue_empty: ⏹️ A reprodução foi interrompida – fila vazia.
+cb_skip_download_failed: ❌ Falha ao baixar a próxima faixa.
+cb_skip_play_failed: ❌ Falha ao reproduzir a próxima faixa.
+cb_skip_success: ⏭️ Faixa ignorada.
+cb_skip_edited: ⏭️ Ignorado por {user}
+cb_stop_success: ⏹️ A reprodução foi interrompida.
+cb_mute_success: 🔇 Silenciado.
+cb_mute_message: |-
+  <b>🔇 Reprodução silenciada</b>
+
+  <b>▫ Faixa:</b> <a href="{url}">{title}</a>
+  <b>▫ Silenciado por:</b> {user}
+cb_unmute_success: 🔊 Sem som.
+cb_seek_success: ⏩ Avançado {seconds} segundos
+cb_seek_near_end: ⚠️ Não é possível avançar {seconds} segundos — prestes a chegar ao fim.
+cb_seek_edited: ⏩ Avançado {seconds} segundos — por {user}
+cb_seekback_success: ⏪ Retrocedido {seconds} segundos
+cb_seekback_edited: ⏪ Retrocedido {seconds} segundos — por {user}
+del_auth_not_authorized: ⚠️ Esse usuário não está autorizado – nada para remover.
+del_auth_remove_fail: '❌ Falha ao remover usuário autorizado: <code>{error}</code>'
+del_auth_success: ✅ {user} removido com sucesso da lista de usuários autorizados.
+authlist_fetch_fail: '❌ Falha ao obter lista de usuários autorizados: <code>{error}</code>'
+authlist_empty: ℹ️ Não há usuários autorizados neste chat.
+authlist_fetching: ⏳ Buscando lista de usuários autorizados...
+authlist_header: <b>Usuários Autorizados:</b>
+authlist_user_fail: '{index}. <code>{user_id}</code> (Não foi possível buscar informações do usuário)'
+authlist_user_entry: '{index}. {user} (<code>{user_id}</code>)'
+authlist_total: <b>Total:</b> {count} usuários
+autoleave_fetch_fail: ⚠️ <b>Falha ao buscar o estado da saída automática.</b>
+autoleave_status: |-
+  🏃‍♂️ <b>Controle de saída automática</b>
+
+  Quando ativado, o assistente sairá automaticamente do chat.
+  Uso: {cmd} [ativar|desativar]
+  Estado atual: {action}
+autoleave_already: ⚠️ A saída automática já está {action}.
+autoleave_update_fail: ⚠️ <b>Falha ao atualizar o estado da saída automática.</b>
+autoleave_updated: 🏃‍♂️ A saída automática foi {action}.
+enabled: Habilitado
+disabled: Desabilitado
+bug_usage: '⚠️ Descreva o bug. Uso: {cmd} <problem> ou responda a uma mensagem.'
+bug_thanks: ✅ Obrigada pelo seu relatório de bug! Ele foi enviado para a equipe de desenvolvimento.
+bug_report_format: |-
+  <b>🐞 Novo relatório de bug</b>
+
+  <b>De:</b> {user} (<code>{user_id}</code>)
+  <b>Bate-papo:</b> {chat} (<code>{chat_id}</code>)
+
+  <b>Relatório:</b>
+  <pre>{report}</pre>
+clear_no_active: ⚠️ <b>Sem reprodução ativa ou fila para limpar.</b>
+clear_success: |-
+  ✅ A fila foi limpa por {user}.
+  <i>Você pode restaurá-la usando <code>/{cmd}</code> antes de adicionar novas músicas</i>
+err_assistant_banned: |-
+  <b>🚫 Assistente restrito</b>
+
+  Não consigo tocar música porque {user} (ID do usuário: <code>{id}</code>) é <b>banido</b> ou <b>removido</b> deste chat.
+
+  <i>✅ Já os desbaniu? Use /reload para atualizar.</i>
+err_admin_permission_required: |-
+  ⚠️ <b>Permissão de administrador necessária</b>
+
+  Eu preciso de <i>acesso de administrador</i> para gerenciar e verificar os membros deste chat.
+
+  ➤ <b>Promova-me com a permissão</b> <code>Gerenciar Chat / Convidar Usuários</code>.
+err_assistant_get_failed: |-
+  ⚠️ O sistema não conseguiu atribuir um assistente para este chat.
+
+  <i>Este é geralmente um problema temporário e deve ser resolvido tentando novamente.</i>
+
+  <b>➡️ Tente novamente seu comando.</b>
+
+  <i>Se isso continuar acontecendo, entre em contato com o suporte para que possamos ajudá-lo.</i>
+err_assistant_join_rate_limited: ⚠️ O assistente não pode entrar neste chat porque atingiu o número máximo de grupos permitidos.
+err_assistant_join_request_sent: |-
+  ⚠️ O Assistente enviou uma solicitação de adesão, mas não consegui aprová-la automaticamente.
+
+  <i>✅ Aprove a solicitação manualmente e tente novamente.</i>
+err_assistant_invite_link_fetch: |-
+  ⚠️ Falha ao buscar o link do convite:
+  <i>{error}</i>
+err_assistant_invite_failed: |-
+  ⚠️ O assistente não conseguiu entrar neste bate-papo:
+  <i>{error}</i>
+err_connection_timeout: |-
+  ⚠️ <b>Tempo limite da conexão com o chat de voz</b>
+
+  O Telegram não está respondendo adequadamente à conexão do chat de voz no momento.
+
+  <i>Se isso continuar acontecendo, encerre o chat de voz, inicie-o novamente e tente de novo.</i>
+err_no_active_voicechat: |-
+  🎙️ <b>Sem bate-papo com voz ativa</b>
+
+  Não consigo entrar. Por favor, inicie um bate-papo por voz primeiro.
+
+  <i>Já começou um? Use /reload para atualizar.</i>
+err_fetch_failed: |-
+  ⚠️ Falha ao buscar informações do bate-papo:
+  <i>{error}</i>
+err_peer_resolve_failed: ⚠️ Falha ao resolver informações dos pares. Tente novamente mais tarde ou adicione novamente o assistente.
+err_rtmp_missing_params: "<b>⚠️ Detalhes RTMP ausentes</b>\n\n<i>Parece que há uma transmissão <b>RTMP</b> ativa neste chat, mas você não informou a <b>URL RTMP</b> nem a <b>Stream Key</b>. Sem esses dados, não consigo iniciar a transmissão de música via RTMP.</i>\n\n<b>Use:</b> <code>/setrtmp [chat_id] [url+key]</code>\n\n<i>\U0001F4CC Assim que os dados do RTMP forem configurados, você poderá iniciar a transmissão.</i>  \n<i>➡️ Se não quiser usar RTMP, mude para o chat de voz normal.</i>"
+err_unknown: |-
+  ⚠️ Ocorreu um erro desconhecido:
+  <i>{error}</i>
+err_fetch_tracks: |-
+  ⚠️ <b>Falha ao buscar detalhes da faixa.</b>
+  Por favor, tente novamente mais tarde.
+err_download_internal: |-
+  ⚠️ <b>Falha no download</b> devido a um erro interno inesperado.
+  Por favor, tente novamente mais tarde.
+flood_seconds: ⏳ Desacelere! Tente novamente em {duration} segundos.
+flood_minutes: ⏳ Aguarde {duration} minutos antes de usar este comando novamente.
+help_private_only: 🤖 Olá! Para ver ajuda e comandos, me chama no privado. Sou mais responsiva por lá!
+help_main: |-
+  📚 <b>Menu de Ajuda</b>
+
+  Selecione uma categoria abaixo para explorar comandos detalhados e seu uso para gerenciar, controlar e personalizar o bot.
+jump_no_active: ⚠️ Nenhuma trilha ativa para pular.
+jump_usage: |-
+  ⚠️ Forneça segundos.
+  Exemplo: <code>{cmd} 120</code>
+jump_invalid_position: |-
+  ⚠️ Posição inválida.
+  Exemplo: <code>{cmd} 120</code>
+jump_too_close_end: ⚠️ Não é possível pular para <b>{position}</b> — está muito perto do final da faixa.
+jump_failed: |-
+  ❌ Falha ao pular para <b>{position}</b>.
+  Erro: <code>{error}</code>
+jump_success: ⏩ Pulou para <u>{position}</u> de <u>{duration}</u>.
+lang_same: ℹ️ Você já está usando esta linguagem.
+lang_select: '🌐 Selecione seu idioma preferido:'
+lang_fail: ❌ Falha ao atualizar o idioma. Por favor, tente novamente mais tarde.
+lang_success: ✅ Idioma atualizado com sucesso para {lang_name}.
+logger_playback_started: Reprodução iniciada
+logger_playback_queued: Reprodução na fila
+logger_bot_added: |-
+  🤖 <b>Bot adicionado ao novo grupo</b>
+
+  <blockquote>
+  <b>Nome do grupo:</b> {group_name}
+  <b>ID do grupo:</b> {group_id}
+  Nome de usuário do grupo <b>:</b> {group_username}
+
+  <b>Adicionado por:</b> {added_by_name}
+  <b>ID do usuário:</b> {added_by_id}
+  <b>Nome de usuário do usuário:</b> {added_by_username}
+
+  <b>Tempo:</b> {date_time}
+  </blockquote>
+logger_bot_removed: |-
+  🤖 <b>Bot removido do grupo</b>
+  <blockquote>
+  <b>Nome do grupo:</b> {group_name}
+  <b>ID do grupo:</b> {group_id}
+  Nome de usuário do grupo <b>:</b> {group_username}
+
+  <b>Removido por:</b> {removed_by_name}
+  <b>ID do usuário:</b> {removed_by_id}
+  <b>Nome de usuário do usuário:</b> {removed_by_username}
+
+  <b>Tempo:</b> {date_time}
+  </blockquote>
+logger_bot_started: |-
+  ▶️ <b>{mention} iniciou o bot</b>
+
+  <b>Nome de usuário:</b> {user_username}
+  <b>ID:</b> {user_id}
+logger_track: '🎧 Faixa:'
+logger_source: '🔗 Fonte:'
+logger_group: '📌 Grupo:'
+logger_requested_by: '👤 Solicitado por:'
+logger_timestamp: '⏳ Carimbo de data e hora:'
+loop_usage: |-
+  🔁 <b>Controle de loop</b>
+
+  Uso: {cmd} [quantidade]
+  • 0 - Desativar loop
+  • 1-10 - Quantidade de repetições
+
+  <i>{count_line}</i>
+loop_invalid: |-
+  ⚠️ <b>Contagem de loops inválida.</b>
+  Use 0 para desabilitar ou 1-10 para definir a contagem de loops.
+loop_already_set: ⚠️ A contagem de loop já está definida para <b>{count}</b> tempo(s).
+loop_disabled: 🔁 O loop foi <b>desativado</b> por {user}
+loop_set: |-
+  🔁 Defina para repetir <b>{count}</b> tempo(s)
+  └ Alterado por: {user}
+loop_current: '• Loop de corrente: tempo(s) <b>{count}</b>'
+logger_usage: |-
+  ⚙️ Uso: <code>{cmd} [enable|disable]</code> - Para ativar ou desativar o logger
+
+  {status}
+logger_status: '📜 Status atual: {action}'
+logger_check_fail: '❌ Falha ao verificar o status do registrador: {error}'
+logger_already: ℹ️ O logger já está {action}.
+logger_update_fail: '❌ Falha ao atualizar a configuração do registrador: {error}'
+logger_updated: ✅ O logger foi {action} com sucesso.
+logs_invalid_number: |-
+  ⚠️ <b>Número inválido</b>
+
+  O valor <code>{value}</code> não é um número positivo válido.
+
+  <b>Uso:</b> <code>/logs [number]</code> ou <code>/logs -old [number]</code>
+logs_invalid_flag: |-
+  ⚠️ <b>Bandeira inválida</b>
+
+  Sinalizador desconhecido ou entrada inválida: <code>{flag}</code>
+
+  <b>Opções válidas:</b>
+  • <code>/logs</code> - Registro completo
+  • <code>/logs [n]</code> - Últimas N linhas
+  • <code>/logs -old [n]</code> – Registro mais antigo
+  • <code>/logs -clear</code> - Limpar registros
+logs_file_error: |-
+  ❌ <b>Erro no arquivo de log</b>
+
+  Ocorreu um erro ao acessar o arquivo de log:
+  <code>{error}</code>
+logs_send_error: |-
+  ❌ <b>Falha ao enviar o log</b>
+
+  Não foi possível preparar ou enviar o arquivo de log.
+  <code>{error}</code>
+logs_clear_failed: |-
+  ❌ <b>Falha na limpeza</b>
+
+  Falha ao limpar o arquivo de log:
+  <code>{error}</code>
+logs_empty: |-
+  📭 <b>Nenhum registro disponível</b>
+
+  O arquivo de log ainda não existe ou existe, mas não contém dados.
+
+  Execute o bot por um tempo para gerar logs.
+logs_preview_header: 📋 <b>Pré-visualização do registro atual:</b>
+logs_lines_header: 📋 <b>Linhas de registro recentes</b> (último {count})
+logs_old_header: 📋 <b>Linhas de registro mais antigas</b> (primeiro {count})
+logs_uploading: |-
+  ⏳ <b>Carregando arquivo de log...</b>
+
+  Aguarde enquanto o arquivo está sendo preparado.
+logs_file_caption: |-
+  📄 <b>Detalhes do arquivo de log</b>
+
+  <b>Nome do arquivo:</b> <code>{filename}</code>
+  <b>Tamanho:</b> {size_mb} MB
+  <b>Lúltima modificação:</b> {modified}
+logs_lines_caption: |-
+  📋 <b>Linhas de registro recentes</b>
+
+  Mostrando as últimas linhas {count} do log atual.
+logs_old_caption: |-
+  📋 <b>Linhas de registro mais antigas</b>
+
+  Mostrando as primeiras linhas {count} do início do log.
+logs_cleared: |-
+  ✅ <b>Arquivo de log limpo</b>
+
+  O arquivo de log foi limpo com sucesso.
+  <b>Tamanho anterior:</b> {size_mb} MB
+maint: |-
+  ⚠️ Estou em manutenção no momento e temporariamente indisponível. Verifique novamente mais tarde.
+
+  {reason}
+maint_reason: '<i>📝 Razão: {reason}</i>'
+maint_usage: |-
+  ⚙️ <b>Controle de manutenção</b>
+
+  Uso: {cmd} [ativar|desativar] [motivo]
+  📜 Status atual: {status}
+maint_check_fail: '❌ Falha ao verificar o status de manutenção: <code>{error}</code>'
+maint_already_enabled: ℹ️ O modo de manutenção já está habilitado 🟢.
+maint_already_disabled: ℹ️ O modo de manutenção já está desativado 🔴.
+maint_already_reason_same: ℹ️ A manutenção já está habilitada pelo mesmo motivo.
+maint_reason_removed: ✅ Motivo de manutenção removido com sucesso.
+maint_reason_updated: |-
+  ✅ Motivo da manutenção atualizado.
+  📝 Motivo: {reason}
+maint_enabled: ✅ O modo de manutenção foi <b>ativado</b> com sucesso.
+maint_enabled_reason: |-
+  ✅ Modo de manutenção habilitado.
+  📝 Motivo: {reason}
+maint_disabled: ✅ O modo de manutenção foi <b>desativado</b> com sucesso.
+maint_entering: ⚠️ O bot está entrando em modo de manutenção...
+enabled_with_reason: |-
+  🟢 Habilitado
+  📝 Motivo: {reason}
+move_usage: '⚠️ Uso: <code>{cmd} [from] [to]</code>'
+move_invalid_numbers: '⚠️ Números inválidos. Exemplo: <code>/{cmd} 2 1</code>'
+move_invalid_indexes_min: ⚠️ Os índices devem ser maiores que 0.
+move_invalid_indexes_max: ⚠️ A fila possui apenas faixas {queue_len}.
+move_success: ✅ Faixa movida da posição {from} para {to} por {user}.
+mute_already_muted: |-
+  🔇 <b>Já está sem som</b>
+  A música já está silenciada neste chat.
+  Você gostaria de ativar o som?
+mute_already_muted_with_time: |-
+  🔇 <b>Já está sem som</b>
+  A música está silenciada.
+  Ativar automaticamente o som em <b>{duration}</b>.
+mute_invalid_duration: |-
+  ⚠️ Duração inválida para ativação automática.
+  Deve estar entre <b>5</b> e <b>3600</b> segundos.
+mute_invalid_format: |-
+  ⚠️ Formato inválido.
+  Usar: <code>/{cmd} 30</code> ou <code>/{cmd} 30s</code>
+mute_failed: |-
+  ❌ <b>Falha na reprodução sem som</b>
+  Erro: <code>{error}</code>
+mute_success: |-
+  🔇 <b>Reprodução silenciada</b>
+
+  🎵 Faixa: {title}
+  👤 Silenciado por: {user}
+mute_success_with_time: |-
+  🔇 <b>Reprodução silenciada</b>
+
+  🎵 Faixa: {title}
+  👤 Silenciado por: {user}
+  <i>⏳ Ativação automática do som em <b>{duration}</b> segundos</i>
+no_song_query: |-
+  <b>🎵 Opa! Nenhuma música detectada.</b>
+
+  <i>Digite <b>{cmd} [nome da música]</b> ou responda a uma mídia para começar a tocar!</i>
+no_song_found: ❌ Nenhuma faixa encontrada.
+nothumb_status: |-
+  🖼️ <b>Controle de miniaturas</b>
+
+  <i>Quando ativado, as mensagens de reprodução não mostrarão capa ou miniatura.</i>
+
+  <b>📊 Uso: {cmd} [ativar|desativar]</b>
+
+  <i>As miniaturas estão {action} no momento.</i>
+nothumb_fetch_fail: ⚠️ <b>Falha ao buscar configuração de miniatura.</b>
+nothumb_already: ℹ️ A exibição de miniaturas já é {action}.
+nothumb_update_fail: ⚠️ <b>Falha ao atualizar a configuração da miniatura.</b>
+nothumb_updated: 🖼️ A exibição de miniaturas foi {action}.
+cmddelete_status: |-
+  🗑️ <b>Controle de exclusão de comandos</b>
+
+  Quando ativado, eu apagarei automaticamente as mensagens de comando.
+  Uso: {cmd} [ativar|desativar]
+  Estado atual: {action}
+cmddelete_updated: 🗑️ A exclusão do comando foi {action}.
+only_admin: |-
+  ⚠️ <b>Permissão negada!</b>
+  Somente <b>administradores</b> podem controlar estas ações. Você ainda pode tocar músicas 🎵.
+
+  Se você acredita que é um administrador, use /reload para atualizar seu status.
+only_admin_or_auth: |-
+  ⚠️ <b>Acesso negado</b>
+  Somente <b>administradores</b> ou <b>usuários autorizados</b> podem controlar estas ações.
+
+  Se você virou administrador recentemente, use /reload para atualizar suas permissões.
+only_admin_or_auth_cb: ⚠️ Somente administradores podem realizar essas ações.
+only_supergroup: ⚠️ Este comando só pode ser utilizado em grupos.
+only_owner: ⚠️ Somente o proprietário do bot pode usar este comando.
+only_sudo: ⚠️ Somente usuários sudo ou o proprietário do bot podem usar este comando.
+pause_invalid_duration: |-
+  ⚠️ Duração inválida para retomada automática.
+  Deve estar entre <b>5</b> e <b>3600</b> segundos.
+pause_invalid_format: |-
+  ⚠️ Formato inválido.
+  Usar: <code>/{cmd} 30</code> ou <code>/{cmd} 30s</code>
+auto_resume_line: <i>⏳ Retomada automática em <b>{seconds}</b> segundos</i>
+pause_already: |-
+  ⏸️ <b>Já pausado</b>
+  A música já está pausada.{auto_resume_line}
+pause_success: |-
+  ⏸️ <b>Reprodução pausada</b>
+
+  🎵 Faixa: {title}
+  ⏱️ Posição: {position} / {duration}
+  👤 Pausado por: {user}
+  {auto_resume_line}
+play_single_track_too_long: |-
+  ⚠️ Você não pode reproduzir músicas por mais de {limit_mins} minutos.
+  <i>{title}</i> foi ignorado.
+play_download_failed: |-
+  ❌ Falha ao baixar "<i>{title}</i>".
+  Erro: <code>{error}</code>
+play_added_to_queue_single: |-
+  <b>🎵 Adicionado à fila:</b> #{index}
+
+  <b>▫ Faixa:</b> <a href="{url}">{title}</a>
+  <b>▫ Duração:</b> {duration}
+  <b>▫ Solicitado por:</b> {by}
+channel_play_depreciated: ⚠️ Este manipulador está obsoleto. Use <code>/cplay --set channel_id</code> para definir seu canal para reprodução.
+play_multiple_tracks_too_long_header: <b>⚠️ Faixas {count} foram ignoradas (duração máxima {limit_mins} minutos):</b>
+play_multiple_tracks_too_long_item: '- <i>{title}</i>'
+play_multiple_tracks_too_long_more: '... e {remaining} mais.'
+play_all_tracks_skipped: ❌ Todas as faixas encontradas foram ignoradas devido aos limites de duração.
+play_failed: |-
+  ❌ Falha ao jogar
+  Erro: {error}
+play_unable: |-
+  <b>❌ Não foi possível reproduzir</b>
+
+  <i>Por favor, <b>reinicie o chat de voz</b>.</i>
+play_downloading_song: 📥 Baixando a música "{title}"
+play_download_canceled: ⚠️ Download cancelado por {user}.
+playmode_help: |-
+  🛠️ <b>Modo de jogo</b>
+
+  <b>Status:</b> {status}
+  <b>Uso:</b> <code>/playmode [enable|disable]</code>
+playmode_status_admins: <b>Apenas administradores</b> 🔐
+playmode_status_everyone: <b>Todos</b> 🌍
+playmode_success_admins: 🛡️ <b>Modo de reprodução</b> agora está restrito apenas a <b>administradores e DJs</b>. 🎧
+playmode_success_everyone: ✅ <b>Modo de reprodução</b> agora é <b>Aberto para todos</b>. Deixe a música fluir! 🎶
+playmode_restricted: 🚫 O modo de reprodução está ativado. Somente administradores e usuários autorizados podem jogar.
+play_added_multiple_header: ➕ <b>Adicionadas faixas {count}</b> por {user}
+play_queue_limit_hint: ⚠️ <i>Limite de fila atingido – algumas faixas foram ignoradas.</i>
+play_queue_view_hint: <i>Use /queue para ver a lista completa.</i>
+ping_start: 🏓 Pingando...
+ping_result: |-
+  <b>🏓 PONG</b>: <code>{latency}ms</code>
+
+  <b><u>🤖 Estatísticas do sistema {bot}: </u></b>
+
+  <b>Tempo de atividade:</b> {uptime}
+  Uso de <b>RAM:</b> {ram_info}
+  Uso da CPU <b>:</b> {cpu_usage}
+  <b>Uso do disco:</b> {disk_usage}
+position_now: |-
+  🎵 <b>{title}</b>
+  📍<code>{position} / {duration}</code>
+  ⚙️ Velocidade: <b>{speed}x</b>
+queue_limit_reached: ⚠️ Limite de fila atingido (máximo de faixas {limit}). Use /clear para limpar a fila.
+queue_no_active: |-
+  ⚠️ <b>Sem reprodução ativa.</b>
+
+  <i>Nada está na fila agora.</i>
+queue_header: 🎶 <b>Fila Atual</b>
+queue_now_playing: ▶️ <b>Em reprodução:</b>
+queue_up_next: ⏭️ <b>A seguir:</b>
+queue_more_line: … e {remaining} mais
+queue_empty_tail: 📭 <i>Não há mais músicas na fila.</i>
+queue_empty: ⚠️ <b>A fila já está vazia.</b>
+queue_restored: ✅ Faixas <b>{count}</b> restauradas com sucesso para a fila.
+queue_restore_no_data: ❌ Nenhuma fila limpa encontrada para restaurar ou uma nova música já foi adicionada.
+reload_start: ⚙️ Recarregando cache de administrador, status de bate-papo por voz e status de assistente...
+reload_done: |-
+  <b>⚙️ Recarga completa:</b>
+
+  {summary}
+reload_admin_cache_ok: <b>• Cache de administrador:</b> <i>✅ Concluído</i>
+reload_admin_cache_fail: <b>• Cache de administrador:</b> <i>❌ ({error})</i>
+reload_voice_inactive: <b>• Bate-papo por voz:</b> <i>⚪ Inativo</i>
+reload_voice_admin_required: <b>• Bate-papo por voz:</b> <i>❌ É necessária permissão de administrador</i>
+reload_voice_fail: <b>• Bate-papo por voz:</b> <i>❌ ({error})</i>
+reload_voice_active: <b>• Bate-papo por voz:</b> <i>✅ Ativo</i>
+reload_assistant_banned: <b>• Assistente:</b> <i>❌ Banido</i>
+reload_assistant_admin_required: <b>• Assistente:</b> <i>❌ É necessária permissão de administrador</i>
+reload_assistant_fail: <b>• Assistente:</b> <i>❌ ({error})</i>
+reload_assistant_present: <b>• Assistente:</b> <i>✅ Presente</i>
+reload_assistant_not_present: <b>• Assistente:</b> <i>⚪ Ausente</i>
+reload_room_reset: <b>• Sala:</b> <i>Redefinir ✅</i>
+remove_usage: |-
+  ⚠️ <b>Uso inválido.</b>
+  Uso: <code>{cmd} [index]</code>
+remove_invalid_index: ⚠️ <b>Índice inválido.</b> Deve ser um número.
+remove_index_too_small: ⚠️ <b>Index deve ser maior que 0.</b>
+remove_index_too_big: ⚠️ Índice inválido. A fila possui apenas faixas <b>{total}</b>.
+remove_success: |-
+  ✅ Faixa removida na posição <b>{index}</b> da fila.
+  👤 Por: {user}
+replay_failed: |-
+  ❌ <b>Falha na repetição</b>
+  Erro: <code>{error}</code>
+replay_success: |-
+  🔁 <b>Agora reproduzindo</b>
+
+  🎵 Título: {title}
+  ⏱️ Duração: <code>{duration}</code>
+  ⚙️ Velocidade: <b>{speed}x</b>
+resume_already_playing: |-
+  ℹ️ <b>Já está tocando</b>
+  A música já está tocando neste chat.
+  Você gostaria de pausar?
+resume_failed: |-
+  ❌ <b>Falha na retomada da reprodução</b>
+  Erro: <code>{error}</code>
+resume_success: |-
+  ▶️ <b>Retomando a reprodução</b>
+
+  🎵 Título: {title}
+  📍 Posição: {position} / {duration}
+  👤 Resumido por: {user}
+  {speed_line}
+restart: ♻️ Reiniciando...
+restart_exepath_fail: '❌ Falha ao obter o caminho do executável: {error}'
+restart_symlink_fail: '❌ Falha ao resolver o caminho do executável: {error}'
+restart_service: |-
+  {bot} acabou de reiniciar. Desculpe pelos problemas.
+
+  Comece a jogar novamente após 10–15 segundos.
+restart_initiated: ✅ Reinício iniciado com sucesso!
+restart_fail: '❌ Falha ao reiniciar: {error}'
+room_not_active_cb: ⚠️ Nada tocando no momento.
+room_no_active: |-
+  ⚠️ <b>Sem reprodução ativa.</b>
+
+  <i>Não há nada tocando agora.</i>
+room_not_linked: ⚠️ Este canal não está vinculado a nenhum grupo.
+room_already_paused: ⏸️ A trilha já está pausada. Toque em ▶️ Continuar para continuar.
+room_already_paused_auto: ⏸️ A faixa já está pausada – retomada automática em {duration}.
+room_pause_failed: |-
+  ❌ Falha ao pausar a reprodução.
+
+  <i>{error}</i>
+rtmp_not_configured: |-
+  ⚠️ <b>RTMP não configurado!</b>
+
+  Por favor, configure o servidor RTMP primeiro:
+  <code>{cmd} rtmps://server/s/streamkey</code>
+rtmp_already_streaming: |-
+  📡 <b>Já transmitindo!</b>
+
+  Use <code>/streamstop</code> para encerrar o stream atual.
+rtmp_init_failed: |-
+  ❌ <b>Falha ao inicializar o fluxo RTMP:</b>
+  <code>{error}</code>
+rtmp_starting_stream: 📡 <b>Iniciando transmissão RTMP...</b>
+rtmp_play_failed: |-
+  ❌ <b>Falha ao iniciar a transmissão:</b>
+  <code>{error}</code>
+rtmp_now_streaming: |-
+  📡 <b>Agora Streaming (RTMP):</b>
+
+  <b>▫ Faixa:</b> <a href="{url}">{title}</a>
+  <b>▫ Duração:</b> {duration}
+  <b>▫ Iniciado por:</b> {by}
+
+  ⚠️ <i>Nota: RTMP tem atraso de buffer de aproximadamente 15-30s</i>
+rtmp_not_streaming: ℹ️ Nenhum fluxo RTMP ativo.
+rtmp_stop_failed: |-
+  ❌ <b>Falha ao interromper a transmissão:</b>
+  <code>{error}</code>
+rtmp_stopped: ⏹️ Fluxo de <b>RTMP interrompido</b> por {user}
+rtmp_configured_not_started: |-
+  ℹ️ Status <b>RTMP:</b> Não iniciado
+
+  <b>▫ Servidor:</b> <code>{server}</code>
+  <b>▫ Estado:</b> Pronto para transmitir
+
+  Use <code>/stream &lt;query&gt;</code> para iniciar a transmissão.
+rtmp_status_playing: |-
+  📡 Status da transmissão <b>RTMP</b>
+
+  <b>▫ Estado:</b> ▶️ Transmissão
+  <b>▫ Posição:</b> {position}
+  <b>▫ Servidor:</b> <code>{server}</code>
+rtmp_status_paused: |-
+  📡 Status da transmissão <b>RTMP</b>
+
+  <b>▫ Estado:</b> ⏸️ Pausado
+  <b>▫ Servidor:</b> <code>{server}</code>
+rtmp_status_idle: |-
+  📡 Status da transmissão <b>RTMP</b>
+
+  <b>▫ Estado:</b> ⏹️ Inativo
+  <b>▫ Servidor:</b> <code>{server}</code>
+rtmp_dm_only: |-
+  🔒 <b>Aviso de segurança</b>
+
+  As credenciais RTMP NUNCA devem ser compartilhadas em grupos!
+
+  <b>📩 Para configurar RTMP:</b>
+  1. Abra meu chat privado: @{bot_username}
+  2. Envie: <code>{cmd} &lt;chat_id&gt; &lt;rtmp_url&gt;</code>
+
+  <b>💡 Exemplo:</b>
+  <code>/setrtmp -1001234567890 rtmps://server/s/key</code>
+rtmp_setup_usage: |-
+  ⚙️ Configuração <b>RTMP</b>
+
+  <u>Uso:</u>
+  <code>/setrtmp &lt;chat_id&gt; &lt;full_rtmp_url&gt;</code>
+
+  <b>📋 Parâmetros:</b>
+  • <code>chat_id</code> - ID do chat/canal alvo
+  • <code>full_rtmp_url</code> - URL RTMP completa com a chave de transmissão
+
+  <b>📝 Exemplo:</b>
+  <code>/setrtmp -1001234567890 rtmps://dc5-1.rtmp.t.me/s/123:key</code>
+
+  <b>🔍 Como obter o ID do chat:</b>
+  • Encaminhe qualquer mensagem do chat para @userinfobot
+  • Ou use o comando <code>/id</code> no chat
+
+  <b>🔐 Segurança:</b>
+  • A configuração só funciona no privado (DM)
+  • Você deve ser administrador no chat de destino
+  • As credenciais são armazenadas com segurança
+rtmp_invalid_chat_id: |-
+  ❌ <b>ID de bate-papo inválido!</b>
+
+  Forneça um ID de bate-papo numérico válido.
+
+  <b>💡 Exemplo:</b>
+  <code>/setrtmp -1001234567890 rtmps://...</code>
+rtmp_check_admin_failed: |-
+  ❌ <b>Falha ao verificar o status do administrador:</b>
+  <code>{error}</code>
+
+  <b>⚠️ Certifique-se:</b>
+  • Eu sou administradora no chat de destino
+  • O ID do chat está correto
+  • Você tem permissões de administrador
+rtmp_not_admin: |-
+  ⚠️ <b>Permissão negada</b>
+
+  Você deve ser <b>administrador</b> no chat de destino para configurar o RTMP.
+rtmp_parse_failed: |-
+  ❌ <b>Falha ao analisar URL RTMP:</b>
+  <code>{error}</code>
+
+  <b>📋 Formato correto:</b>
+  <code>rtmp://server/app/streamkey</code>
+  ou
+  <code>rtmps://server/s/streamkey</code>
+rtmp_streaming_not_supported: |-
+  ⚠️ <b>Streaming não suportado</b>
+
+  Esta ação não está disponível ao usar o modo <b>RTMP</b>.
+
+  Use <code>/stream</code> para reproduzir mídia via RTMP.
+rtmp_configured_success: |-
+  ✅ <b>RTMP configurado com sucesso!</b>
+
+  <b>🆔 ID do chat:</b> <code>{chat_id}</code>
+  <b>🔗 URL:</b> <code>{url}</code>
+  <b>🔑 Chave:</b> <code>{key}</code>
+
+  <b>✨ Próximas etapas:</b>
+  Vá até o chat e use:
+  <code>/stream &lt;song name&gt;</code>
+
+  <b>🔒 Nota de segurança:</b>
+  As credenciais são armazenadas de forma segura e nunca mostradas no grupo.
+searching: 🔍🎶 Procurando... ⚡✨
+searching_query: '🔍🎶 Procurando por: <b>{query}</b>... ⚡✨'
+speed_line: '⚙️ Velocidade: <b>{speed}x</b>'
+stats_system_header: 🔧 <b>Sistema:</b>
+stats_go_mem_header: 📦 <b>Memória Interna (Go):</b>
+stats_server_header: 💻 <b>Estatísticas do servidor:</b>
+stats_served_header: 📊 <b>Servido:</b>
+stats_system_os_arch: '• SO: <code>{os}</code>, Arco: <code>{arch}</code>'
+stats_system_cpu_goroutines: '• CPUs: <code>{cpus}</code>, Goroutines: <code>{goroutines}</code>'
+stats_go_alloc: '• Alocar: <code>{alloc} MB</code>'
+stats_go_sys: '• Sistema: <code>{sys} MB</code>'
+stats_go_gc: '• NumGC: <code>{gc_count}</code> ({emoji} {gc_rate}/min)'
+stats_server_cpu: '• Uso da CPU: {emoji} <code>{cpu}%</code>'
+stats_server_ram: '• Uso de RAM: {emoji} <code>{used_gib} GiB</code> | <code>{total_gib} GiB</code>'
+stats_server_storage: '• Armazenamento: <code>{used_gib} GiB</code> | <code>{total_gib} GiB</code>'
+stats_served_chats: '• Bate-papos: <code>{count}</code>'
+stats_served_chats_err: '• Chats: <code>Erro: {error}</code>'
+stats_served_users: '• Usuários: <code>{count}</code>'
+stats_served_users_err: '• Usuários: <code>Erro: {error}</code>'
+sudo_owner_self: 😂 Haha, você já é o chefe! Por que você está tentando se adicionar?
+sudo_bot_self: 🤖 Haha, eu sou a bot! Não consigo me adicionar à lista de sudo — nem mesmo o proprietário me engana 😎
+sudo_bot_user: 🤖 Você não pode adicionar um bot à lista de sudo – os usuários sudo devem ser humanos!
+sudo_fetch_user_fail: |-
+  ❌ Falha ao buscar informações do usuário. Talvez o usuário esteja inacessível.
+  <i>{error}</i>
+sudo_check_fail: '❌ Falha ao verificar a existência do sudo: <i>{error}</i>'
+sudo_already: '⚠️ O usuário {user} (ID: <code>{id}</code>) já é um usuário sudo.'
+sudo_add_fail: '❌ Falha ao adicionar sudo: <i>{error}</i>'
+sudo_add_success: ✅ {user} (<code>{id}</code>) foi adicionado aos usuários sudo.
+sudo_assistant_self: 🤖 O assistente está sempre na lista sudo por padrão — ele não pode ser adicionado novamente.
+sudo_owner_remove_block: 😎 Boa tentativa! Você não pode remover o proprietário – eles são intocáveis.
+sudo_assistant_cannot_remove: 🤖 O assistente é obrigatório e não pode ser removido da lista sudo.
+sudo_not_exists: ⚠️ O usuário {user} (<code>{id}</code>) não é um usuário sudo.
+sudo_remove_fail: '❌ Falha ao remover sudo: <i>{error}</i>'
+sudo_remove_success: '🗑️ {user} (ID: <code>{id}</code>) foi removido dos usuários sudo.'
+sudo_list_fetching: ⏳ Buscando lista de usuários sudo...
+sudo_list_fetch_fail: '❌ Falha ao obter a lista de usuários sudo: <code>{error}</code>'
+sudo_list_header: 👑 <b>Usuários sudo atuais:</b>
+sudo_list_owner: '{index}. {user} — <b>Proprietário</b>'
+sudo_list_entry: '{index}. {user}'
+sudo_list_no_extra: ⚠️ Nenhum usuário sudo adicional foi encontrado.
+seek_no_active: ⚠️ <b>Nenhuma faixa está sendo reproduzida no momento.</b>
+seek_usage: |-
+  ⚠️ Forneça segundos.
+  Exemplo: <code>{cmd} 40</code>
+seek_invalid_seconds: |-
+  ⚠️ Valor de segundos inválido.
+  Exemplo: <code>{cmd} 40</code>
+seek_too_close_start: ⚠️ Não é possível retroceder <b>{seconds}</b> segundos — isso seria muito próximo do início da faixa.
+seek_too_close_end: ⚠️ Não é possível avançar <b>{seconds}</b> segundos — isso estaria muito perto do final da faixa.
+seek_failed: |-
+  ❌ Falha ao buscar {direction} <b>{seconds}</b> segundos.
+  Erro: <code>{error}</code>
+seek_success: '{emoji} saltou de {direction} para <u>{position}</u> de <u>{duration}</u>.'
+stop_confirm_paused: |-
+  ⏸️ <b>A reprodução está pausada no momento.</b>
+
+  Deseja retomar o jogo ou pará-lo completamente?
+stop_confirm_muted: |-
+  🔇 <b>A reprodução está silenciada no momento.</b>
+
+  Deseja ativar o som ou pará-lo completamente?
+stopped: ⏹️ <b>Reprodução interrompida e apagada por {user}.</b>
+shuffle_current_state: |-
+  🔀 Atualmente o embaralhamento é <b>{state}</b> para este bate-papo.
+
+  Use <code>{cmd}</code> para alterná-lo.
+shuffle_updated: 🔀 Embaralhe <b>{state}</b> por {user}.
+skip_stopped: |-
+  ⏹️ A reprodução foi interrompida. A fila está vazia.
+  Ignorado por: {user}
+speed_usage: |-
+  💡 <b>Uso:</b>
+  <code>{cmd} [speed] [duration]</code> — altera a velocidade de reprodução
+
+  Faixa de velocidade permitida: <b>0,50x → 4,00x</b>
+  Duração (opcional) redefine a velocidade após determinados segundos.
+
+  Exemplo:
+  <code>{cmd} 1.25 45</code> – jogue a 1,25x por 45 segundos.
+speed_current: |-
+  🎧 <b>Velocidade atual:</b> <code>{speed}x</code> para 🎵 <u>{title}</u>
+
+  💡 Use <code>{cmd} reset</code> para restaurar a reprodução normal.
+speed_current_with_reset: |-
+  🎧 <b>Velocidade Atual:</b> <code>{speed}x</code>
+
+  🎵 <b>Faixa:</b> <i>{title}</i>
+  ⏳ <b>Redefinição automática em:</b> {duration}
+
+  💡 Use <code>{cmd} reset</code> para restaurar a reprodução normal instantaneamente.
+speed_invalid_value: |-
+  ❌ Valor de velocidade inválido.
+  Exemplo: <code>{cmd} 1.5</code> ou <code>{cmd} 2x</code>
+speed_invalid_range: ⚠️ A velocidade deve estar entre <b>0,50x</b> e <b>4,00x</b>.
+speed_invalid_duration: ⚠️ Duração inválida. Deve estar entre <b>5</b> e <b>3600</b> segundos.
+speed_already_set: ℹ️ A velocidade de reprodução já é <b>{speed}x</b> para 🎵 <b>{title}</b>
+speed_already_set_reset_hint: |-
+  ℹ️ A velocidade de reprodução já é <b>{speed}x</b> para 🎵 <b>{title}</b>
+
+  💡 Use <code>{cmd} reset</code> para retornar à velocidade normal.
+speed_failed: |-
+  ❌ Falha ao alterar a velocidade para <b>{speed}x</b>.
+  Erro: <code>{error}</code>
+speed_reset_success: ✅ Velocidade de reprodução redefinida para <b>1.0x</b> por {user}
+speed_set: 🚀 Velocidade de reprodução definida como <b>{speed}x</b> por {user}.
+speed_set_with_reset: |-
+  🚀 Velocidade de reprodução definida como <b>{speed}x</b> por {user}.
+  ⏳ Será redefinido ao normal após <b>{duration}</b> segundos.
+spt_fetch_fail: '⚠️ Falha ao buscar informações de rede: <code>{error}</code>'
+spt_servers_fetch_fail: '⚠️ Falha ao buscar servidores: <code>{error}</code>'
+spt_best_server_fail: '⚠️ Falha ao encontrar o melhor servidor: <code>{error}</code>'
+spt_running_download: 🚀 Executando teste de download...
+spt_running_upload: 📤 Executando teste de upload...
+spt_result: |-
+  <b>📡 Resultado do teste de velocidade</b>
+
+  <b><u>👤 Cliente</u></b>
+  IP: <code>{ip}</code>
+  ISP: {isp}
+  Lat: <code>{lat}</code>
+  Lon: <code>{lon}</code>
+
+  <b><u>🛰️ Servidor</u></b>
+  Nome: {server_name}
+  País: {country}
+  Patrocinador: {sponsor}
+  Distância: {distance_km} km
+  Latência: {latency_ms} ms
+
+  <b><u>⚡ Velocidade</u></b>
+  Baixar: <code>{dl_mbps} Mbps</code>
+  Carregar: <code>{ul_mbps} Mbps</code>
+start_private: |-
+  Olá, {user}! Meu nome é {bot}.
+
+  Sou uma bot de música do Telegram, com suporte a plataformas como YouTube, Spotify, JioSaavn e SoundCloud.
+
+  Se quiser, pode me adicionar aos seus grupos 💖
+start_group: <b>💫 Estou aqui!</b> Me chama com um comando quando quiser 😉
+stream_channelid_fail: ⚠️ Falha ao obter o ID do seu canal conectado.
+stream_queue_finished: |-
+  🎵 <b>Fila concluída!</b>
+
+  Não há mais músicas para tocar. Use /play para adicionar mais faixas! 🎶
+stream_downloading_next: 📥 Baixando sua próxima faixa...
+stream_download_fail: |-
+  ❌ Falha ao baixar.
+  Erro: <code>{error}</code>
+stream_play_fail: ❌ Falha ao reproduzir a música.
+stream_now_playing: |-
+  <b>🎵 Tocando agora:</b>
+
+  <b>▫ Faixa:</b> <a href="{url}">{title}</a>
+  <b>▫ Duração:</b> {duration}
+  <b>▫ Solicitado por:</b> {by}
+sudo_join_owner: 👑 {user} — proprietário de {bot} — acabou de entrar no chat.
+sudo_join_sudo: 🛡️ {user}, um usuário sudo de {bot}, acabou de entrar no chat.
+supergroup_needed: |-
+  Este chat (ID: <code>{chat_id}</code>) ainda não é um supergrupo.
+  <b>⚠️ Converta este chat em um supergrupo e depois me adicione como administrador.</b>
+
+  Se você não sabe como converter, use este guia:
+  🔗 <a href=\"https://te.legra.ph/How-to-Convert-a-Group-to-a-Supergroup-01-02\">Como converter para um supergrupo</a>
+
+  Se você tiver alguma dúvida, junte-se ao nosso grupo de suporte:
+unmute_already: |-
+  ℹ️ <b>O som já está ativado</b>
+  A música não está silenciada neste chat.
+unmute_failed: |-
+  ❌ <b>Falha na reprodução do som</b>
+  Erro: <code>{error}</code>
+unmute_success: |-
+  🔊 <b>Reprodução sem som</b>
+
+  🎵 Faixa: {title}
+  👤 Ativado o som por: {user}
+  {speed_line}
+voicechat_ended: |-
+  <b>⚠️ Bate-papo por vídeo encerrado</b>
+
+  <i>⏰ Duração: {duration}</i>
+voicechat_started: |-
+  <b>♻️ Bate-papo por voz iniciado!</b>
+
+  <i>Use /play [nome da música] para tocar música.</i>
+help_owner: |-
+  👑 <b>Comandos do proprietário</b>
+
+  <i>Ferramentas exclusivas para gerenciar usuários sudo, executar código do sistema e administrar o bot com segurança.</i>
+
+  <b>Comandos:</b>
+  <blockquote>
+  <b>/addsudo</b> - Adiciona um novo usuário à lista sudo do bot
+  <b>/delsudo</b> - Remove um usuário da lista sudo do bot
+  <b>/eval</b> - Executa trechos de código Go
+  <b>/maintenance</b> - Gerencia o modo de manutenção do bot
+  <b>/restart</b> - Reinicia o bot
+  <b>/sh</b> - Executa comandos shell
+  </blockquote>
+help_sudo: |-
+  ⚡ <b>Comandos sudo</b>
+
+  <i>Ferramentas avançadas para gerenciar o comportamento do bot, monitorar desempenho e controlar logs e automações.</i>
+
+  <b>Comandos:</b>
+  <blockquote>
+  <b>/active</b> - Mostra o total de chats ativos
+  <b>/autoleave</b> - Alterna a saída automática do chat
+  <b>/logger</b> - Ativa ou desativa o logger
+  <b>/stats</b> - Exibe as estatísticas do bot e do sistema
+  <b>/logs</b> - Obtém os logs do sistema
+  </blockquote>
+help_admin: |-
+  🛠 <b>Comandos de administrador</b>
+
+  <i>Ferramentas de controle de música e reprodução para administradores gerenciarem a fila com facilidade.</i>
+
+  <b>Comandos:</b>
+  <blockquote>
+  <b>/playmode</b> - Controla quem pode usar /play
+  <b>/cmddelete</b> - Alterna a exclusão automática de comandos do bot
+  <b>/speed</b> - Altera a velocidade de reprodução
+  <b>/skip</b> - Pula a música atual
+  <b>/pause</b> - Pausa a reprodução atual
+  <b>/resume</b> - Retoma a reprodução pausada
+  <b>/replay</b> - Repete a música atual
+  <b>/mute</b> - Silencia a reprodução
+  <b>/unmute</b> - Reativa o som da reprodução
+  <b>/seek</b> - Avança alguns segundos
+  <b>/seekback</b> - Retrocede alguns segundos
+  <b>/jump</b> - Pula para um ponto específico da faixa
+  <b>/move</b> - Move uma faixa da fila para outra posição
+  <b>/clear</b> - Limpa todas as músicas da fila
+  <b>/remove</b> - Remove uma faixa específica da fila
+  <b>/shuffle</b> - Embaralha todas as faixas da fila
+  <b>/loop</b> - Ativa ou desativa o loop
+  <b>/stop</b> - Para a reprodução e sai do chat de voz
+  <b>/nothumb</b> - Ativa ou desativa capa/miniatura nas mensagens de reprodução
+  </blockquote>
+help_public: |-
+  🌍 <b>Comandos públicos</b>
+
+  <i>Recursos para tocar músicas, ver a fila, verificar a latência e reportar bugs.</i>
+
+  <b>Comandos:</b>
+  <blockquote>
+  <b>/play</b> - Toca uma música
+  <b>/queue</b> - Mostra todas as faixas na fila
+  <b>/ping</b> - Verifica a latência de rede do bot
+  <b>/start</b> - Inicia o bot
+  <b>/help</b> - Mostra o menu de ajuda
+  <b>/bug</b> - Reporta um problema
+  <b>/position</b> - Mostra o tempo atual da faixa
+  <b>/reload</b> - Recarrega dados de administrador e cache
+  <b>/json</b> - Mostra a estrutura JSON da mensagem
+  <b>/sudolist</b> - Mostra a lista de usuários sudo
+  </blockquote>

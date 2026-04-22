@@ -1,0 +1,67 @@
+package modules
+
+import (
+	"strings"
+
+	"github.com/amarnathcjd/gogram/telegram"
+
+	"main/internal/database"
+	"main/internal/locales"
+	"main/internal/utils"
+)
+
+func handleLogger(m *telegram.NewMessage) error {
+	args := strings.Fields(m.Text())
+	chatID := m.ChannelID()
+
+	current, dbErr := database.IsLoggerEnabled()
+
+	action := F(chatID, utils.IfElse(current, "enabled", "disabled"))
+
+	if len(args) < 2 {
+		if dbErr == nil {
+			m.Reply(F(chatID, "logger_usage", locales.Arg{
+				"cmd": getCommand(m),
+				"status": F(chatID, "logger_status", locales.Arg{
+					"action": action,
+				}),
+			}))
+		} else {
+			m.Reply(F(chatID, "logger_usage", locales.Arg{
+				"cmd":    getCommand(m),
+				"status": "",
+			}))
+		}
+		return telegram.ErrEndGroup
+	}
+
+	enable, err := utils.ParseBool(args[1])
+	if err != nil {
+		m.Reply(F(chatID, "invalid_bool"))
+		return telegram.ErrEndGroup
+	}
+
+	action = F(chatID, utils.IfElse(enable, "enabled", "disabled"))
+	if dbErr != nil {
+		m.Reply(
+			F(chatID, "logger_check_fail", locales.Arg{"error": dbErr.Error()}),
+		)
+		return telegram.ErrEndGroup
+	}
+
+	if current == enable {
+		m.Reply(F(chatID, "logger_already", locales.Arg{"action": action}))
+		return telegram.ErrEndGroup
+	}
+
+	if err := database.SetLoggerEnabled(enable); err != nil {
+		m.Reply(
+			F(chatID, "logger_update_fail", locales.Arg{"error": err.Error()}),
+		)
+		return telegram.ErrEndGroup
+	}
+
+	m.Reply(F(chatID, "logger_updated", locales.Arg{"action": action}))
+
+	return telegram.ErrEndGroup
+}
