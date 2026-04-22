@@ -67,8 +67,11 @@ func (f *FallenApiPlatform) Download(
 	track *state.Track,
 	statusMsg *telegram.NewMessage,
 ) (string, error) {
-	// fallen api didn't support video downloads so disable it
-	track.Video = false
+	// FallenApi is audio-only; refuse video so the registry falls through
+	// to the next downloader (yt-dlp) that can serve a proper video stream.
+	if track.Video {
+		return "", errors.New("fallen api does not support video downloads")
+	}
 
 	if f := findFile(track); f != "" {
 		gologging.Debug("FallenApi: Download -> Cached File -> " + f)
