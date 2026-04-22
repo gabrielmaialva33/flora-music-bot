@@ -22,3 +22,5 @@ index.html
 *.txt
 
 .codex
+.idea
+.claude
