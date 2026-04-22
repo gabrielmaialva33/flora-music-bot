@@ -30,112 +30,112 @@ type playOpts struct {
 const playMaxRetries = 3
 
 func init() {
-	helpTexts["/play"] = `<i>Play a song in the voice chat from YouTube, Spotify, or other sources.</i>
+	helpTexts["/play"] = `<i>Toca uma música no chat de voz do YouTube, Spotify ou outras fontes.</i>
 
-<u>Usage:</u>
-<b>/play [query/URL]</b> — Search and play a song
-<b>/play [reply to audio/video]</b> — Play replied media
+<u>Uso:</u>
+<b>/play [query/URL]</b> — Pesquisa e toca uma música
+<b>/play [responda a áudio/vídeo]</b> — Toca a mídia respondida
 
-<b>🎵 Supported Sources:</b>
-• YouTube (videos, playlists)
-• Spotify (tracks, albums, playlists)
+<b>🎵 Fontes suportadas:</b>
+• YouTube (vídeos, playlists)
+• Spotify (faixas, álbuns, playlists)
 • SoundCloud
-• Direct audio/video links
+• Links diretos de áudio/vídeo
 
 <b>⚙️ Features:</b>
-• Queue support - adds to end if already playing
-• Auto-join voice chat if not present
-• Duration limit check
-• Multiple track support (playlists)
+• Suporte a fila - adiciona no final se já tiver tocando
+• Entra no chat de voz automaticamente se não estiver
+• Checa limite de duração
+• Suporte a múltiplas faixas (playlists)
 
-<b>💡 Examples:</b>
+<b>💡 Exemplos:</b>
 <code>/play never gonna give you up</code>
 <code>/play https://youtu.be/dQw4w9WgXcQ</code>
 <code>/play https://open.spotify.com/track/...</code>
 
-<b>⚠️ Notes:</b>
-• Bot must have proper permissions in voice chat
-• Tracks exceeding duration limit will be skipped
-• Use <code>/queue</code> to view upcoming tracks
-• Use <code>/fplay</code> to force play (skip queue)`
+<b>⚠️ Observações:</b>
+• O bot precisa ter as permissões corretas no chat de voz
+• Faixas que passam do limite de duração são puladas
+• Usa <code>/queue</code> pra ver as próximas faixas
+• Usa <code>/fplay</code> pra forçar play (pula a fila)`
 
-	helpTexts["/fplay"] = `<i>Force play a song, skipping the current queue.</i>
+	helpTexts["/fplay"] = `<i>Força o play de uma música, pulando a fila atual.</i>
 
-<u>Usage:</u>
-<b>/fplay [query/URL]</b> — Force play immediately
-<b>/fplay [reply to audio/video]</b> — Force play replied media
+<u>Uso:</u>
+<b>/fplay [query/URL]</b> — Força o play imediatamente
+<b>/fplay [responda a áudio/vídeo]</b> — Força o play da mídia respondida
 
-<b>🎵 Behavior:</b>
-• Stops current playback
-• Clears queue
-• Starts playing immediately
+<b>🎵 Comportamento:</b>
+• Para o playback atual
+• Limpa a fila
+• Começa a tocar imediatamente
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar
 
-<b>💡 Example:</b>
-<code>/fplay urgent announcement track</code>
+<b>💡 Exemplo:</b>
+<code>/fplay musica de anúncio urgente</code>
 
-<b>⚠️ Note:</b>
-This command is useful for urgent playback needs but will disrupt the current queue.`
+<b>⚠️ Observação:</b>
+Esse comando é útil pra playback urgente mas vai bagunçar a fila atual.`
 
-	helpTexts["/vplay"] = `<i>Play video content in voice chat (video mode).</i>
+	helpTexts["/vplay"] = `<i>Toca conteúdo em vídeo no chat de voz (modo vídeo).</i>
 
-<u>Usage:</u>
-<b>/vplay [query/URL]</b> — Play video
-<b>/vplay [reply to video]</b> — Play replied video
+<u>Uso:</u>
+<b>/vplay [query/URL]</b> — Toca o vídeo
+<b>/vplay [responda a vídeo]</b> — Toca o vídeo respondido
 
 <b>📹 Features:</b>
-• Full video playback support
-• Audio + Video streaming
-• Same queue system as audio
+• Suporte completo a playback de vídeo
+• Streaming de áudio + vídeo
+• Mesmo sistema de fila do áudio
 
-<b>⚠️ Notes:</b>
-• Requires video streaming permissions
-• Use <code>/fvplay</code> for force video play`
+<b>⚠️ Observações:</b>
+• Requer permissões de streaming de vídeo
+• Usa <code>/fvplay</code> pra forçar o play do vídeo`
 
-	helpTexts["/fvplay"] = `<i>Force play video content, skipping queue.</i>
+	helpTexts["/fvplay"] = `<i>Força o play de vídeo, pulando a fila.</i>
 
-<u>Usage:</u>
-<b>/fvplay [query/URL]</b> — Force play video immediately
+<u>Uso:</u>
+<b>/fvplay [query/URL]</b> — Força o play do vídeo imediatamente
 
-<b>🔒 Restrictions:</b>
-• Admin/auth only command
+<b>🔒 Restrições:</b>
+• Comando apenas pra admins/autorizados
 
-<b>💡 Use Case:</b>
-Immediate video playback when something urgent needs to be shown.`
+<b>💡 Caso de uso:</b>
+Playback imediato de vídeo quando precisa mostrar algo urgente.`
 
-	helpTexts["/cplay"] = `<i>Play in linked channel's voice chat.</i>
+	helpTexts["/cplay"] = `<i>Toca no chat de voz do canal vinculado.</i>
 
-<u>Usage:</u>
-<b>/cplay [query]</b> — Play in linked channel
+<u>Uso:</u>
+<b>/cplay [query]</b> — Toca no canal vinculado
 
-<b>⚙️ Setup Required:</b>
-First use <code>/channelplay --set [channel_id]</code>
+<b>⚙️ Setup necessário:</b>
+Primeiro usa <code>/channelplay --set [channel_id]</code>
 
-<b>⚠️ Note:</b>
-All c* commands work the same as regular commands but affect the linked channel.`
+<b>⚠️ Observação:</b>
+Todos os comandos c* funcionam igual aos comandos normais mas afetam o canal vinculado.`
 
-	helpTexts["/channelplay"] = `<i>Configure linked channel for channel play mode.</i>
+	helpTexts["/channelplay"] = `<i>Configura o canal vinculado pro modo channel play.</i>
 
-<u>Usage:</u>
-<b>/channelplay --set [channel_id]</b> — Set linked channel
+<u>Uso:</u>
+<b>/channelplay --set [channel_id]</b> — Define o canal vinculado
 
-<b>⚙️ Behavior:</b>
-• Links a channel to current group
-• All <code>c*</code> commands affect linked channel
-• Channel must be accessible by bot
+<b>⚙️ Comportamento:</b>
+• Vincula um canal ao grupo atual
+• Todos os comandos <code>c*</code> afetam o canal vinculado
+• O canal precisa estar acessível pro bot
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> can configure
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> podem configurar
 
-<b>💡 Examples:</b>
+<b>💡 Exemplos:</b>
 <code>/channelplay --set -1001234567890</code>
 
-<b>⚠️ Notes:</b>
-• Get channel ID using forward + @userinfobot
-• Bot must be admin in linked channel
-• Use <code>/cplay</code> after setup`
+<b>⚠️ Observações:</b>
+• Pega o channel ID usando encaminhar + @userinfobot
+• O bot precisa ser admin no canal vinculado
+• Usa <code>/cplay</code> depois do setup`
 
 	helpTexts["/playforce"] = helpTexts["/fplay"]
 	helpTexts["/fcplay"] = helpTexts["/cfplay"]

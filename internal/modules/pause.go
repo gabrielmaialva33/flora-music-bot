@@ -13,19 +13,19 @@ import (
 )
 
 func init() {
-	helpTexts["/pause"] = `<i>Pause the current playback.</i>
+	helpTexts["/pause"] = `<i>Pausa o playback atual.</i>
 
-<u>Usage:</u>
-<b>/pause</b> — Pause playback
-<b>/pause [seconds]</b> — Pause with auto-resume after specified seconds
+<u>Uso:</u>
+<b>/pause</b> — Pausa o playback
+<b>/pause [segundos]</b> — Pausa com auto-resume depois dos segundos especificados
 
 <b>⚙️ Features:</b>
-• Manual pause/resume control
-• Auto-resume timer (5-3600 seconds)
+• Controle manual de pause/resume
+• Timer de auto-resume (5-3600 segundos)
 
-<b>💡 Examples:</b>
-<code>/pause</code> — Pause indefinitely
-<code>/pause 30</code> — Pause for 30 seconds then auto-resume
+<b>💡 Exemplos:</b>
+<code>/pause</code> — Pausa por tempo indeterminado
+<code>/pause 30</code> — Pausa por 30 segundos e depois dá resume automático
 `
 }
 

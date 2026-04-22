@@ -10,19 +10,19 @@ import (
 )
 
 func init() {
-	helpTexts["/resume"] = `<i>Resume the paused playback.</i>
+	helpTexts["/resume"] = `<i>Dá resume no playback pausado.</i>
 
-<u>Usage:</u>
-<b>/resume</b> — Resume playback from pause
+<u>Uso:</u>
+<b>/resume</b> — Continua o playback da pausa
 
-<b>⚙️ Behavior:</b>
-• Continues from last paused position
-• Cancels auto-resume timer if active
+<b>⚙️ Comportamento:</b>
+• Continua da última posição pausada
+• Cancela o timer de auto-resume se tiver ativo
 
-<b>⚠️ Notes:</b>
-• Can only resume if currently paused
-• Position is preserved during pause
-• Speed settings remain active after resume`
+<b>⚠️ Observações:</b>
+• Só dá pra resumir se tiver pausado
+• A posição é preservada durante a pausa
+• As configs de velocidade continuam ativas depois do resume`
 }
 
 func resumeHandler(m *telegram.NewMessage) error {

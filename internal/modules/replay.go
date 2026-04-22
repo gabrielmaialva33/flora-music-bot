@@ -10,18 +10,18 @@ import (
 )
 
 func init() {
-	helpTexts["/replay"] = `<i>Restart the current track from the beginning.</i>
+	helpTexts["/replay"] = `<i>Reinicia a faixa atual do começo.</i>
 
-<u>Usage:</u>
-<b>/replay</b> — Restart current track
+<u>Uso:</u>
+<b>/replay</b> — Reinicia a faixa atual
 
-<b>⚙️ Behavior:</b>
-• Resets position to 0:00
-• Maintains speed setting
-• Continues playback immediately
+<b>⚙️ Comportamento:</b>
+• Volta a posição pra 0:00
+• Mantém a config de velocidade
+• Continua o playback imediatamente
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar
 `
 }
 

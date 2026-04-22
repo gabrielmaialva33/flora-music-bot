@@ -11,21 +11,21 @@ import (
 // TODO: jab song muted ya paused ho to stop mein user ko batao ki song [muted/paused] hai to tumhe [resume/unmute] karna hai ya stop??
 
 func init() {
-	helpTexts["/end"] = `<i>Stop playback and leave the voice chat.</i>
+	helpTexts["/end"] = `<i>Para o playback e sai do chat de voz.</i>
 
-<u>Usage:</u>
-<b>/stop</b> or <b>/end</b> — Stop playback
+<u>Uso:</u>
+<b>/stop</b> ou <b>/end</b> — Para o playback
 
-<b>⚙️ Behavior:</b>
-• Stops current track
-• Clears queue
-• Assistant leaves voice chat
+<b>⚙️ Comportamento:</b>
+• Para a faixa atual
+• Limpa a fila
+• O assistente sai do chat de voz
 •
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar
 
-<b>⚠️ Note:</b>
-This action cannot be undone. Use <code>/pause</code> for temporary stops.`
+<b>⚠️ Observação:</b>
+Essa ação não pode ser desfeita. Usa <code>/pause</code> pra paradas temporárias.`
 	helpTexts["/stop"] = helpTexts["/end"]
 }
 
