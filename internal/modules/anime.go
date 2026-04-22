@@ -310,7 +310,7 @@ func renderHome(m *tg.NewMessage, cb *tg.CallbackQuery) error {
 		))
 		if len(row) == 2 {
 			kb.AddRow(row...)
-			row = row[:0]
+			row = nil
 		}
 	}
 	if len(row) > 0 {
@@ -379,7 +379,7 @@ func renderRail(cb *tg.CallbackQuery, title string) error {
 		))
 		if len(row) == 2 {
 			kb.AddRow(row...)
-			row = row[:0]
+			row = nil
 		}
 	}
 	if len(row) > 0 {
@@ -540,7 +540,7 @@ func renderAnime(cb *tg.CallbackQuery, animeID int) error {
 		))
 		if len(row) == 2 {
 			kb.AddRow(row...)
-			row = row[:0]
+			row = nil
 		}
 	}
 	if len(row) > 0 {
@@ -618,7 +618,7 @@ func renderEpisodes(
 		))
 		if len(row) == 2 {
 			kb.AddRow(row...)
-			row = row[:0]
+			row = nil
 		}
 	}
 	if len(row) > 0 {
