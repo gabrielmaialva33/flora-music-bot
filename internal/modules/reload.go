@@ -13,29 +13,29 @@ import (
 )
 
 func init() {
-	helpTexts["/reload"] = `<i>Reload admin cache and refresh voice chat state.</i>
+	helpTexts["/reload"] = `<i>Recarrega o cache de admins e atualiza o estado do chat de voz.</i>
 
-<u>Usage:</u>
-<b>/reload</b> — Refresh all cached data
+<u>Uso:</u>
+<b>/reload</b> — Atualiza todos os dados em cache
 
-<b>🔄 What Gets Reloaded:</b>
-• Chat admin list
-• Voice chat status
-• Assistant presence status
-• Assistant ban status
+<b>🔄 O que é recarregado:</b>
+• Lista de admins do chat
+• Status do chat de voz
+• Status de presença do assistente
+• Status de ban do assistente
 
-<b>🔒 Flood Protection:</b>
-• Regular users: 5 minute cooldown
-• Admins: 2 minute cooldown
+<b>🔒 Proteção contra flood:</b>
+• Usuários comuns: cooldown de 5 minutos
+• Admins: cooldown de 2 minutos
 
-<b>💡 When to Use:</b>
-• After promoting/demoting admins
-• Voice chat issues
-• Permission problems
-• Bot behaving incorrectly
+<b>💡 Quando usar:</b>
+• Depois de promover/rebaixar admins
+• Problemas no chat de voz
+• Problemas de permissão
+• Bot tá se comportando errado
 
-<b>⚠️ Notes:</b>
-• May reset room state if admin permissions required
+<b>⚠️ Observações:</b>
+• Pode resetar o estado da room se precisar de permissões de admin
 `
 }
 

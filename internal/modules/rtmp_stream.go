@@ -23,93 +23,93 @@ var (
 )
 
 func init() {
-	helpTexts["stream"] = `<i>Start RTMP live streaming to configured server.</i>
+	helpTexts["stream"] = `<i>Inicia streaming RTMP ao vivo pro servidor configurado.</i>
 
-<u>Usage:</u>
-<b>/stream &lt;query/URL&gt;</b> — Start streaming a track
-<b>/stream [reply to audio/video]</b> — Stream replied media
+<u>Uso:</u>
+<b>/stream &lt;query/URL&gt;</b> — Começa a transmitir uma faixa
+<b>/stream [responda a áudio/vídeo]</b> — Transmite a mídia respondida
 
 <b>🎥 Features:</b>
-• Live streaming to your RTMP server
-• Supports audio and video
-• Queue support (like /play)
-• Real-time status monitoring
+• Streaming ao vivo pro seu servidor RTMP
+• Suporta áudio e vídeo
+• Suporte a fila (tipo /play)
+• Monitoramento de status em tempo real
 
-<b>⚙️ Setup Required:</b>
-Before using this command, an admin must configure RTMP:
-1. Open bot's private chat (DM)
-2. Send: <code>/setrtmp &lt;chat_id&gt; &lt;rtmp_url&gt;</code>
+<b>⚙️ Setup necessário:</b>
+Antes de usar esse comando, um admin precisa configurar o RTMP:
+1. Abre o DM do bot
+2. Manda: <code>/setrtmp &lt;chat_id&gt; &lt;rtmp_url&gt;</code>
 
-<b>📝 Example Setup:</b>
-In bot DM:
+<b>📝 Exemplo de setup:</b>
+No DM do bot:
 <code>/setrtmp -1001234567890 rtmps://dc5-1.rtmp.t.me/s/123:key</code>
 
-Then in your chat:
+Depois no seu chat:
 <code>/stream never gonna give you up</code>
 
-<b>⚠️ Important Notes:</b>
-• RTMP streams have ~15-30s buffering delay
-• Setup ONLY works in bot DM (for security)
-• Use <code>/streamstop</code> to end stream
-• Only admin/auth users can control streams
-• We do NOT use Telegram's RTMP API - you provide your own server`
+<b>⚠️ Observações importantes:</b>
+• Streams RTMP têm delay de buffering de ~15-30s
+• Setup SÓ funciona no DM do bot (por segurança)
+• Usa <code>/streamstop</code> pra terminar o stream
+• Só admins/autorizados podem controlar streams
+• NÃO usamos a API RTMP do Telegram - você usa seu próprio servidor`
 
-	helpTexts["streamstop"] = `<i>Stop current RTMP stream.</i>
+	helpTexts["streamstop"] = `<i>Para o stream RTMP atual.</i>
 
-<u>Usage:</u>
-<b>/streamstop</b> — Stop the active stream
+<u>Uso:</u>
+<b>/streamstop</b> — Para o stream ativo
 
-<b>⚠️ Note:</b>
-Only admin/auth users can stop streams.`
+<b>⚠️ Observação:</b>
+Só admins/autorizados podem parar streams.`
 
-	helpTexts["streamstatus"] = `<i>Check current RTMP stream status.</i>
+	helpTexts["streamstatus"] = `<i>Checa o status atual do stream RTMP.</i>
 
-<u>Usage:</u>
-<b>/streamstatus</b> — Show stream information
+<u>Uso:</u>
+<b>/streamstatus</b> — Mostra informações do stream
 
-<b>📊 Shows:</b>
-• Stream state (playing/stopped)
-• Current position
-• RTMP server (masked for security)
-• Configuration status`
+<b>📊 Mostra:</b>
+• Estado do stream (tocando/parado)
+• Posição atual
+• Servidor RTMP (mascarado por segurança)
+• Status da configuração`
 
-	helpTexts["setrtmp"] = `<i>Configure RTMP streaming server (DM only).</i>
+	helpTexts["setrtmp"] = `<i>Configura o servidor de streaming RTMP (só no DM).</i>
 
-<u>Usage:</u>
-<b>/setrtmp &lt;chat_id&gt; &lt;rtmp_url&gt;</b> — Set RTMP for a chat
+<u>Uso:</u>
+<b>/setrtmp &lt;chat_id&gt; &lt;rtmp_url&gt;</b> — Define RTMP pra um chat
 
-<b>🔒 Security:</b>
-• <b>This command ONLY works in DM</b> (private chat with bot)
-• NEVER share RTMP credentials in groups
-• Credentials are stored securely in database
-• We do NOT use Telegram's RTMP API
+<b>🔒 Segurança:</b>
+• <b>Esse comando SÓ funciona no DM</b> (chat privado com o bot)
+• NUNCA compartilha credenciais RTMP em grupos
+• Credenciais são armazenadas com segurança no banco
+• NÃO usamos a API RTMP do Telegram
 
-<b>📋 URL Format:</b>
-<code>rtmp://server/app/streamkey</code>
-or
-<code>rtmps://server/s/streamkey</code>
+<b>📋 Formato da URL:</b>
+<code>rtmp://servidor/app/streamkey</code>
+ou
+<code>rtmps://servidor/s/streamkey</code>
 
-<b>📝 Examples:</b>
+<b>📝 Exemplos:</b>
 
-<b>Telegram Voice Chat:</b>
-1. Start voice chat in your channel
-2. Telegram gives you: <code>rtmps://dc5-1.rtmp.t.me/s/123:key</code>
-3. In bot DM send: <code>/setrtmp -1001234567890 rtmps://dc5-1.rtmp.t.me/s/123:key</code>
+<b>Chat de Voz do Telegram:</b>
+1. Inicia o chat de voz no seu canal
+2. O Telegram te dá: <code>rtmps://dc5-1.rtmp.t.me/s/123:key</code>
+3. No DM do bot manda: <code>/setrtmp -1001234567890 rtmps://dc5-1.rtmp.t.me/s/123:key</code>
 
-<b>Custom RTMP Server:</b>
+<b>Servidor RTMP Customizado:</b>
 <code>/setrtmp -1001234567890 rtmp://live.example.com/stream/mykey</code>
 
-<b>🔍 Getting Chat ID:</b>
-• Forward message from chat to @userinfobot
-• Or use <code>/id</code> command in the chat
+<b>🔍 Como pegar o Chat ID:</b>
+• Encaminha uma mensagem do chat pro @userinfobot
+• Ou usa o comando <code>/id</code> no chat
 
-<b>⚠️ Requirements:</b>
-• You must be admin in target chat
-• Bot must be member of target chat
-• Command only works in bot's private chat
+<b>⚠️ Requisitos:</b>
+• Você precisa ser admin do chat alvo
+• O bot precisa ser membro do chat alvo
+• Comando só funciona no chat privado do bot
 
-<b>💡 Why DM only?</b>
-RTMP stream keys are like passwords. Configuring in DM prevents accidental exposure in group chats.`
+<b>💡 Por que só no DM?</b>
+Stream keys RTMP são tipo senhas. Configurar no DM evita vazamento acidental em grupos.`
 }
 
 // Get or create RTMP stream for chat
