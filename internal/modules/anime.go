@@ -6,13 +6,12 @@ import (
 	"html"
 	"strconv"
 	"strings"
-	"sync"
-	"time"
 
 	"github.com/Laky-64/gologging"
 	tg "github.com/amarnathcjd/gogram/telegram"
 
-	"main/internal/config"
+	"main/internal/core"
+	state "main/internal/core/models"
 	"main/internal/tomato"
 )
 
@@ -93,9 +92,16 @@ func animeCB(cb *tg.CallbackQuery) error {
 		seasonID, _ := strconv.Atoi(parts[3])
 		page, _ := strconv.Atoi(parts[4])
 		return renderEpisodes(cb, animeID, seasonID, page)
-	case "p": // anime:p:<episodeID>
+	case "p": // anime:p:<episodeID> — auto-play in best quality
 		id, _ := strconv.Atoi(parts[2])
-		return renderStream(cb, id)
+		return performPlay(cb, id, "best")
+	case "pq": // anime:pq:<episodeID>:<fhd|shd>
+		if len(parts) < 4 {
+			cb.Answer("🤔 Qualidade inválida")
+			return tg.ErrEndGroup
+		}
+		id, _ := strconv.Atoi(parts[2])
+		return performPlay(cb, id, parts[3])
 	case "back": // anime:back:<animeID>
 		id, _ := strconv.Atoi(parts[2])
 		return renderAnime(cb, id)
@@ -387,45 +393,109 @@ func renderEpisodes(
 	return sendOrEdit(nil, cb, b.String(), kb.Build())
 }
 
-// renderStream fetches stream URLs and shows ready-to-paste commands.
-func renderStream(cb *tg.CallbackQuery, episodeID int) error {
-	cb.Answer("🎬 Gerando stream...")
+// performPlay resolves the episode stream, picks a quality and injects it
+// straight into the chat's voice chat via core.RoomState.Play. It then
+// edits the callback message with a "now playing" card.
+//
+// quality: "fhd" | "shd" | "best"
+func performPlay(cb *tg.CallbackQuery, episodeID int, quality string) error {
+	chatID := cb.ChannelID()
+
+	// Auto-play requires a group with an active video chat.
+	// User DMs (positive ID) don't have voice chats.
+	if chatID > 0 {
+		cb.Answer(
+			"⚠️ O /anime só toca em grupos com chat de vídeo ativo.",
+			&tg.CallbackOptions{Alert: true},
+		)
+		return tg.ErrEndGroup
+	}
+
+	cb.Answer("🎬 Preparando o player...")
 
 	s, err := tomato.Default().EpisodeStream(episodeID)
 	if err != nil {
 		return replyErr(nil, cb, "❌ Erro ao gerar stream: "+err.Error())
 	}
 
-	best := s.Streams.Best()
-	if best == "" {
-		return replyErr(nil, cb, "😕 Nenhum stream disponível pra esse episódio.")
+	url, label := pickStream(s.Streams, quality)
+	if url == "" {
+		return replyErr(nil, cb, "😕 Essa qualidade não está disponível.")
 	}
 
+	ass, err := core.Assistants.ForChat(chatID)
+	if err != nil {
+		return replyErr(nil, cb,
+			"❌ Não consegui resolver o assistente pra esse grupo:\n<code>"+
+				html.EscapeString(err.Error())+"</code>")
+	}
+	room, _ := core.GetRoom(chatID, ass, true)
+
+	requester := "🍅 <i>via /anime</i>"
+	if cb.Sender != nil {
+		requester = fmt.Sprintf(
+			`<a href="tg://user?id=%d">%s</a>`,
+			cb.Sender.ID,
+			html.EscapeString(cb.Sender.FirstName),
+		)
+	}
+
+	track := &state.Track{
+		ID:        fmt.Sprintf("tomato_%d", episodeID),
+		Title:     s.EpisodeName,
+		URL:       url,
+		Video:     true,
+		Source:    "TomatoAnimes",
+		Requester: requester,
+	}
+
+	if err := room.Play(track, url, false); err != nil {
+		gologging.ErrorF("anime: room.Play failed for ep %d: %v", episodeID, err)
+		return replyErr(nil, cb,
+			"❌ Não consegui iniciar a reprodução.\n\n"+
+				"Certifica que o <b>chat de vídeo</b> está ativo e o assistente "+
+				"(<b>@"+ass.Self.Username+"</b>) é membro do grupo.\n\n"+
+				"<i>Detalhe:</i> <code>"+html.EscapeString(err.Error())+"</code>")
+	}
+
+	// ---------- Now-playing card ----------
 	var b strings.Builder
 	fmt.Fprintf(
 		&b,
-		"🎬 <b>Pronto pra tocar!</b>\n\n<b>%s</b>\n\n",
+		"🎬 <b>Tocando no chat de vídeo!</b>\n\n"+
+			"<b>%s</b>\n\n"+
+			"🍿 Qualidade: <b>%s</b>\n",
 		html.EscapeString(s.EpisodeName),
+		label,
 	)
-	b.WriteString("📋 <b>Toque no comando pra copiar, depois cole no chat de vídeo:</b>\n\n")
-
-	fmt.Fprintf(&b, "<code>/vplay %s</code>\n\n", best)
-
-	if s.Streams.FHD != "" && s.Streams.SHD != "" && s.Streams.FHD != s.Streams.SHD {
-		b.WriteString("<i>Se o 1080p travar, use o 480p:</i>\n")
-		fmt.Fprintf(&b, "<code>/vplay %s</code>\n\n", s.Streams.SHD)
-	}
-
 	if s.EpisodeHasNext {
 		fmt.Fprintf(
 			&b,
-			"➡️ <b>Próximo:</b> Ep %d — %s",
+			"\n➡️ <b>Próximo:</b> Ep %d — <i>%s</i>",
 			s.EpisodeNumber+1,
 			html.EscapeString(truncate(s.NextEpisodeTitle, 50)),
 		)
 	}
 
 	kb := tg.NewKeyboard()
+	// quality switcher
+	qRow := []tg.KeyboardButton{}
+	if quality != "fhd" && s.Streams.FHD != "" {
+		qRow = append(qRow, tg.Button.Data(
+			"🎬 1080p",
+			fmt.Sprintf("anime:pq:%d:fhd", episodeID),
+		))
+	}
+	if quality != "shd" && s.Streams.SHD != "" {
+		qRow = append(qRow, tg.Button.Data(
+			"📱 480p",
+			fmt.Sprintf("anime:pq:%d:shd", episodeID),
+		))
+	}
+	if len(qRow) > 0 {
+		kb.AddRow(qRow...)
+	}
+
 	if s.EpisodeHasNext && s.NextEpisodeID > 0 {
 		kb.AddRow(tg.Button.Data(
 			"▶️ Próximo episódio",
@@ -441,6 +511,29 @@ func renderStream(cb *tg.CallbackQuery, episodeID int) error {
 	)
 
 	return sendOrEdit(nil, cb, b.String(), kb.Build())
+}
+
+// pickStream chooses a URL based on requested quality and returns
+// the URL along with a human label for the now-playing card.
+func pickStream(
+	q tomato.StreamQualities,
+	quality string,
+) (url, label string) {
+	switch quality {
+	case "fhd":
+		return q.FHD, "1080p"
+	case "shd":
+		return q.SHD, "480p"
+	}
+	// best: pick highest available
+	switch {
+	case q.FHD != "":
+		return q.FHD, "1080p"
+	case q.MHD != "":
+		return q.MHD, "720p"
+	default:
+		return q.SHD, "480p"
+	}
 }
 
 // ---------- helpers ----------
@@ -518,9 +611,3 @@ func decodeB64(s string) (string, error) {
 	return string(b), nil
 }
 
-// shush unused imports in case of future expansion
-var (
-	_ = time.Now
-	_ = sync.Mutex{}
-	_ = config.BetomatoToken
-)
