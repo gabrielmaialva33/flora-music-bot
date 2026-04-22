@@ -24,11 +24,60 @@ import (
 // Both maps are small (a few dozen entries per active chat) and are
 // never flushed — memory cost is negligible.
 var (
-	epThumbCache   = make(map[int]string)
-	epThumbMu      sync.RWMutex
+	epThumbCache    = make(map[int]string)
+	epThumbMu       sync.RWMutex
 	animeCoverCache = make(map[int]string)
 	animeCoverMu    sync.RWMutex
+	animeNameCache  = make(map[int]string)
+	animeNameMu     sync.RWMutex
 )
+
+func cacheAnimeName(id int, name string) {
+	if id == 0 || name == "" {
+		return
+	}
+	animeNameMu.Lock()
+	animeNameCache[id] = name
+	animeNameMu.Unlock()
+}
+
+func lookupAnimeName(id int) string {
+	animeNameMu.RLock()
+	defer animeNameMu.RUnlock()
+	return animeNameCache[id]
+}
+
+// preloadAnimeNames fetches every anime's name in parallel (capped)
+// and caches them. Used to turn "#1234" into real titles before
+// rendering a rail.
+func preloadAnimeNames(ids []int) {
+	const maxConcurrent = 6
+	sem := make(chan struct{}, maxConcurrent)
+	var wg sync.WaitGroup
+	for _, id := range ids {
+		if id == 0 || lookupAnimeName(id) != "" {
+			continue
+		}
+		wg.Add(1)
+		sem <- struct{}{}
+		go func(id int) {
+			defer wg.Done()
+			defer func() { <-sem }()
+			a, err := tomato.Default().Anime(id)
+			if err != nil {
+				gologging.DebugF("anime: preload %d failed: %v", id, err)
+				return
+			}
+			cacheAnimeName(id, a.AnimeDetails.AnimeName)
+			cover := a.AnimeDetails.AnimeCapeURL
+			if cover == "" {
+				cover = a.AnimeDetails.AnimeBannerURL
+			}
+			cacheAnimeCover(id, cover)
+		}(id)
+	}
+	wg.Wait()
+}
 
 func cacheEpisodeThumb(id int, thumb string) {
 	if id == 0 || thumb == "" {
@@ -143,6 +192,14 @@ func animeCB(cb *tg.CallbackQuery) error {
 	case "h": // anime:h — home
 		cb.Answer("⏳ Carregando…")
 		return renderHome(nil, cb)
+	case "rail": // anime:rail:<b64title>
+		if len(parts) < 3 {
+			cb.Answer("🤔 Categoria inválida")
+			return tg.ErrEndGroup
+		}
+		title, _ := decodeB64(parts[2])
+		cb.Answer("🎞 Carregando títulos…")
+		return renderRail(cb, title)
 	case "s": // anime:s:<b64query>:<page>
 		if len(parts) < 4 {
 			cb.Answer("🤔 Busca inválida")
@@ -195,8 +252,37 @@ func animeCB(cb *tg.CallbackQuery) error {
 
 // ---------- renderers ----------
 
-// renderHome shows the feed with rails.
-// Either m (fresh message) or cb (callback) is provided.
+// sectionIcon picks a nice emoji for each feed rail title.
+func sectionIcon(title string) string {
+	lower := strings.ToLower(title)
+	switch {
+	case strings.Contains(lower, "alta"):
+		return "🔥"
+	case strings.Contains(lower, "recém") || strings.Contains(lower, "novo"):
+		return "🆕"
+	case strings.Contains(lower, "dublagem") || strings.Contains(lower, "dublado"):
+		return "🗣"
+	case strings.Contains(lower, "aventura"):
+		return "🗺"
+	case strings.Contains(lower, "comédia") || strings.Contains(lower, "comedia"):
+		return "😂"
+	case strings.Contains(lower, "romance"):
+		return "❤️"
+	case strings.Contains(lower, "slice"):
+		return "🌿"
+	case strings.Contains(lower, "recomen"):
+		return "✨"
+	case strings.Contains(lower, "curtido"):
+		return "👍"
+	case strings.Contains(lower, "talvez"):
+		return "🎯"
+	}
+	return "🎞"
+}
+
+// renderHome shows a category picker built from the feed rails.
+// Each rail becomes a button; clicking it opens renderRail with
+// preloaded anime names.
 func renderHome(m *tg.NewMessage, cb *tg.CallbackQuery) error {
 	feed, err := tomato.Default().Feed()
 	if err != nil {
@@ -205,57 +291,107 @@ func renderHome(m *tg.NewMessage, cb *tg.CallbackQuery) error {
 	}
 
 	var b strings.Builder
-	b.WriteString("🍅 <b>TomatoAnimes — Início</b>\n")
-	b.WriteString("<i>Escolha um anime pra começar.</i>\n")
+	b.WriteString("🍅 <b>TomatoAnimes</b>\n")
+	b.WriteString("<i>Escolha uma categoria ou busque um anime.</i>\n\n")
+	b.WriteString("<b>🔎 Pra buscar:</b> <code>/anime &lt;nome&gt;</code>")
 
 	kb := tg.NewKeyboard()
-	rowsAdded := 0
 
-	// Show trending + newly added + recommended (types 3 and 5), capped
+	// 2-column grid of rails that actually have content.
+	row := make([]tg.KeyboardButton, 0, 2)
 	for _, sec := range feed.Data {
-		if sec.Type != 3 && sec.Type != 5 {
+		if (sec.Type != 3 && sec.Type != 5) || len(sec.Data) == 0 || sec.Title == "" {
 			continue
 		}
-		if len(sec.Data) == 0 {
-			continue
-		}
-		b.WriteString("\n<b>▸ ")
-		b.WriteString(html.EscapeString(sec.Title))
-		b.WriteString("</b>")
-
-		// One row with up to 3 animes per section
-		max := len(sec.Data)
-		if max > 3 {
-			max = 3
-		}
-		row := make([]tg.KeyboardButton, 0, max)
-		for i := 0; i < max; i++ {
-			a := sec.Data[i]
-			if a.AnimeID == 0 {
-				continue
-			}
-			label := fmt.Sprintf("#%d", a.AnimeID)
-			row = append(row, tg.Button.Data(
-				label,
-				fmt.Sprintf("anime:v:%d", a.AnimeID),
-			))
-		}
-		if len(row) > 0 {
+		label := fmt.Sprintf("%s %s", sectionIcon(sec.Title), truncate(sec.Title, 22))
+		row = append(row, tg.Button.Data(
+			label,
+			"anime:rail:"+encodeB64(sec.Title),
+		))
+		if len(row) == 2 {
 			kb.AddRow(row...)
-			rowsAdded++
-		}
-		if rowsAdded >= 5 {
-			break
+			row = row[:0]
 		}
 	}
-
-	b.WriteString("\n\n<b>🔎 Pra buscar:</b> <code>/anime &lt;nome&gt;</code>")
+	if len(row) > 0 {
+		kb.AddRow(row...)
+	}
 
 	kb.AddRow(
 		tg.Button.Data("❌ Fechar", "anime:x"),
 	)
 
 	return sendOrEdit(m, cb, b.String(), "", kb.Build())
+}
+
+// renderRail shows all animes from a given feed rail (identified by its
+// title). Preloads names in parallel so the buttons display real titles.
+func renderRail(cb *tg.CallbackQuery, title string) error {
+	feed, err := tomato.Default().Feed()
+	if err != nil {
+		gologging.ErrorF("anime: feed failed: %v", err)
+		return replyErr(nil, cb, friendlyErr(err))
+	}
+
+	var rail *tomato.FeedSection
+	for i := range feed.Data {
+		if feed.Data[i].Title == title {
+			rail = &feed.Data[i]
+			break
+		}
+	}
+	if rail == nil || len(rail.Data) == 0 {
+		return replyErr(nil, cb, "😕 Categoria não encontrada.")
+	}
+
+	// Collect up to 12 anime IDs and preload their names in parallel.
+	ids := make([]int, 0, 12)
+	for _, a := range rail.Data {
+		if a.AnimeID == 0 {
+			continue
+		}
+		ids = append(ids, a.AnimeID)
+		if len(ids) >= 12 {
+			break
+		}
+	}
+	preloadAnimeNames(ids)
+
+	var b strings.Builder
+	fmt.Fprintf(
+		&b,
+		"%s <b>%s</b>\n<i>Escolha um anime pra abrir os detalhes.</i>\n",
+		sectionIcon(rail.Title),
+		html.EscapeString(rail.Title),
+	)
+
+	// 2-column grid of anime buttons with real names (cache-backed).
+	kb := tg.NewKeyboard()
+	row := make([]tg.KeyboardButton, 0, 2)
+	for _, id := range ids {
+		name := lookupAnimeName(id)
+		if name == "" {
+			name = fmt.Sprintf("Anime #%d", id)
+		}
+		row = append(row, tg.Button.Data(
+			truncate(name, 22),
+			fmt.Sprintf("anime:v:%d", id),
+		))
+		if len(row) == 2 {
+			kb.AddRow(row...)
+			row = row[:0]
+		}
+	}
+	if len(row) > 0 {
+		kb.AddRow(row...)
+	}
+
+	kb.AddRow(
+		tg.Button.Data("🏠 Início", "anime:h"),
+		tg.Button.Data("❌ Fechar", "anime:x"),
+	)
+
+	return sendOrEdit(nil, cb, b.String(), "", kb.Build())
 }
 
 // renderSearch shows search results.
