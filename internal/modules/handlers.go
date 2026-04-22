@@ -127,6 +127,11 @@ var handlers = []MsgHandlerDef{
 		Filters: []telegram.Filter{ignoreChannelFilter},
 	},
 	{
+		Pattern: "(anime|a|tomato)",
+		Handler: animeHandler,
+		Filters: []telegram.Filter{ignoreChannelFilter},
+	},
+	{
 		Pattern: "(lang|language)",
 		Handler: langHandler,
 		Filters: []telegram.Filter{superGroupFilter, authFilter},
@@ -453,6 +458,7 @@ var cbHandlers = []CbHandlerDef{
 	{Pattern: "^bcast_cancel$", Handler: broadcastCancelCB},
 
 	{Pattern: `^room:(\w+)$`, Handler: roomHandle},
+	{Pattern: `^anime:`, Handler: animeCB},
 	{Pattern: "progress", Handler: emptyCBHandler},
 }
 
