@@ -13,100 +13,100 @@ import (
 )
 
 func init() {
-	helpTexts["/queue"] = `<i>Display the current playback queue.</i>
+	helpTexts["/queue"] = `<i>Mostra a fila de playback atual.</i>
 
-<u>Usage:</u>
-<b>/queue</b> — Show queue
+<u>Uso:</u>
+<b>/queue</b> — Mostra a fila
 
-<b>📋 Display Format:</b>
-• Now Playing - Current track with position
-• Up Next - Next 10 tracks in queue
-• Track info: Title, requester, duration
+<b>📋 Formato de exibição:</b>
+• Tocando agora - Faixa atual com a posição
+• Próximas - As próximas 10 faixas da fila
+• Info da faixa: Título, quem pediu, duração
 
 <b>⚙️ Features:</b>
-• Real-time queue status
-• Requester attribution
-• Duration display
-• Queue length indicator
+• Status da fila em tempo real
+• Atribuição de quem pediu
+• Exibição de duração
+• Indicador de tamanho da fila
 
-<b>💡 Related Commands:</b>
-• <code>/position</code> - Current track position only
-• <code>/remove</code> - Remove specific track
-• <code>/clear</code> - Clear all tracks
-• <code>/move</code> - Reorder tracks`
+<b>💡 Comandos relacionados:</b>
+• <code>/position</code> - Só a posição da faixa atual
+• <code>/remove</code> - Remove uma faixa específica
+• <code>/clear</code> - Limpa todas as faixas
+• <code>/move</code> - Reordena as faixas`
 
-	helpTexts["/restore"] = `<i>Restore a previously cleared music queue.</i>
+	helpTexts["/restore"] = `<i>Restaura uma fila de música que foi limpa antes.</i>
 
-<u>Usage:</u>
-<b>/restore</b> — Recover tracks
+<u>Uso:</u>
+<b>/restore</b> — Recupera as faixas
 
-<b>⚙️ Behavior:</b>
-• Recovers tracks cleared by the last <code>/clear</code> command
-• Only works if no new songs have been added since the clear
-• Restored tracks are appended to the current queue
+<b>⚙️ Comportamento:</b>
+• Recupera as faixas limpas pelo último <code>/clear</code>
+• Só funciona se nenhuma música nova tiver sido adicionada depois do clear
+• As faixas restauradas são colocadas no final da fila atual
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this`
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar`
 
-	helpTexts["/remove"] = `<i>Remove a specific track from the queue.</i>
+	helpTexts["/remove"] = `<i>Remove uma faixa específica da fila.</i>
 
-<u>Usage:</u>
-<b>/remove [index]</b> — Remove track at position
+<u>Uso:</u>
+<b>/remove [índice]</b> — Remove a faixa da posição
 
-<b>⚙️ Behavior:</b>
-• Index starts from 1 (first track in queue)
-• Cannot remove currently playing track
-• Queue positions update automatically
+<b>⚙️ Comportamento:</b>
+• Índice começa do 1 (primeira faixa da fila)
+• Não dá pra remover a faixa que tá tocando agora
+• As posições da fila atualizam automaticamente
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar
 
-<b>💡 Examples:</b>
-<code>/remove 1</code> — Remove first track in queue
-<code>/remove 5</code> — Remove 5th track
+<b>💡 Exemplos:</b>
+<code>/remove 1</code> — Remove a primeira faixa da fila
+<code>/remove 5</code> — Remove a 5ª faixa
 
-<b>⚠️ Notes:</b>
-• Use <code>/queue</code> to see track indices
-• Invalid index shows error with queue length
-• Use <code>/clear</code> to remove all tracks`
+<b>⚠️ Observações:</b>
+• Usa <code>/queue</code> pra ver os índices das faixas
+• Índice inválido mostra erro com o tamanho da fila
+• Usa <code>/clear</code> pra remover todas as faixas`
 
-	helpTexts["/clear"] = `<i>Clear all tracks from the queue.</i>
+	helpTexts["/clear"] = `<i>Limpa todas as faixas da fila.</i>
 
-<u>Usage:</u>
-<b>/clear</b> — Remove all queued tracks
+<u>Uso:</u>
+<b>/clear</b> — Remove todas as faixas da fila
 
-<b>⚙️ Behavior:</b>
-• Removes all tracks from queue
-• Current playing track continues
-• Queue becomes empty after current track ends
+<b>⚙️ Comportamento:</b>
+• Remove todas as faixas da fila
+• A faixa que tá tocando continua
+• A fila fica vazia depois que a faixa atual acabar
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar
 
-<b>💡 Tips:</b>
-If you cleared the queue by mistake, use <code>/restore</code> or <code>/crestore</code> immediately to recover it (before adding any new songs).`
+<b>💡 Dicas:</b>
+Se você limpou a fila sem querer, usa <code>/restore</code> ou <code>/crestore</code> na hora pra recuperar (antes de adicionar música nova).`
 
-	helpTexts["/move"] = `<i>Reorder tracks in the queue.</i>
+	helpTexts["/move"] = `<i>Reordena as faixas da fila.</i>
 
-<u>Usage:</u>
-<b>/move [from] [to]</b> — Move track from position to position
+<u>Uso:</u>
+<b>/move [de] [pra]</b> — Move a faixa de uma posição pra outra
 
-<b>⚙️ Behavior:</b>
-• Moves track at index 'from' to index 'to'
-• Other tracks shift positions accordingly
-• Indices start from 1
+<b>⚙️ Comportamento:</b>
+• Move a faixa do índice 'de' pro índice 'pra'
+• As outras faixas deslocam as posições de acordo
+• Índices começam do 1
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar
 
-<b>💡 Examples:</b>
-<code>/move 3 1</code> — Move 3rd track to 1st position
-<code>/move 1 5</code> — Move 1st track to 5th position
+<b>💡 Exemplos:</b>
+<code>/move 3 1</code> — Move a 3ª faixa pra 1ª posição
+<code>/move 1 5</code> — Move a 1ª faixa pra 5ª posição
 
-<b>⚠️ Notes:</b>
-• Both positions must be valid queue indices
-• Use <code>/queue</code> to see current order
-• Cannot move currently playing track`
+<b>⚠️ Observações:</b>
+• As duas posições precisam ser índices válidos da fila
+• Usa <code>/queue</code> pra ver a ordem atual
+• Não dá pra mover a faixa que tá tocando agora`
 }
 
 func queueHandler(m *tg.NewMessage) error {

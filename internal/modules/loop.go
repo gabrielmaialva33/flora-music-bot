@@ -11,27 +11,27 @@ import (
 )
 
 func init() {
-	helpTexts["/loop"] = `<i>Set loop count for the current track.</i>
+	helpTexts["/loop"] = `<i>Define quantas vezes a faixa atual vai repetir.</i>
 
-<u>Usage:</u>
-<b>/loop</b> — Show current loop count
-<b>/loop [count]</b> — Set loop count (0-10)
+<u>Uso:</u>
+<b>/loop</b> — Mostra a contagem de loop atual
+<b>/loop [contagem]</b> — Define o loop (0-10)
 
-<b>⚙️ Behavior:</b>
-• 0 = No loop (play once)
-• 1-10 = Repeat track that many times
-• Loop counter decrements after each playback
+<b>⚙️ Comportamento:</b>
+• 0 = Sem loop (toca uma vez só)
+• 1-10 = Repete a faixa essa quantidade de vezes
+• O contador decrementa depois de cada execução
 
-<b>💡 Examples:</b>
-<code>/loop 0</code> — Disable loop
-<code>/loop 3</code> — Loop current track 3 times
-<code>/loop 10</code> — Loop current track 10 times
+<b>💡 Exemplos:</b>
+<code>/loop 0</code> — Desativa o loop
+<code>/loop 3</code> — Repete a faixa atual 3 vezes
+<code>/loop 10</code> — Repete a faixa atual 10 vezes
 
-<b>⚠️ Notes:</b>
-• Maximum loop count: 10
-• Loop affects only current track
-• After loops complete, plays next in queue
-• If the track is forcefully skipped using <code>/skip</code>, the loop will stop and reset automatically`
+<b>⚠️ Observações:</b>
+• Limite máximo de loop: 10
+• O loop afeta só a faixa atual
+• Depois que os loops acabam, toca a próxima da fila
+• Se a faixa for pulada com <code>/skip</code>, o loop para e reseta automaticamente`
 }
 
 func loopHandler(m *tg.NewMessage) error {

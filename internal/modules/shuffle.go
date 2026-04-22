@@ -10,27 +10,27 @@ import (
 )
 
 func init() {
-	helpTexts["/shuffle"] = `<i>Toggle shuffle mode for the queue.</i>
+	helpTexts["/shuffle"] = `<i>Liga/desliga o modo shuffle da fila.</i>
 
-<u>Usage:</u>
-<b>/shuffle</b> — Show current shuffle state
-<b>/shuffle on</b> — Enable shuffle
-<b>/shuffle off</b> — Disable shuffle
+<u>Uso:</u>
+<b>/shuffle</b> — Mostra o estado atual do shuffle
+<b>/shuffle on</b> — Ativa o shuffle
+<b>/shuffle off</b> — Desativa o shuffle
 
-<b>⚙️ Behavior:</b>
-• Randomly reorders queue when enabled
-• Affects track selection order
-• Can be toggled at any time
+<b>⚙️ Comportamento:</b>
+• Embaralha a fila aleatoriamente quando ativado
+• Afeta a ordem de seleção das faixas
+• Pode ser ligado/desligado a qualquer momento
 
-<b>🔒 Restrictions:</b>
-• Only <b>chat admins</b> or <b>authorized users</b> can use this
+<b>🔒 Restrições:</b>
+• Só <b>admins do chat</b> ou <b>usuários autorizados</b> podem usar
 
-<b>💡 Examples:</b>
-<code>/shuffle on</code> — Enable shuffle mode
-<code>/shuffle off</code> — Disable shuffle mode
+<b>💡 Exemplos:</b>
+<code>/shuffle on</code> — Ativa o modo shuffle
+<code>/shuffle off</code> — Desativa o modo shuffle
 
-<b>⚠️ Note:</b>
-Shuffle only affects queue order, not currently playing track.`
+<b>⚠️ Observação:</b>
+O shuffle só afeta a ordem da fila, não a faixa que tá tocando.`
 }
 
 func shuffleHandler(m *telegram.NewMessage) error {
