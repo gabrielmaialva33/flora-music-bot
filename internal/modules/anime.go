@@ -195,6 +195,21 @@ var (
 	epSeasonMu    sync.RWMutex
 )
 
+// breadcrumb joins non-empty crumbs with U+203A (›) to produce a
+// lightweight "you are here" header. We truncate aggressively so it
+// stays on one line on mobile.
+func breadcrumb(crumbs ...string) string {
+	out := make([]string, 0, len(crumbs))
+	for _, c := range crumbs {
+		c = strings.TrimSpace(c)
+		if c == "" {
+			continue
+		}
+		out = append(out, truncate(c, 28))
+	}
+	return strings.Join(out, " › ")
+}
+
 func cacheEpisodeSeason(epID, seasonID int) {
 	if epID == 0 || seasonID == 0 {
 		return
@@ -812,6 +827,10 @@ func renderAnime(cb *tg.CallbackQuery, animeID int) error {
 
 	var b strings.Builder
 	fmt.Fprintf(
+		&b, "<i>%s</i>\n\n",
+		html.EscapeString(breadcrumb("🍅 TomatoAnimes", d.AnimeName)),
+	)
+	fmt.Fprintf(
 		&b, "🎬 <b>%s</b>  <i>(%s)</i>\n\n",
 		html.EscapeString(d.AnimeName),
 		html.EscapeString(d.AnimeDate),
@@ -904,11 +923,32 @@ func renderEpisodes(
 		totalPages = 1
 	}
 
+	// Breadcrumb: "🍅 › Anime › Temporada X · Y eps"
+	animeName := lookupAnimeName(animeID)
+	seasonLabel := ""
+	if a, err := animeCached(animeID); err == nil {
+		if animeName == "" {
+			animeName = a.AnimeDetails.AnimeName
+		}
+		for _, s := range a.AnimeSeasons {
+			if s.SeasonID == seasonID {
+				seasonLabel = s.SeasonName
+				break
+			}
+		}
+	}
+	crumb := breadcrumb(
+		"🍅",
+		animeName,
+		fmt.Sprintf("%s · %d eps", seasonLabel, res.Episodes),
+	)
+
 	var b strings.Builder
+	fmt.Fprintf(&b, "<i>%s</i>\n\n", html.EscapeString(crumb))
 	fmt.Fprintf(
 		&b,
-		"📺 <b>Episódios</b>  <i>(%d no total • página %d/%d)</i>\n\n",
-		res.Episodes, page+1, totalPages,
+		"📺 <b>Episódios</b>  <i>(página %d/%d)</i>\n\n",
+		page+1, totalPages,
 	)
 	for _, ep := range slice {
 		fmt.Fprintf(
@@ -938,12 +978,15 @@ func renderEpisodes(
 	}
 
 	// Smart pagination: [◂] [ · N/M · ] [▸]
-	kb.AddRow(paginationRow(
-		page, totalPages,
-		func(p int) string {
-			return fmt.Sprintf("anime:ep:%d:%d:%d", animeID, seasonID, p)
-		},
-	)...)
+	hrefFn := func(p int) string {
+		return fmt.Sprintf("anime:ep:%d:%d:%d", animeID, seasonID, p)
+	}
+	kb.AddRow(paginationRow(page, totalPages, hrefFn)...)
+	// Jump anchors for long seasons (100+ eps → 10+ pages).
+	// Shows [« 1] [‹ prev-group] [next-group ›] [last »] with 5-page stride.
+	if jumps := jumpRow(page, totalPages, 5, hrefFn); len(jumps) > 0 {
+		kb.AddRow(jumps...)
+	}
 
 	kb.AddRow(
 		tg.Button.Data("🔙 Temporadas", fmt.Sprintf("anime:back:%d", animeID)),
@@ -951,6 +994,45 @@ func renderEpisodes(
 	)
 
 	return sendOrEdit(nil, cb, b.String(), lookupAnimeCover(animeID), kb.Build())
+}
+
+// jumpRow returns a secondary pagination row with "jump by stride"
+// anchors: [« 1] [‹ -stride] [+stride ›] [last »]. Only rendered when
+// totalPages is big enough to benefit from it (>= 2*stride).
+func jumpRow(
+	current, total, stride int,
+	hrefFn func(page int) string,
+) []tg.KeyboardButton {
+	if total < stride*2 {
+		return nil
+	}
+	out := make([]tg.KeyboardButton, 0, 4)
+	// first
+	if current > stride {
+		out = append(out, tg.Button.Data("« 1", hrefFn(0)))
+	}
+	// jump back
+	if back := current - stride; back >= 0 {
+		out = append(out, tg.Button.Data(
+			fmt.Sprintf("‹ %d", back+1),
+			hrefFn(back),
+		))
+	}
+	// jump forward
+	if fwd := current + stride; fwd < total {
+		out = append(out, tg.Button.Data(
+			fmt.Sprintf("%d ›", fwd+1),
+			hrefFn(fwd),
+		))
+	}
+	// last
+	if current < total-1-stride {
+		out = append(out, tg.Button.Data(
+			fmt.Sprintf("%d »", total),
+			hrefFn(total-1),
+		))
+	}
+	return out
 }
 
 // paginationRow builds a Telegram pagination row with a centered counter
@@ -1048,7 +1130,23 @@ func performPlay(cb *tg.CallbackQuery, episodeID int, quality string) error {
 	}
 
 	// ---------- Now-playing card ----------
+	// Breadcrumb: "🍅 › Anime › ep N/Total"
+	animeName := lookupAnimeName(s.EpisodeAnimeID)
+	if animeName == "" {
+		if a, err := animeCached(s.EpisodeAnimeID); err == nil {
+			animeName = a.AnimeDetails.AnimeName
+		}
+	}
+
 	var b strings.Builder
+	if animeName != "" {
+		epTag := fmt.Sprintf("ep %d", s.EpisodeNumber)
+		fmt.Fprintf(
+			&b,
+			"<i>%s</i>\n\n",
+			html.EscapeString(breadcrumb("🍅", animeName, epTag)),
+		)
+	}
 	fmt.Fprintf(
 		&b,
 		"🎬 <b>Tocando no chat de vídeo!</b>\n\n"+
