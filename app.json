@@ -1,87 +1,108 @@
 {
   "name": "WinxMusic",
-  "description": "Telegram Group Calls streaming bot with some useful features, written in Python with Pyrogram and Py-Tgcalls. Supporting platforms like Youtube, Spotify, Resso, AppleMusic, Soundcloud and M3u8 Links.",
-  "logo": "https://graph.org/file/c0e014ff34f34d1056627.png",
+  "description": "A Telegram bot that streams music into group voice chats with seamless playback and control.",
   "keywords": [
-    "python3",
     "telegram",
     "bot",
-    "Winx",
-    "WinxMusicBot",
-    "telegram-bot",
-    "pyrogram"
+    "music",
+    "go",
+    "voice-chat"
   ],
+  "repository": "https://github.com/gabrielmaialva33/flora-music-bot",
+  "website": "https://github.com/gabrielmaialva33/flora-music-bot",
   "stack": "container",
   "env": {
     "API_ID": {
-      "description": "Get this value from https://my.telegram.org",
+      "description": "Your Telegram API ID from my.telegram.org.",
       "value": "",
       "required": true
     },
     "API_HASH": {
-      "description": "Get this value from https://my.telegram.org",
+      "description": "Your Telegram API Hash from my.telegram.org.",
       "value": "",
       "required": true
     },
-    "BOT_TOKEN": {
-      "description": "A Bot's token Get it from Botfather",
+    "TOKEN": {
+      "description": "Your Telegram bot token from @BotFather.",
       "value": "",
       "required": true
-    },
-    "EXTRA_PLUGINS": {
-      "description": "if You want to load extra plugins with music plugins so fill True  if you don't want to load extra plugins so Fill False",
-      "value": "False",
-      "required": false
     },
     "MONGO_DB_URI": {
-      "description": "Get a mongodb url from https://cloud.mongodb.com . You can leave it blank if you want , bot will use Winx's database for you.",
+      "description": "Your MongoDB connection string.",
       "value": "",
+      "required": true
+    },
+    "STRING_SESSION": {
+      "description": "A Pyrogram string session for the assistant.",
+      "value": "",
+      "required": true
+    },
+    "FALLEN_API_KEY": {
+      "description": "API key for Fallen API (optional). You can get one from @FallenApiBot or https://beta.fallenapi.fun/. If you are using cookies, you can leave this empty.",
+      "value": "",
+      "required": false
+    },
+    "FALLEN_API_URL": {
+      "description": "Base URL for the Fallen API. For more info, visit @FallenApiBot or https://beta.fallenapi.fun/.",
+      "value": "https://beta.fallenapi.fun",
       "required": false
     },
     "OWNER_ID": {
-      "description": "The user id(s) of user(s) whom you would like to add as a OWNER. Multiple values shall be seperated with a space.",
+      "description": "The Telegram user ID of the bot's owner.",
       "value": "",
       "required": true
     },
-    "STRING_SESSIONS": {
-      "description": "A Pyrogram String Session. One Assistant is Compulsory. You Can Fill Multiple String Session Seperating With (,) comma",
-      "value": "",
-      "required": true
-    },
-    "HEROKU_API_KEY": {
-      "description": "Your Heroku account's API key",
+    "LOGGER_ID": {
+      "description": "The Telegram chat ID where logs will be sent.",
       "value": "",
       "required": false
     },
-    "HEROKU_APP_NAME": {
-      "description": "Your heroku app/bot's name",
+    "DURATION_LIMIT": {
+      "description": "The maximum duration of a track in seconds.",
+      "value": "4200",
+      "required": false
+    },
+    "LEAVE_ON_DEMOTED": {
+      "description": "Leave the group when the bot is demoted. Set to true to enable.",
+      "value": "false",
+      "required": false
+    },
+    "QUEUE_LIMIT": {
+      "description": "The maximum number of tracks allowed in the queue.",
+      "value": "7",
+      "required": false
+    },
+    "START_IMG_URL": {
+      "description": "URL of the image to be displayed on the start message.",
+      "value": "https://raw.githubusercontent.com/gabrielmaialva33/assets/master/images.png",
+      "required": false
+    },
+    "SUPPORT_CHAT": {
+      "description": "The URL of your support chat.",
+      "value": "https://t.me/WinxCallGroup",
+      "required": false
+    },
+    "SUPPORT_CHANNEL": {
+      "description": "The URL of your support channel.",
+      "value": "https://t.me/WinxCallChannel",
+      "required": false
+    },
+    "COOKIES_LINK": {
+      "description": "A space-separated list of batbin.me URLs for cookies.",
       "value": "",
       "required": false
     },
-    "LOG_GROUP_ID": {
-      "description": "Your Log Group ID, add your bot and promote as an admin with full rights!. Use only Group. Please don't use Channel ID.",
-      "value": "",
-      "required": true
+    "SET_CMDS": {
+      "description": "Set to 'true' to have the bot set its commands on startup.",
+      "value": "false",
+      "required": false
     },
-    "UPSTREAM_REPO": {
-      "description": "If you dont know this, Leave as it is",
-      "value": "https://github.com/gabrielmaialva33/flora-music-bot",
-      "required": true
-    },
-    "UPSTREAM_BRANCH": {
-      "description": "Upstream Repo's Branch Name",
-      "value": "master",
-      "required": true
+    "MAX_AUTH_USERS": {
+      "description": "The maximum number of authorized users per chat.",
+      "value": "25",
+      "required": false
     }
   },
-  "buildpacks": [
-    {
-      "url": "heroku/python"
-    },
-    {
-      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
-    }
-  ],
   "formation": {
     "worker": {
       "quantity": 1,

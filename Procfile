@@ -1,1 +1,1 @@
-worker: winxmusic
+worker: /app/myapp
