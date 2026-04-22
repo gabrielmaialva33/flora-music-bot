@@ -113,11 +113,11 @@ func loadConfig() {
 
 	StartImage = getString(
 		"START_IMG_URL",
-		"https://raw.githubusercontent.com/gabrielmaialva33/assets/master/images.png",
+		"https://raw.githubusercontent.com/gabrielmaialva33/flora-music-bot/refs/heads/main/.github/assets/start.png",
 	)
 	PingImage = getString(
 		"PING_IMG_URL",
-		"https://telegra.ph/file/91533956c91d0fd7c9f20.jpg",
+		"https://raw.githubusercontent.com/gabrielmaialva33/flora-music-bot/refs/heads/main/.github/assets/ping.png",
 	)
 	Port = getString("PORT", "8000")
 }
