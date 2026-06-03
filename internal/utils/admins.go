@@ -114,3 +114,30 @@ func fetchAdmins(c *telegram.Client, chatID int64) ([]int64, error) {
 	}
 	return ids, nil
 }
+
+var ownerCache = NewCache[int64, int64](30 * time.Minute)
+
+// GetChatOwner returns the creator's user ID for a chat, using a short-lived cache.
+// Returns (0, nil) when no creator could be determined.
+func GetChatOwner(c *telegram.Client, chatID int64) (int64, error) {
+	if ownerID, ok := ownerCache.Get(chatID); ok && ownerID != 0 {
+		return ownerID, nil
+	}
+
+	admins, _, err := c.GetChatMembers(chatID, &telegram.ParticipantOptions{
+		Filter:           &telegram.ChannelParticipantsAdmins{},
+		SleepThresholdMs: 3000,
+		Limit:            -1,
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	for _, p := range admins {
+		if p.Status == telegram.Creator && p.User != nil {
+			ownerCache.Set(chatID, p.User.ID)
+			return p.User.ID, nil
+		}
+	}
+	return 0, nil
+}
