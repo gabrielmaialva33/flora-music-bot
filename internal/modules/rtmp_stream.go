@@ -227,12 +227,10 @@ func handleStream(m *tg.NewMessage, force bool) error {
 	replyMsg, _ = utils.EOR(replyMsg, downloadingText)
 
 	ctx, cancel := context.WithCancel(context.Background())
-	downloadCancels[chatID] = cancel
+	storeDownloadCancel(chatID, cancel)
 	defer func() {
-		if _, ok := downloadCancels[chatID]; ok {
-			delete(downloadCancels, chatID)
-			cancel()
-		}
+		popDownloadCancel(chatID)
+		cancel()
 	}()
 
 	filePath, err := safeDownload(ctx, track, replyMsg, chatID)

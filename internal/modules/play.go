@@ -260,7 +260,7 @@ func cplayHandler(m *tg.NewMessage) error {
 func handlePlay(m *tg.NewMessage, opts *playOpts) error {
 	chatID := m.ChannelID()
 	adminsOnly, _ := database.PlayModeAdminsOnly(chatID)
-	if adminsOnly {
+	if adminsOnly && !isOwnerOrSudo(m.SenderID()) {
 		isAdmin, err := utils.IsChatAdmin(m.Client, chatID, m.SenderID())
 		if err != nil || !isAdmin {
 			isAuth, _ := database.IsAuthorized(chatID, m.SenderID())
@@ -502,8 +502,13 @@ func filterAndTrimTracks(
 		return nil, 0, fmt.Errorf("all tracks skipped")
 	}
 
-	// Respect queue limit
+	// Respect queue limit. A fila pode ter enchido entre a checagem inicial e o
+	// download (corrida de /play concorrente), deixando availableSlots negativo —
+	// sem o clamp, tracks[:availableSlots] daria panic de slice bounds.
 	availableSlots := config.QueueLimit - len(r.Queue())
+	if availableSlots < 0 {
+		availableSlots = 0
+	}
 	if availableSlots < len(tracks) {
 		tracks = tracks[:availableSlots]
 		gologging.WarnF(
@@ -546,12 +551,10 @@ func playTracksAndRespond(
 			replyMsg, _ = utils.EOR(replyMsg, downloadingText, opt)
 
 			ctx, cancel := context.WithCancel(context.Background())
-			downloadCancels[m.ChannelID()] = cancel
+			storeDownloadCancel(m.ChannelID(), cancel)
 			defer func() {
-				if _, ok := downloadCancels[m.ChannelID()]; ok {
-					delete(downloadCancels, m.ChannelID())
-					cancel()
-				}
+				popDownloadCancel(m.ChannelID())
+				cancel()
 			}()
 
 			path, err := safeDownload(ctx, track, replyMsg, chatID)

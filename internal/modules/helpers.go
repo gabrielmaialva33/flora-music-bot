@@ -6,6 +6,7 @@ import (
 	"html"
 	"runtime/debug"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Laky-64/gologging"
@@ -19,7 +20,24 @@ import (
 	"main/internal/utils"
 )
 
-var downloadCancels = make(map[int64]func())
+// downloadCancels guarda os cancel funcs de download por chat. sync.Map porque
+// gogram despacha handlers concorrentemente (/play em chats distintos, clique no
+// botão cancelar) e map nativo daria "concurrent map writes" (fatal, não pego
+// pelo recover do SafeMessageHandler).
+var downloadCancels sync.Map // map[int64]context.CancelFunc
+
+func storeDownloadCancel(chatID int64, cancel func()) {
+	downloadCancels.Store(chatID, cancel)
+}
+
+// popDownloadCancel remove e retorna o cancel do chat, se existir.
+func popDownloadCancel(chatID int64) (func(), bool) {
+	v, ok := downloadCancels.LoadAndDelete(chatID)
+	if !ok {
+		return nil, false
+	}
+	return v.(func()), true
+}
 
 func getEffectiveRoom(m *tg.NewMessage, cplay bool) (*core.RoomState, error) {
 	chatID := m.ChannelID()
