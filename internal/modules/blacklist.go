@@ -23,7 +23,13 @@ func handleBlockUser(m *telegram.NewMessage) error {
 		return telegram.ErrEndGroup
 	}
 	if err := database.AddBlacklistedUser(userID); err != nil {
-		m.Reply(F(m.ChannelID(), "blacklist_block_user_fail", locales.Arg{"error": err.Error()}))
+		m.Reply(
+			F(
+				m.ChannelID(),
+				"blacklist_block_user_fail",
+				locales.Arg{"error": err.Error()},
+			),
+		)
 		return telegram.ErrEndGroup
 	}
 	m.Reply(F(m.ChannelID(), "blacklist_block_user_success", locales.Arg{"id": userID}))
@@ -42,7 +48,13 @@ func handleUnblockUser(m *telegram.NewMessage) error {
 		return telegram.ErrEndGroup
 	}
 	if err := database.RemoveBlacklistedUser(userID); err != nil {
-		m.Reply(F(m.ChannelID(), "blacklist_unblock_user_fail", locales.Arg{"error": err.Error()}))
+		m.Reply(
+			F(
+				m.ChannelID(),
+				"blacklist_unblock_user_fail",
+				locales.Arg{"error": err.Error()},
+			),
+		)
 		return telegram.ErrEndGroup
 	}
 	m.Reply(F(m.ChannelID(), "blacklist_unblock_user_success", locales.Arg{"id": userID}))
@@ -56,11 +68,23 @@ func handleBlockChat(m *telegram.NewMessage) error {
 	}
 	chatID, err := utils.ExtractChat(m)
 	if err != nil {
-		m.Reply(F(m.ChannelID(), "blacklist_invalid_chat_identifier", locales.Arg{"error": err.Error()}))
+		m.Reply(
+			F(
+				m.ChannelID(),
+				"blacklist_invalid_chat_identifier",
+				locales.Arg{"error": err.Error()},
+			),
+		)
 		return telegram.ErrEndGroup
 	}
 	if err := database.AddBlacklistedChat(chatID); err != nil {
-		m.Reply(F(m.ChannelID(), "blacklist_block_chat_fail", locales.Arg{"error": err.Error()}))
+		m.Reply(
+			F(
+				m.ChannelID(),
+				"blacklist_block_chat_fail",
+				locales.Arg{"error": err.Error()},
+			),
+		)
 		return telegram.ErrEndGroup
 	}
 	m.Reply(F(m.ChannelID(), "blacklist_block_chat_success", locales.Arg{"id": chatID}))
@@ -74,11 +98,23 @@ func handleUnblockChat(m *telegram.NewMessage) error {
 	}
 	chatID, err := utils.ExtractChat(m)
 	if err != nil {
-		m.Reply(F(m.ChannelID(), "blacklist_invalid_chat_identifier", locales.Arg{"error": err.Error()}))
+		m.Reply(
+			F(
+				m.ChannelID(),
+				"blacklist_invalid_chat_identifier",
+				locales.Arg{"error": err.Error()},
+			),
+		)
 		return telegram.ErrEndGroup
 	}
 	if err := database.RemoveBlacklistedChat(chatID); err != nil {
-		m.Reply(F(m.ChannelID(), "blacklist_unblock_chat_fail", locales.Arg{"error": err.Error()}))
+		m.Reply(
+			F(
+				m.ChannelID(),
+				"blacklist_unblock_chat_fail",
+				locales.Arg{"error": err.Error()},
+			),
+		)
 		return telegram.ErrEndGroup
 	}
 	m.Reply(F(m.ChannelID(), "blacklist_unblock_chat_success", locales.Arg{"id": chatID}))
@@ -88,12 +124,24 @@ func handleUnblockChat(m *telegram.NewMessage) error {
 func handleBlacklisted(m *telegram.NewMessage) error {
 	chats, err := database.BlacklistedChats()
 	if err != nil {
-		m.Reply(F(m.ChannelID(), "blacklist_fetch_chats_fail", locales.Arg{"error": err.Error()}))
+		m.Reply(
+			F(
+				m.ChannelID(),
+				"blacklist_fetch_chats_fail",
+				locales.Arg{"error": err.Error()},
+			),
+		)
 		return telegram.ErrEndGroup
 	}
 	users, err := database.BlacklistedUsers()
 	if err != nil {
-		m.Reply(F(m.ChannelID(), "blacklist_fetch_users_fail", locales.Arg{"error": err.Error()}))
+		m.Reply(
+			F(
+				m.ChannelID(),
+				"blacklist_fetch_users_fail",
+				locales.Arg{"error": err.Error()},
+			),
+		)
 		return telegram.ErrEndGroup
 	}
 

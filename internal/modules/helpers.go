@@ -131,7 +131,8 @@ func sendPlayLogs(m *tg.NewMessage, track *state.Track, queued bool) {
 	}
 
 	// Track
-	fmt.Fprintf(&sb,
+	fmt.Fprintf(
+		&sb,
 		"<b>%s</b> <a href=\"%s\">%s</a>\n",
 		F(chatID, "logger_track"),
 		track.URL,
@@ -139,7 +140,8 @@ func sendPlayLogs(m *tg.NewMessage, track *state.Track, queued bool) {
 	)
 
 	// Source
-	fmt.Fprintf(&sb,
+	fmt.Fprintf(
+		&sb,
 		"<b>%s</b> %s\n",
 		F(chatID, "logger_source"),
 		string(track.Source),
@@ -164,7 +166,8 @@ func sendPlayLogs(m *tg.NewMessage, track *state.Track, queued bool) {
 	fmt.Fprintf(&sb, " (<code>%d</code>)\n", m.Sender.ID)
 
 	// Timestamp
-	fmt.Fprintf(&sb, "<b>%s</b> %s",
+	fmt.Fprintf(
+		&sb, "<b>%s</b> %s",
 		F(chatID, "logger_timestamp"),
 		time.Now().Format("2006-01-02 15:04:05"),
 	)
@@ -464,7 +467,8 @@ func blacklistMessageMiddleware(next tg.MessageHandler) tg.MessageHandler {
 					return tg.ErrEndGroup
 				}
 			}
-			if m.IsPrivate() || strings.HasSuffix(m.GetCommand(), m.Client.Me().Username) {
+			if m.IsPrivate() ||
+				strings.HasSuffix(m.GetCommand(), m.Client.Me().Username) {
 				m.Reply(F(m.ChannelID(), "blacklist_user_blocked"))
 			}
 			return tg.ErrEndGroup
