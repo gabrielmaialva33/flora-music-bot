@@ -153,6 +153,11 @@ var handlers = []MsgHandlerDef{
 		Filters: []telegram.Filter{ignoreChannelFilter},
 	},
 	{
+		Pattern: "privacy",
+		Handler: privacyHandler,
+		Filters: []telegram.Filter{ignoreChannelFilter},
+	},
+	{
 		Pattern: "(anime|a|tomato)",
 		Handler: animeHandler,
 		Filters: []telegram.Filter{ignoreChannelFilter},
