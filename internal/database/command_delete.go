@@ -1,11 +1,7 @@
 package database
 
 func CommandDelete(chatID int64) (bool, error) {
-	settings, err := getChatSettings(chatID)
-	if err != nil {
-		return false, err
-	}
-	return settings.CommandDelete, nil
+	return getChatField(chatID, func(s *ChatSettings) bool { return s.CommandDelete })
 }
 
 func SetCommandDelete(chatID int64, enabled bool) error {

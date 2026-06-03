@@ -3,14 +3,11 @@ package database
 import "main/internal/config"
 
 func Language(chatID int64) (string, error) {
-	settings, err := getChatSettings(chatID)
-	if err != nil {
+	lang, err := getChatField(chatID, func(s *ChatSettings) string { return s.Language })
+	if err != nil || lang == "" {
 		return config.DefaultLang, err
 	}
-	if settings.Language == "" {
-		return config.DefaultLang, nil
-	}
-	return settings.Language, nil
+	return lang, nil
 }
 
 func SetLanguage(chatID int64, lang string) error {

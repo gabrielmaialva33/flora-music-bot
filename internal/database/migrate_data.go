@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -70,7 +71,7 @@ func migrateCPlay(ctx context.Context, db *mongo.Database) {
 
 	cursor, err := coll.Find(ctx, bson.M{}, opts)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
+		if !errors.Is(err, mongo.ErrNoDocuments) {
 			logger.ErrorF("Failed to query old cplaymode collection: %v", err)
 		}
 		return
@@ -136,7 +137,7 @@ func migrateServedUsers(ctx context.Context, db *mongo.Database) {
 
 	cursor, err := coll.Find(ctx, bson.M{"user_id": bson.M{"$gt": 0}}, opts)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
+		if !errors.Is(err, mongo.ErrNoDocuments) {
 			logger.ErrorF("Failed to query old tgusersdb collection: %v", err)
 		}
 		return
@@ -194,7 +195,7 @@ func migrateServedChats(ctx context.Context, db *mongo.Database) {
 
 	cursor, err := coll.Find(ctx, bson.M{"chat_id": bson.M{"$lt": 0}}, opts)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
+		if !errors.Is(err, mongo.ErrNoDocuments) {
 			logger.ErrorF("Failed to query old chats collection: %v", err)
 		}
 		return
@@ -251,7 +252,7 @@ func migrateSudoers(ctx context.Context, db *mongo.Database) {
 	var doc oldSudoers
 	err := coll.FindOne(ctx, bson.M{"sudo": "sudo"}).Decode(&doc)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
+		if !errors.Is(err, mongo.ErrNoDocuments) {
 			logger.ErrorF("Failed to query old sudoers collection: %v", err)
 		}
 		return

@@ -1,11 +1,7 @@
 package database
 
 func CleanMode(chatID int64) (bool, error) {
-	s, err := getChatSettings(chatID)
-	if err != nil {
-		return false, err
-	}
-	return s.CleanMode, nil
+	return getChatField(chatID, func(s *ChatSettings) bool { return s.CleanMode })
 }
 
 func SetCleanMode(chatID int64, enabled bool) error {

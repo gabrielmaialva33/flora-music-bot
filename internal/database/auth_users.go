@@ -1,11 +1,7 @@
 package database
 
 func IsAuthorized(chatID, userID int64) (bool, error) {
-	settings, err := getChatSettings(chatID)
-	if err != nil {
-		return false, err
-	}
-	return contains(settings.AuthUsers, userID), nil
+	return getChatField(chatID, func(s *ChatSettings) bool { return contains(s.AuthUsers, userID) })
 }
 
 func Authorize(chatID, userID int64) error {
@@ -25,9 +21,8 @@ func Unauthorize(chatID, userID int64) error {
 }
 
 func AuthorizedUsers(chatID int64) ([]int64, error) {
-	settings, err := getChatSettings(chatID)
-	if err != nil {
-		return nil, err
-	}
-	return append([]int64(nil), settings.AuthUsers...), nil
+	// defensive copy so callers can't mutate the cached slice in place.
+	return getChatField(chatID, func(s *ChatSettings) []int64 {
+		return append([]int64(nil), s.AuthUsers...)
+	})
 }

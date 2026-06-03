@@ -1,11 +1,7 @@
 package database
 
 func PlayModeAdminsOnly(chatID int64) (bool, error) {
-	settings, err := getChatSettings(chatID)
-	if err != nil {
-		return false, err
-	}
-	return settings.PlayModeAdminsOnly, nil
+	return getChatField(chatID, func(s *ChatSettings) bool { return s.PlayModeAdminsOnly })
 }
 
 func SetPlayModeAdminsOnly(chatID int64, adminsOnly bool) error {

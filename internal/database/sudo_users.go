@@ -5,7 +5,7 @@ func Sudoers() ([]int64, error) {
 	if err != nil {
 		return nil, err
 	}
-	return state.Sudoers, nil
+	return append([]int64(nil), state.Sudoers...), nil
 }
 
 func IsSudoWithoutError(id int64) bool {
@@ -22,17 +22,9 @@ func IsSudo(id int64) (bool, error) {
 }
 
 func AddSudo(id int64) error {
-	return modifyBotState(func(s *BotState) bool {
-		var added bool
-		s.Sudoers, added = addUnique(s.Sudoers, id)
-		return added
-	})
+	return addToBotList(func(s *BotState) *[]int64 { return &s.Sudoers }, id)
 }
 
 func RemoveSudo(id int64) error {
-	return modifyBotState(func(s *BotState) bool {
-		var removed bool
-		s.Sudoers, removed = removeElement(s.Sudoers, id)
-		return removed
-	})
+	return removeFromBotList(func(s *BotState) *[]int64 { return &s.Sudoers }, id)
 }

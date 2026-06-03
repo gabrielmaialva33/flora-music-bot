@@ -3,11 +3,7 @@ package database
 // ThumbnailsDisabled returns whether thumbnails are disabled for the chat.
 // Returns false by default (thumbnails enabled).
 func ThumbnailsDisabled(chatID int64) (bool, error) {
-	settings, err := getChatSettings(chatID)
-	if err != nil {
-		return false, err
-	}
-	return settings.ThumbnailsDisabled, nil
+	return getChatField(chatID, func(s *ChatSettings) bool { return s.ThumbnailsDisabled })
 }
 
 // SetThumbnailsDisabled sets whether thumbnails should be disabled for the chat.

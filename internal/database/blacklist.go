@@ -33,33 +33,17 @@ func IsBlacklistedChat(chatID int64) (bool, error) {
 }
 
 func AddBlacklistedUser(userID int64) error {
-	return modifyBotState(func(s *BotState) bool {
-		var added bool
-		s.Blacklisted.Users, added = addUnique(s.Blacklisted.Users, userID)
-		return added
-	})
+	return addToBotList(func(s *BotState) *[]int64 { return &s.Blacklisted.Users }, userID)
 }
 
 func RemoveBlacklistedUser(userID int64) error {
-	return modifyBotState(func(s *BotState) bool {
-		var removed bool
-		s.Blacklisted.Users, removed = removeElement(s.Blacklisted.Users, userID)
-		return removed
-	})
+	return removeFromBotList(func(s *BotState) *[]int64 { return &s.Blacklisted.Users }, userID)
 }
 
 func AddBlacklistedChat(chatID int64) error {
-	return modifyBotState(func(s *BotState) bool {
-		var added bool
-		s.Blacklisted.Chats, added = addUnique(s.Blacklisted.Chats, chatID)
-		return added
-	})
+	return addToBotList(func(s *BotState) *[]int64 { return &s.Blacklisted.Chats }, chatID)
 }
 
 func RemoveBlacklistedChat(chatID int64) error {
-	return modifyBotState(func(s *BotState) bool {
-		var removed bool
-		s.Blacklisted.Chats, removed = removeElement(s.Blacklisted.Chats, chatID)
-		return removed
-	})
+	return removeFromBotList(func(s *BotState) *[]int64 { return &s.Blacklisted.Chats }, chatID)
 }

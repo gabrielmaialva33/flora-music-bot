@@ -9,14 +9,14 @@ const (
 )
 
 func GetAdminMode(chatID int64) (AdminMode, error) {
-	settings, err := getChatSettings(chatID)
+	mode, err := getChatField(chatID, func(s *ChatSettings) AdminMode { return s.AdminMode })
 	if err != nil {
 		return "", err
 	}
-	if settings.AdminMode == "" {
+	if mode == "" {
 		return AdminModeAdminAuth, nil
 	}
-	return settings.AdminMode, nil
+	return mode, nil
 }
 
 func SetAdminMode(chatID int64, mode AdminMode) error {

@@ -1,13 +1,5 @@
 package database
 
-import (
-	"errors"
-	"fmt"
-
-	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/mongo"
-)
-
 type UsersChats struct {
 	Users []int64 `bson:"users"`
 	Chats []int64 `bson:"chats"`
@@ -53,68 +45,15 @@ func newDefaultBotState() *BotState {
 	return s
 }
 
-func getBotState() (*BotState, error) {
-	if cached, found := dbCache.Get(botStateCacheKey); found {
-		if state, ok := cached.(*BotState); ok {
-			return state, nil
-		}
-	}
-
-	ctx, cancel := ctx()
-	defer cancel()
-
-	var state BotState
-	err := settingsColl.FindOne(ctx, bson.M{"_id": "global"}).Decode(&state)
-
-	if errors.Is(err, mongo.ErrNoDocuments) {
-		s := newDefaultBotState()
-		dbCache.Set(botStateCacheKey, s)
-		return s, nil
-	}
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to get bot state: %w", err)
-	}
-
-	buildIndexes(&state)
-	dbCache.Set(botStateCacheKey, &state)
-	return &state, nil
-}
+// BotState é singleton: cache key "bot_state", _id "global" no Mongo (ver botStore).
+func getBotState() (*BotState, error) { return botStore.get(botStateCacheKey) }
 
 func updateBotState(newState *BotState) error {
-	ctx, cancel := ctx()
-	defer cancel()
-
-	_, err := settingsColl.UpdateOne(
-		ctx,
-		bson.M{"_id": "global"},
-		bson.M{"$set": newState},
-		upsertOpt,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to update bot state: %w", err)
-	}
-
-	dbCache.Set(botStateCacheKey, newState)
-	return nil
+	return botStore.update(botStateCacheKey, newState)
 }
 
 func modifyBotState(fn func(*BotState) bool) error {
-	state, err := getBotState()
-	if err != nil {
-		return err
-	}
-
-	if fn(state) {
-		if err := updateBotState(state); err != nil {
-			// fn mutou o ponteiro cacheado in-place; se o write falhou, invalida
-			// o cache pra não servir estado divergente do DB até o TTL expirar.
-			dbCache.Delete(botStateCacheKey)
-			return err
-		}
-	}
-
-	return nil
+	return botStore.modify(botStateCacheKey, fn)
 }
 
 func buildIndexes(s *BotState) {

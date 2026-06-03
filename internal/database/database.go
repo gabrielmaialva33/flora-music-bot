@@ -17,8 +17,14 @@ var (
 	settingsColl     *mongo.Collection
 	chatSettingsColl *mongo.Collection
 
-	logger  = gologging.GetLogger("Database")
-	dbCache = utils.NewCache[string, any](60 * time.Minute)
+	logger = gologging.GetLogger("Database")
+
+	chatCache  = utils.NewCache[int64, *ChatSettings](60 * time.Minute)
+	stateCache = utils.NewCache[string, *BotState](60 * time.Minute)
+
+	// Inicializados em Init() (precisam das collections já resolvidas).
+	botStore  *docStore[string, BotState]
+	chatStore *docStore[int64, ChatSettings]
 )
 
 func Init(mongoURL string) (func(), error) {
@@ -34,6 +40,20 @@ func Init(mongoURL string) (func(), error) {
 	database = client.Database("WinxMusic")
 	settingsColl = database.Collection("bot_settings")
 	chatSettingsColl = database.Collection("chat_settings")
+
+	botStore = &docStore[string, BotState]{
+		coll:        settingsColl,
+		cache:       stateCache,
+		idOf:        func(string) any { return "global" }, // _id do singleton
+		makeDefault: func(string) *BotState { return newDefaultBotState() },
+		afterLoad:   buildIndexes,
+	}
+	chatStore = &docStore[int64, ChatSettings]{
+		coll:        chatSettingsColl,
+		cache:       chatCache,
+		idOf:        func(id int64) any { return id },
+		makeDefault: func(id int64) *ChatSettings { return defaultChatSettings(id) },
+	}
 
 	migrateData()
 
