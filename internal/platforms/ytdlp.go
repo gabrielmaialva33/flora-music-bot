@@ -112,6 +112,10 @@ func (y *YtdlpPlatform) Name() state.PlatformName {
 func (y *YtdlpPlatform) CanGetTracks(query string) bool {
 	query = strings.TrimSpace(query)
 
+	if _, err := sanitizeMediaURL(query); err != nil {
+		return false
+	}
+
 	// Must be a URL
 	parsedURL, err := url.Parse(query)
 	if err != nil || parsedURL.Scheme == "" || parsedURL.Host == "" {
@@ -137,6 +141,13 @@ func (y *YtdlpPlatform) GetTracks(
 	video bool,
 ) ([]*state.Track, error) {
 	query = strings.TrimSpace(query)
+
+	safeURL, err := sanitizeMediaURL(query)
+	if err != nil {
+		gologging.InfoF("YtDlp: Rejected unsafe URL: %s", query)
+		return nil, err
+	}
+	query = safeURL
 
 	gologging.InfoF("YtDlp: Extracting metadata for %s", query)
 
