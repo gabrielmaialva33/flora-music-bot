@@ -82,14 +82,14 @@ func loadConfig() {
 	StartTime = time.Now()
 
 	// Load Required
-	APIID = int32(getInt64("API_ID", 0))
+	APIID = getInt[int32]("API_ID", 0)
 	APIHash = getString("API_HASH", "")
 	// Checks TOKEN, fallbacks to BOT_TOKEN
 	Token = getString(
 		"TOKEN",
 		getString("BOT_TOKEN", ""),
 	)
-	LoggerID = getInt64("LOGGER_ID", 0)
+	LoggerID = getInt[int64]("LOGGER_ID", 0)
 	MongoURI = getString("MONGO_DB_URI", "")
 	SessionType = getString("SESSION_TYPE", "pyrogram")
 	StringSessions = getStringSlice(
@@ -97,7 +97,7 @@ func loadConfig() {
 		getStringSlice("STRING_SESSION", nil),
 	)
 	// Load Optional
-	OwnerID = getInt64("OWNER_ID", 0)
+	OwnerID = getInt[int64]("OWNER_ID", 0)
 	SpotifyClientID = getString("SPOTIFY_CLIENT_ID", "")
 	SpotifyClientSecret = getString("SPOTIFY_CLIENT_SECRET", "")
 	FallenAPIURL = getString("FALLEN_API_URL", "https://beta.fallenapi.fun")
@@ -106,14 +106,14 @@ func loadConfig() {
 	BetomatoBaseURL = getString("BETOMATO_BASE_URL", "https://edge.betomato.com")
 
 	DefaultLang = getString("DEFAULT_LANG", "ptbr")
-	DurationLimit = int(getInt64("DURATION_LIMIT", 4200)) // In seconds
+	DurationLimit = getInt("DURATION_LIMIT", 4200) // In seconds
 	LeaveOnDemoted = getBool("LEAVE_ON_DEMOTED", false)
-	QueueLimit = int(getInt64("QUEUE_LIMIT", 7))
+	QueueLimit = getInt("QUEUE_LIMIT", 7)
 	SupportChat = getString("SUPPORT_CHAT", "https://t.me/WinxCallGroup")
 	SupportChannel = getString("SUPPORT_CHANNEL", "https://t.me/WinxCallChannel")
 	CookiesLink = getString("COOKIES_LINK", "")
 	SetCmds = getBool("SET_CMDS", false)
-	MaxAuthUsers = int(getInt64("MAX_AUTH_USERS", 25))
+	MaxAuthUsers = getInt("MAX_AUTH_USERS", 25)
 
 	StartImage = getString(
 		"START_IMG_URL",
@@ -127,29 +127,32 @@ func loadConfig() {
 }
 
 func validateConfig() {
-	if APIID == 0 {
-		logger.Fatal("API_ID is required but missing!")
+	required := []struct {
+		ok   bool
+		name string
+	}{
+		{APIID != 0, "API_ID"},
+		{APIHash != "", "API_HASH"},
+		{LoggerID != 0, "LOGGER_ID"},
+		{MongoURI != "", "MONGO_DB_URI"},
+		{Token != "", "TOKEN (or BOT_TOKEN)"},
+		{len(StringSessions) != 0, "STRING_SESSIONS (or STRING_SESSION)"},
 	}
-	if APIHash == "" {
-		logger.Fatal("API_HASH is required but missing!")
+
+	var missing []string
+	for _, field := range required {
+		if !field.ok {
+			missing = append(missing, field.name)
+		}
 	}
-	if LoggerID == 0 {
-		logger.Fatal("LOGGER_ID is required but missing!")
-	}
-	if MongoURI == "" {
-		logger.Fatal("MONGO_DB_URI is required but missing!")
-	}
-	if Token == "" {
-		logger.Fatal(
-			"TOKEN or BOT_TOKEN is required but missing! Please set it in .env or environment.",
-		)
-	}
-	if len(StringSessions) == 0 {
+
+	if len(missing) > 0 {
 		logger.FatalF(
-			"STRING_SESSIONS is empty — at least one %s session string is required.",
-			SessionType,
+			"missing required config: %s",
+			strings.Join(missing, ", "),
 		)
 	}
+
 	if SpotifyClientID == "" || SpotifyClientSecret == "" {
 		logger.Warn(
 			"Spotify credentials not configured - Spotify links won't work",
@@ -199,7 +202,7 @@ func getBool(key string, fallback bool) bool {
 	return boolVal
 }
 
-func getInt64(key string, fallback int64) int64 {
+func getInt[T ~int | ~int32 | ~int64](key string, fallback T) T {
 	val, ok := lookupEnv(key)
 	if !ok {
 		return fallback
@@ -207,9 +210,9 @@ func getInt64(key string, fallback int64) int64 {
 
 	num, err := strconv.ParseInt(val, 10, 64)
 	if err != nil {
-		logger.FatalF("Invalid int64 for %s: %v", key, err)
+		logger.FatalF("Invalid integer for %s: %v", key, err)
 	}
-	return num
+	return T(num)
 }
 
 func getStringSlice(key string, fallback []string) []string {

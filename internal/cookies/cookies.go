@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Laky-64/gologging"
 	"resty.dev/v3"
@@ -20,7 +21,8 @@ const cookieDir = "internal/cookies"
 var (
 	cachedFiles []string
 	cacheOnce   sync.Once
-	client      = resty.New()
+	// Timeout pra não pendurar o boot: o download de cookies roda no init().
+	client = resty.New().SetTimeout(30 * time.Second)
 )
 
 //go:embed *.txt
