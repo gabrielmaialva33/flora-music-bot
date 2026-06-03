@@ -349,10 +349,14 @@ func performEval(
 		}
 
 		strDou := strings.Split(stdOut.String(), "output-start")
+		out := stdOut.String()
+		if len(strDou) > 1 {
+			out = strDou[1]
+		}
 
 		return fmt.Sprintf(
 			"<b>#EVALOut:</b> <code>%s</code>",
-			strings.TrimSpace(strDou[1]),
+			strings.TrimSpace(out),
 		), false
 	}
 

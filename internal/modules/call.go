@@ -58,6 +58,15 @@ func streamEndHandler(
 		t = r.NextTrack()
 	}
 
+	// NextTrack pode devolver nil se a fila esvaziou entre o check acima e aqui
+	// (skip/stop/clear do usuário — o guard is_transitioning não cobre isso);
+	// sem essa checagem, os t.URL adiante seriam nil deref.
+	if t == nil {
+		core.DeleteRoom(chatID)
+		core.Bot.SendMessage(cid, F(cid, "stream_queue_finished"))
+		return
+	}
+
 	statusText := F(cid, "stream_downloading_next")
 	if wasLooping && t != nil && r.FilePath() != "" {
 		statusText = F(cid, "cb_replaying")

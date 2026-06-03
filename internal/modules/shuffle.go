@@ -74,10 +74,25 @@ func handleShuffle(m *telegram.NewMessage, cplay bool) error {
 	}
 
 	var newState bool
-	if arg == "on" || arg == "enable" || arg == "true" || arg == "1" {
+	switch arg {
+	case "on", "enable", "true", "1":
 		newState = true
-	} else if arg == "off" || arg == "disable" || arg == "false" || arg == "0" {
+	case "off", "disable", "false", "0":
 		newState = false
+	default:
+		// Input inválido: mostra o estado/uso atual em vez de desligar shuffle
+		// silenciosamente (o zero-value de newState era false).
+		state := F(chatID, "disabled")
+		cmd := getCommand(m) + " on"
+		if r.Shuffle() {
+			state = F(chatID, "enabled")
+			cmd = getCommand(m) + " off"
+		}
+		m.Reply(F(chatID, "shuffle_current_state", locales.Arg{
+			"state": state,
+			"cmd":   cmd,
+		}))
+		return telegram.ErrEndGroup
 	}
 
 	r.SetShuffle(newState)

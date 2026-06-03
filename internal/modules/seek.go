@@ -112,7 +112,7 @@ func handleSeek(m *telegram.NewMessage, cplay, isBack bool) error {
 	}
 
 	seconds, err := strconv.Atoi(args[1])
-	if err != nil {
+	if err != nil || seconds <= 0 {
 		m.Reply(F(chatID, "seek_invalid_seconds", locales.Arg{
 			"cmd": getCommand(m),
 		}))
