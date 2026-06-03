@@ -40,11 +40,17 @@ const (
 	innerTubeKey                              = "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw"
 	innerTubeClientVersion                    = "2.20250101.01.00"
 	innerTubeClientName                       = "WEB"
+	innerTubeUserAgent                        = "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36"
 )
 
 var yt = &YouTubePlatform{
 	name: PlatformYouTube,
 }
+
+// ytClient é dedicado ao InnerTube: o User-Agent é fixado uma vez aqui em vez
+// de ser re-setado a cada chamada de callInnerTube (tirando o SetHeader do hot
+// path). Mantém o mesmo timeout do rc global.
+var ytClient = newHTTPClient(30*time.Second, innerTubeUserAgent)
 
 func init() {
 	Register(90, yt)
@@ -59,6 +65,7 @@ func (p *YouTubePlatform) CanGetTracks(link string) bool {
 }
 
 func (p *YouTubePlatform) GetTracks(
+	_ context.Context,
 	input string,
 	video bool,
 ) ([]*state.Track, error) {
@@ -97,7 +104,7 @@ func (p *YouTubePlatform) GetTracks(
 		return nil, errors.New("no tracks found")
 	}
 
-	return updateCached(tracks, video), nil
+	return withVideoFlag(tracks, video), nil
 }
 
 func (p *YouTubePlatform) handlePlaylist(
@@ -209,15 +216,6 @@ func (p *YouTubePlatform) Download(
 	_ *telegram.NewMessage,
 ) (string, error) {
 	return "", errors.New("youtube platform does not support downloading")
-}
-
-func (*YouTubePlatform) CanSearch() bool { return true }
-
-func (p *YouTubePlatform) Search(
-	q string,
-	video bool,
-) ([]*state.Track, error) {
-	return p.GetTracks(q, video)
 }
 
 func (p *YouTubePlatform) VideoSearch(
@@ -467,11 +465,10 @@ func (p *YouTubePlatform) callInnerTube(endpoint string, body, result any) error
 		endpoint,
 		innerTubeKey,
 	)
-	resp, err := rc.R().
+	resp, err := ytClient.R().
 		SetBody(body).
 		SetResult(result).
 		SetHeader("Content-Type", "application/json").
-		SetHeader("User-Agent", "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36").
 		Post(apiURL)
 	if err != nil {
 		return fmt.Errorf("innertube request failed: %w", err)
@@ -562,19 +559,6 @@ func getThumbnailURL(vid map[string]any) string {
 		}
 	}
 	return ""
-}
-
-func updateCached(tracks []*state.Track, video bool) []*state.Track {
-	out := make([]*state.Track, 0, len(tracks))
-	for _, t := range tracks {
-		if t == nil {
-			continue
-		}
-		tc := *t
-		tc.Video = video
-		out = append(out, &tc)
-	}
-	return out
 }
 
 func dig(m any, path ...any) any {

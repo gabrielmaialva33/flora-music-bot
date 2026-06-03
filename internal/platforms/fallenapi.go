@@ -47,6 +47,7 @@ func (f *FallenApiPlatform) CanGetTracks(query string) bool {
 }
 
 func (f *FallenApiPlatform) GetTracks(
+	_ context.Context,
 	_ string,
 	_ bool,
 ) ([]*state.Track, error) {
@@ -104,15 +105,6 @@ func (f *FallenApiPlatform) Download(
 		return "", errors.New("empty file returned by API")
 	}
 	return path, nil
-}
-
-func (*FallenApiPlatform) CanSearch() bool { return false }
-
-func (*FallenApiPlatform) Search(
-	string,
-	bool,
-) ([]*state.Track, error) {
-	return nil, nil
 }
 
 func (f *FallenApiPlatform) getDownloadURL(

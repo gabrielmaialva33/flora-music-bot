@@ -92,17 +92,19 @@ func (d *DirectStreamPlatform) CanGetTracks(query string) bool {
 		return true
 	}
 
-	_, err = d.validateStream(query)
+	// CanGetTracks não recebe ctx; usa Background.
+	_, err = d.validateStream(context.Background(), query)
 	return err == nil
 }
 
 func (d *DirectStreamPlatform) GetTracks(
+	ctx context.Context,
 	query string,
 	video bool,
 ) ([]*state.Track, error) {
 	query = strings.TrimSpace(query)
 
-	info, err := d.validateStream(query)
+	info, err := d.validateStream(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to validate stream: %w", err)
 	}
@@ -174,17 +176,9 @@ func (d *DirectStreamPlatform) looksLikeStream(urlStr string) bool {
 	return false
 }
 
-func (*DirectStreamPlatform) CanSearch() bool { return false }
-
-func (*DirectStreamPlatform) Search(
-	string,
-	bool,
-) ([]*state.Track, error) {
-	return nil, nil
-}
-
 // validateStream makes a HEAD request to validate the URL
 func (d *DirectStreamPlatform) validateStream(
+	ctx context.Context,
 	urlStr string,
 ) (*streamInfo, error) {
 	// Gate SSRF: o DirectStream faz request direto na URL do usuário (inclusive
@@ -197,10 +191,11 @@ func (d *DirectStreamPlatform) validateStream(
 	client := streamClient
 
 	// Try HEAD request first (faster)
-	resp, err := client.R().Head(urlStr)
+	resp, err := client.R().SetContext(ctx).Head(urlStr)
 	if err != nil || resp.StatusCode() >= 400 {
 		// If HEAD fails, try GET with range request
 		resp, err = client.R().
+			SetContext(ctx).
 			SetHeader("Range", "bytes=0-1024").
 			Get(urlStr)
 		if err != nil {

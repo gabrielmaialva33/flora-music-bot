@@ -66,6 +66,7 @@ func (t *TelegramPlatform) CanDownload(source state.PlatformName) bool {
 }
 
 func (t *TelegramPlatform) GetTracks(
+	_ context.Context,
 	query string,
 	_ bool,
 ) ([]*state.Track, error) {
@@ -220,15 +221,6 @@ func (t *TelegramPlatform) resolveUserProfileMusic(
 	}
 
 	return doc, nil
-}
-
-func (*TelegramPlatform) CanSearch() bool { return false }
-
-func (*TelegramPlatform) Search(
-	string,
-	bool,
-) ([]*state.Track, error) {
-	return nil, nil
 }
 
 func (t *TelegramPlatform) GetTracksByMessage(

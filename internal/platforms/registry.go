@@ -75,13 +75,17 @@ func findPlatform(url string) state.Platform {
 }
 
 // GetTracks extracts tracks from the given query or message context
-func GetTracks(m *telegram.NewMessage, video bool) ([]*state.Track, error) {
+func GetTracks(
+	ctx context.Context,
+	m *telegram.NewMessage,
+	video bool,
+) ([]*state.Track, error) {
 	gologging.Debug("GetTracks called | video: " + strconv.FormatBool(video))
 
 	// 1. URL Processing
 	if urls, _ := utils.ExtractURLs(m); len(urls) > 0 {
 		gologging.Debug("URLs detected in message: " + strconv.Itoa(len(urls)))
-		tracks, errs := processURLs(urls, video)
+		tracks, errs := processURLs(ctx, urls, video)
 		if len(tracks) > 0 {
 			gologging.Info("Returning tracks from URLs")
 			return tracks, nil
@@ -96,7 +100,7 @@ func GetTracks(m *telegram.NewMessage, video bool) ([]*state.Track, error) {
 	// 2. Query/Search Processing
 	if query := m.Args(); query != "" {
 		gologging.Info("Processing search query: " + query)
-		tracks, err := processSearchQuery(query, video)
+		tracks, err := processSearchQuery(ctx, query, video)
 		if err == nil && len(tracks) > 0 {
 			return tracks, nil
 		}
@@ -111,7 +115,11 @@ func GetTracks(m *telegram.NewMessage, video bool) ([]*state.Track, error) {
 	return nil, errors.New("no tracks found")
 }
 
-func processURLs(urls []string, video bool) ([]*state.Track, []string) {
+func processURLs(
+	ctx context.Context,
+	urls []string,
+	video bool,
+) ([]*state.Track, []string) {
 	var allTracks []*state.Track
 	var errs []string
 
@@ -126,7 +134,7 @@ func processURLs(urls []string, video bool) ([]*state.Track, []string) {
 		}
 
 		gologging.Debug("Matched platform [" + string(p.Name()) + "] for URL: " + url)
-		tracks, err := p.GetTracks(url, video)
+		tracks, err := p.GetTracks(ctx, url, video)
 		if err != nil {
 			if strings.Contains(err.Error(), "failed to extract metadata") {
 				gologging.Debug("Silent skip: metadata extraction failed for " + url)
@@ -144,10 +152,14 @@ func processURLs(urls []string, video bool) ([]*state.Track, []string) {
 	return allTracks, errs
 }
 
-func processSearchQuery(query string, video bool) ([]*state.Track, error) {
+func processSearchQuery(
+	ctx context.Context,
+	query string,
+	video bool,
+) ([]*state.Track, error) {
 	if p := findPlatform(query); p != nil && p.Name() != PlatformYouTube {
 		gologging.Debug("Query matches specific platform: " + string(p.Name()))
-		tracks, err := p.GetTracks(query, video)
+		tracks, err := p.GetTracks(ctx, query, video)
 		if err == nil && len(tracks) > 0 {
 			gologging.Info("Query handled by platform: " + string(p.Name()))
 			return tracks, nil
@@ -155,7 +167,7 @@ func processSearchQuery(query string, video bool) ([]*state.Track, error) {
 	}
 
 	gologging.Info("Searching YouTube with query: " + query)
-	tracks, err := yt.GetTracks(query, video)
+	tracks, err := yt.GetTracks(ctx, query, video)
 	if err != nil {
 		gologging.Error("YouTube search failed: " + err.Error())
 		return nil, err
@@ -333,5 +345,6 @@ func combineErrors(prefix string, errs []string) error {
 func Init() (func(), error) {
 	return func() {
 		rc.Close()
+		ytClient.Close()
 	}, nil
 }

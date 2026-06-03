@@ -64,6 +64,7 @@ func (s *SpotifyPlatform) CanGetTracks(query string) bool {
 }
 
 func (s *SpotifyPlatform) GetTracks(
+	ctx context.Context,
 	query string,
 	video bool,
 ) ([]*state.Track, error) {
@@ -76,7 +77,7 @@ func (s *SpotifyPlatform) GetTracks(
 	// Check cache first
 	cacheKey := "spotify:" + strings.ToLower(query)
 	if cached, ok := spotifyCache.Get(cacheKey); ok {
-		return updateVideoFlag(cached, video), nil
+		return withVideoFlag(cached, video), nil
 	}
 
 	// Initialize client if needed
@@ -86,8 +87,6 @@ func (s *SpotifyPlatform) GetTracks(
 
 	var tracks []*state.Track
 	var err error
-
-	ctx := context.Background()
 
 	// Handle different Spotify URL types
 	if matches := spotifyTrackRegex.FindStringSubmatch(query); len(
@@ -116,7 +115,7 @@ func (s *SpotifyPlatform) GetTracks(
 		spotifyCache.Set(cacheKey, tracks)
 	}
 
-	return updateVideoFlag(tracks, video), nil
+	return withVideoFlag(tracks, video), nil
 }
 
 func (s *SpotifyPlatform) CanDownload(source state.PlatformName) bool {
@@ -200,15 +199,6 @@ func (s *SpotifyPlatform) Download(
 	}
 
 	return "", errors.New("no YouTube downloader available")
-}
-
-func (*SpotifyPlatform) CanSearch() bool { return false }
-
-func (*SpotifyPlatform) Search(
-	string,
-	bool,
-) ([]*state.Track, error) {
-	return nil, nil
 }
 
 // ensureClient initializes the Spotify client (once)
@@ -366,24 +356,6 @@ func (s *SpotifyPlatform) convertSpotifyTrack(
 	}
 
 	return track
-}
-
-func updateVideoFlag(tracks []*state.Track, video bool) []*state.Track {
-	if len(tracks) == 0 {
-		return nil
-	}
-
-	result := make([]*state.Track, len(tracks))
-	for i, t := range tracks {
-		if t == nil {
-			continue
-		}
-		clone := *t
-		clone.Video = video
-		result[i] = &clone
-	}
-
-	return result
 }
 
 func cleanTitle(title string) string {
