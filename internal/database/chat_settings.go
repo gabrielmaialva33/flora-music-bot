@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -61,7 +62,7 @@ func getChatSettings(chatID int64) (*ChatSettings, error) {
 	err := chatSettingsColl.FindOne(ctx, bson.M{"_id": chatID}).
 		Decode(&settings)
 
-	if err == mongo.ErrNoDocuments {
+	if errors.Is(err, mongo.ErrNoDocuments) {
 		def := defaultChatSettings(chatID)
 		dbCache.Set(cacheKey, def)
 		return def, nil
@@ -110,7 +111,12 @@ func modifyChatSettings(chatID int64, fn func(*ChatSettings) bool) error {
 	}
 
 	if fn(settings) {
-		return updateChatSettings(settings)
+		if err := updateChatSettings(settings); err != nil {
+			// settings é o ponteiro cacheado, já mutado por fn; invalida o cache
+			// no erro pra não servir estado que não foi persistido.
+			dbCache.Delete("chat_settings_" + strconv.FormatInt(chatID, 10))
+			return err
+		}
 	}
 
 	return nil

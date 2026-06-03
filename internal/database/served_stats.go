@@ -5,7 +5,7 @@ func ServedChats() ([]int64, error) {
 	if err != nil {
 		return nil, err
 	}
-	return state.Served.Chats, nil
+	return append([]int64(nil), state.Served.Chats...), nil
 }
 
 func ServedUsers() ([]int64, error) {
@@ -13,7 +13,7 @@ func ServedUsers() ([]int64, error) {
 	if err != nil {
 		return nil, err
 	}
-	return state.Served.Users, nil
+	return append([]int64(nil), state.Served.Users...), nil
 }
 
 func IsServedChat(id int64) (bool, error) {

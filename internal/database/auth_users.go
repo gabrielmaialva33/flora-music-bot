@@ -29,5 +29,5 @@ func AuthorizedUsers(chatID int64) ([]int64, error) {
 	if err != nil {
 		return nil, err
 	}
-	return settings.AuthUsers, nil
+	return append([]int64(nil), settings.AuthUsers...), nil
 }

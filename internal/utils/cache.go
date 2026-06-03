@@ -54,7 +54,11 @@ func (c *Cache[K, V]) Get(key K) (V, bool) {
 
 	if item.Expired() {
 		c.mu.Lock()
-		delete(c.items, key)
+		// Re-checa sob o write-lock: outra goroutine pode ter renovado a entrada
+		// (Set) entre o RUnlock e este Lock — não apagar a versão nova.
+		if it, ok := c.items[key]; ok && it.Expired() {
+			delete(c.items, key)
+		}
 		c.mu.Unlock()
 
 		var zero V

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -65,7 +66,7 @@ func getBotState() (*BotState, error) {
 	var state BotState
 	err := settingsColl.FindOne(ctx, bson.M{"_id": "global"}).Decode(&state)
 
-	if err == mongo.ErrNoDocuments {
+	if errors.Is(err, mongo.ErrNoDocuments) {
 		s := newDefaultBotState()
 		dbCache.Set(botStateCacheKey, s)
 		return s, nil
@@ -105,7 +106,12 @@ func modifyBotState(fn func(*BotState) bool) error {
 	}
 
 	if fn(state) {
-		return updateBotState(state)
+		if err := updateBotState(state); err != nil {
+			// fn mutou o ponteiro cacheado in-place; se o write falhou, invalida
+			// o cache pra não servir estado divergente do DB até o TTL expirar.
+			dbCache.Delete(botStateCacheKey)
+			return err
+		}
 	}
 
 	return nil
