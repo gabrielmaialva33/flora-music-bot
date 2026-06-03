@@ -15,7 +15,10 @@ func (ctx *Context) connectCall(
 	jsonParams string,
 ) error {
 	ctx.waitConnectMutex.Lock()
-	waitChan := make(chan error)
+	// Buffer 1: o reader abaixo desiste após 20s (timeout), mas o callback do
+	// ntgcalls ainda faz waitChan <- ... — sem buffer, esse send travaria a
+	// goroutine do callback pra sempre (leak) quando a resposta chega tarde.
+	waitChan := make(chan error, 1)
 	ctx.waitConnect[chatId] = waitChan
 	ctx.waitConnectMutex.Unlock()
 

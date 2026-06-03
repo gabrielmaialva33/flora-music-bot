@@ -43,7 +43,9 @@ func (ctx *Context) joinPresentation(chatId int64, join bool) error {
 		}
 
 		ctx.waitConnectMutex.Lock()
-		waitChan := make(chan error)
+		// Buffer 1: ver connect_call.go — evita travar a goroutine do callback do
+		// ntgcalls quando o reader já desistiu por timeout.
+		waitChan := make(chan error, 1)
 		ctx.waitConnect[chatId] = waitChan
 		ctx.waitConnectMutex.Unlock()
 

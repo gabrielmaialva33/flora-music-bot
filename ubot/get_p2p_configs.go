@@ -14,6 +14,8 @@ func (ctx *Context) getP2PConfigs(GAorB []byte) (*P2PConfig, error) {
 		DhConfig:   dhConfig,
 		IsOutgoing: GAorB == nil,
 		GAorB:      GAorB,
-		WaitData:   make(chan error),
+		// Buffer 1: connectCall desiste após 10s; sem buffer, o send em
+		// UpdatePhoneCall (handle_updates.go) travaria a goroutine ao chegar tarde.
+		WaitData: make(chan error, 1),
 	}, nil
 }
