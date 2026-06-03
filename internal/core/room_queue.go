@@ -14,7 +14,6 @@ func (r *RoomState) NextTrack() *state.Track {
 	}
 
 	r.mu.Lock()
-	defer r.mu.Unlock()
 
 	if r.track != nil && r.loop > 0 {
 		r.position = 0
@@ -23,12 +22,21 @@ func (r *RoomState) NextTrack() *state.Track {
 		r.muted = false
 		r.loop--
 		r.updatedAt = time.Now().Unix()
-		return r.track
+		t := r.track
+		r.mu.Unlock()
+		return t
 	}
 
-	r.releaseFile()
+	// Captura o track atual pra liberar o arquivo FORA do lock. releaseTrackFile
+	// inspeciona as outras rooms (roomsMu + room.mu de cada uma); fazer isso sob
+	// r.mu daria deadlock de ordem inversa entre duas rooms trocando de faixa ao
+	// mesmo tempo (A segura rA.mu e quer rB.mu; B segura rB.mu e quer rA.mu).
+	oldTrack := r.track
+	oldChatID := r.chatID
 
 	if len(r.queue) == 0 {
+		r.mu.Unlock()
+		releaseTrackFile(oldTrack, oldChatID)
 		return nil
 	}
 
@@ -47,6 +55,8 @@ func (r *RoomState) NextTrack() *state.Track {
 	r.muted = false
 	r.updatedAt = time.Now().Unix()
 
+	r.mu.Unlock()
+	releaseTrackFile(oldTrack, oldChatID)
 	return next
 }
 
