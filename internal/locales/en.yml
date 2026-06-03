@@ -1016,3 +1016,83 @@ help_public: |
   <b>/sudolist</b> - View sudo user list
   </blockquote>
   
+# --- Ported from upstream (TheTeamVivek/YukkiMusic): admin mode, clean mode, blacklist, settings panel ---
+only_admin_cb: "⚠️ Only admins can do these actions."
+
+adminmode_help: |
+  🛡️ <b>Admin Command Mode</b>
+
+  <b>Status:</b> {status}
+  <b>Usage:</b> <code>/adminmode [admin|adminauth|everyone]</code>
+adminmode_status_admin: "Admins 🔐"
+adminmode_status_adminauth: "Auth Users 🎧"
+adminmode_status_everyone: "Everyone 🌍"
+adminmode_updated: "✅ <b>Admin command mode</b> updated to: {status}"
+adminmode_invalid: "⚠️ Invalid mode. Use: <code>admin</code>, <code>adminauth</code>, or <code>everyone</code>."
+
+cleanmode_status: "🧹 <b>Clean Mode</b>\n\nAuto-cleanup of command and service messages.\nCurrent state: {action}\nDelete after: {duration}m"
+cleanmode_hint: "Use /settings to change the auto-delete duration."
+
+blacklist_chat_blocked: "🚫 This chat is blocked from using this bot."
+blacklist_owner_blocked_leave: "🚫 This chat owner is blocked from using this bot. Leaving chat."
+blacklist_user_blocked: "🚫 You are blocked from using this bot."
+blacklist_usage_blockchat: "Usage: <code>/blockchat [chat_id|@username]</code>"
+blacklist_usage_unblockchat: "Usage: <code>/unblockchat [chat_id|@username]</code>"
+blacklist_invalid_chat_identifier: "Invalid chat identifier: {error}"
+blacklist_block_user_success: "✅ User blocked: <code>{id}</code>"
+blacklist_block_user_fail: "⚠️ Failed to block user: {error}"
+blacklist_unblock_user_success: "✅ User unblocked: <code>{id}</code>"
+blacklist_unblock_user_fail: "⚠️ Failed to unblock user: {error}"
+blacklist_block_chat_success: "✅ Chat blocked: <code>{id}</code>"
+blacklist_block_chat_fail: "⚠️ Failed to block chat: {error}"
+blacklist_unblock_chat_success: "✅ Chat unblocked: <code>{id}</code>"
+blacklist_unblock_chat_fail: "⚠️ Failed to unblock chat: {error}"
+blacklist_fetch_chats_fail: "⚠️ Failed to fetch blocked chats: {error}"
+blacklist_fetch_users_fail: "⚠️ Failed to fetch blocked users: {error}"
+blacklist_list_title: "📛 <b>Blacklisted</b>"
+blacklist_list_chats: "💬 <b>Chats:</b>"
+blacklist_list_users: "👤 <b>Users:</b>"
+
+settings_btn_adminmode: "🛡️ Admin Mode"
+settings_btn_playmode: "🎵 Play Mode"
+settings_btn_cmddelete: "🗑️ Cmd Delete"
+settings_btn_cleanmode: "🧹 Clean Mode"
+settings_btn_cleanduration: "⏱️ Clean Delay"
+settings_btn_nothumb: "🖼️ Thumbnails"
+settings_btn_lang: "🌐 Language"
+settings_btn_back: "⬅️ Back"
+settings_info_adminmode: |
+  🛡️ What is this?
+
+  Controls who can use admin commands of the bot (skip, pause, etc.).
+settings_info_playmode: |
+  🎵 What is this?
+
+  Control who can use the /play command. If enabled, only administrators and authorized users can start playback.
+settings_info_cmddelete: |
+  🗑️ What is this?
+
+  When enabled, the bot will automatically delete command messages after processing them to keep the chat clean.
+settings_info_cleanmode: |
+  🧹 What is this?
+
+  Automatically removes command and bot service messages after a short delay.
+  Playing status messages are kept until they naturally expire.
+settings_info_cleanduration: |
+  ⏱️ Cycles the auto-delete delay: 15m → 30m → 60m → 5m.
+settings_info_nothumb: |
+  🖼️ What is this?
+
+  Toggle whether to show track artwork/thumbnails in playback messages.
+settings_info_lang: |
+  🌐 What is this?
+
+  Select the language for the bot's messages and interface in this group.
+settings_main: |
+  ⚙️ <b>Chat Settings</b>
+
+  <b>Group:</b> {title}
+  <b>Group ID:</b> <code>{id}</code>
+
+  Configure the bot's behavior in this group using the buttons below.
+settings_updated: "✅ Settings updated!"

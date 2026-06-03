@@ -56,8 +56,12 @@ func handleVoiceChatAction(
 	gologging.DebugF("Voice chat %s in %d", msgKey, chatID)
 
 	if !isActive {
+		room, ok := core.GetRoom(chatID, nil, false)
 		go func() {
 			time.Sleep(500 * time.Millisecond)
+			if ok {
+				scheduleOldPlayingMessage(room)
+			}
 			core.DeleteRoom(chatID)
 			gologging.DebugF(
 				"Room destroyed for ended voice chat in %d",

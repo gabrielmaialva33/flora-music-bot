@@ -476,6 +476,21 @@ var handlers = []MsgHandlerDef{
 		Handler: cmdDeleteHandler,
 		Filters: []telegram.Filter{superGroupFilter, adminFilter},
 	},
+	{
+		Pattern: "cleanmode",
+		Handler: cleanModeHandler,
+		Filters: []telegram.Filter{superGroupFilter, adminFilter},
+	},
+	{
+		Pattern: "adminmode",
+		Handler: adminModeHandler,
+		Filters: []telegram.Filter{superGroupFilter, adminFilter},
+	},
+	{
+		Pattern: "settings",
+		Handler: settingsHandler,
+		Filters: []telegram.Filter{superGroupFilter},
+	},
 }
 
 var cbHandlers = []CbHandlerDef{
@@ -491,6 +506,7 @@ var cbHandlers = []CbHandlerDef{
 	{Pattern: `^room:(\w+)$`, Handler: roomHandle},
 	{Pattern: `^anime:`, Handler: animeCB},
 	{Pattern: "progress", Handler: emptyCBHandler},
+	{Pattern: "^(set|info):", Handler: settingsCallbackHandler},
 }
 
 func Init(bot *telegram.Client, assistants *core.AssistantManager) {
@@ -517,6 +533,9 @@ func Init(bot *telegram.Client, assistants *core.AssistantManager) {
 	bot.On("action", handleChatAction).SetGroup(70)
 
 	bot.AddActionHandler(handleActions).SetGroup(60)
+
+	bot.AddRawHandler(&telegram.UpdateReadChannelOutbox{}, cleanModeReadHandler)
+	cleanScheduler.start()
 
 	assistants.ForEach(func(a *core.Assistant) {
 		a.Ntg.OnStreamEnd(streamEndHandler)
@@ -585,9 +604,10 @@ func setBotCommands(bot *telegram.Client) {
 	} else {
 		sudoCommands := append(AllCommands.PrivateUserCommands, AllCommands.PrivateSudoCommands...)
 		for _, sudoer := range sudoers {
-			if _, err := bot.BotsSetBotCommands(&telegram.BotCommandScopePeer{
-				Peer: &telegram.InputPeerUser{UserID: sudoer, AccessHash: 0},
-			},
+			if _, err := bot.BotsSetBotCommands(
+				&telegram.BotCommandScopePeer{
+					Peer: &telegram.InputPeerUser{UserID: sudoer, AccessHash: 0},
+				},
 				"",
 				sudoCommands,
 			); err != nil {
@@ -598,7 +618,8 @@ func setBotCommands(bot *telegram.Client) {
 
 	ownerCommands := append(
 		AllCommands.PrivateUserCommands,
-		AllCommands.PrivateSudoCommands...)
+		AllCommands.PrivateSudoCommands...,
+	)
 	ownerCommands = append(ownerCommands, AllCommands.PrivateOwnerCommands...)
 	if _, err := bot.BotsSetBotCommands(&telegram.BotCommandScopePeer{
 		Peer: &telegram.InputPeerUser{UserID: config.OwnerID, AccessHash: 0},
