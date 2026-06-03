@@ -147,12 +147,14 @@ func checkAdminOrAuth(
 	chatID int64,
 	opt *tg.CallbackOptions,
 ) bool {
-	isAdmin, err := utils.IsChatAdmin(cb.Client, chatID, cb.SenderID)
-	if err != nil || !isAdmin {
-		cb.Answer(F(cb.ChannelID(), "only_admin_or_auth_cb"), opt)
-		return false
+	// Mesmo critério do path de slash command (canUseAdminCommand): honra auth
+	// users, owner e sudo conforme o AdminMode — antes só checava IsChatAdmin, o
+	// que travava auth/owner/sudo que não fossem admin do chat nos botões inline.
+	if canUseAdminCommand(cb.Client, chatID, cb.SenderID) {
+		return true
 	}
-	return true
+	cb.Answer(F(cb.ChannelID(), "only_admin_or_auth_cb"), opt)
+	return false
 }
 
 func checkFloodControl(
