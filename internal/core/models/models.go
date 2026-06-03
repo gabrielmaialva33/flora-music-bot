@@ -29,21 +29,6 @@ type (
 		// Name returns the unique identifier of the platform.
 		Name() PlatformName
 
-		// CanSearch reports whether this platform supports search.
-		CanSearch() bool
-
-		// Search searches the platform for tracks matching the query.
-		//
-		// query: the search string
-		// video:
-		//   - If the platform supports both audio and video, propagate this
-		//     value into Track.Video
-		//   - If the platform is audio-only, always set Track.Video = false
-		//   - If the platform is video-only, always set Track.Video = true
-		//
-		// This method is primarily used for video playback workflows.
-		Search(query string, video bool) ([]*Track, error)
-
 		// CanDownload reports whether this platform can download tracks
 		// originating from the given source platform.
 		CanDownload(source PlatformName) bool
@@ -66,10 +51,11 @@ type (
 
 		// GetTracks fetches track metadata for the given query.
 		//
+		// ctx is used for cancellation and timeouts.
 		// video indicates whether video playback is requested.
 		// Platforms that do not support video should still return tracks,
 		// but must set Track.Video = false.
-		GetTracks(query string, video bool) ([]*Track, error)
+		GetTracks(ctx context.Context, query string, video bool) ([]*Track, error)
 	}
 )
 

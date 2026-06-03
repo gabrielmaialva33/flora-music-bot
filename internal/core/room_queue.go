@@ -15,14 +15,14 @@ func (r *RoomState) NextTrack() *state.Track {
 
 	r.mu.Lock()
 
-	if r.track != nil && r.loop > 0 {
-		r.position = 0
-		r.playing = false
-		r.paused = false
-		r.muted = false
-		r.loop--
-		r.updatedAt = time.Now().Unix()
-		t := r.track
+	if r.pb.track != nil && r.pb.loop > 0 {
+		r.pb.position = 0
+		r.pb.playing = false
+		r.pb.paused = false
+		r.pb.muted = false
+		r.pb.loop--
+		r.pb.updatedAt = time.Now().Unix()
+		t := r.pb.track
 		r.mu.Unlock()
 		return t
 	}
@@ -31,29 +31,29 @@ func (r *RoomState) NextTrack() *state.Track {
 	// inspeciona as outras rooms (roomsMu + room.mu de cada uma); fazer isso sob
 	// r.mu daria deadlock de ordem inversa entre duas rooms trocando de faixa ao
 	// mesmo tempo (A segura rA.mu e quer rB.mu; B segura rB.mu e quer rA.mu).
-	oldTrack := r.track
+	oldTrack := r.pb.track
 	oldChatID := r.chatID
 
-	if len(r.queue) == 0 {
+	if len(r.q.queue) == 0 {
 		r.mu.Unlock()
 		releaseTrackFile(oldTrack, oldChatID)
 		return nil
 	}
 
 	index := 0
-	if r.shuffle {
-		index = rand.Intn(len(r.queue))
+	if r.q.shuffle {
+		index = rand.Intn(len(r.q.queue))
 	}
 
-	next := r.queue[index]
-	r.queue = append(r.queue[:index], r.queue[index+1:]...)
+	next := r.q.queue[index]
+	r.q.queue = append(r.q.queue[:index], r.q.queue[index+1:]...)
 
-	r.track = next
-	r.position = 0
-	r.playing = false
-	r.paused = false
-	r.muted = false
-	r.updatedAt = time.Now().Unix()
+	r.pb.track = next
+	r.pb.position = 0
+	r.pb.playing = false
+	r.pb.paused = false
+	r.pb.muted = false
+	r.pb.updatedAt = time.Now().Unix()
 
 	r.mu.Unlock()
 	releaseTrackFile(oldTrack, oldChatID)
@@ -70,12 +70,12 @@ func (r *RoomState) RemoveFromQueue(index int) {
 	defer r.mu.Unlock()
 
 	if index == -1 {
-		r.queue = []*state.Track{}
+		r.q.queue = []*state.Track{}
 		return
 	}
 
-	if index >= 0 && index < len(r.queue) {
-		r.queue = append(r.queue[:index], r.queue[index+1:]...)
+	if index >= 0 && index < len(r.q.queue) {
+		r.q.queue = append(r.q.queue[:index], r.q.queue[index+1:]...)
 	}
 }
 
@@ -88,19 +88,19 @@ func (r *RoomState) MoveInQueue(from, to int) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	if from < 0 || from >= len(r.queue) ||
-		to < 0 || to >= len(r.queue) ||
+	if from < 0 || from >= len(r.q.queue) ||
+		to < 0 || to >= len(r.q.queue) ||
 		from == to {
 		return
 	}
 
-	item := r.queue[from]
-	r.queue = append(r.queue[:from], r.queue[from+1:]...)
+	item := r.q.queue[from]
+	r.q.queue = append(r.q.queue[:from], r.q.queue[from+1:]...)
 
-	if to >= len(r.queue) {
-		r.queue = append(r.queue, item)
+	if to >= len(r.q.queue) {
+		r.q.queue = append(r.q.queue, item)
 	} else {
-		r.queue = append(r.queue[:to], append([]*state.Track{item}, r.queue[to:]...)...)
+		r.q.queue = append(r.q.queue[:to], append([]*state.Track{item}, r.q.queue[to:]...)...)
 	}
 }
 
@@ -113,5 +113,5 @@ func (r *RoomState) AddTracksToQueue(tracks []*state.Track) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	r.queue = append(r.queue, tracks...)
+	r.q.queue = append(r.q.queue, tracks...)
 }

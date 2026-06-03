@@ -32,31 +32,31 @@ func (r *RoomState) Play(t *state.Track, path string, force ...bool) error {
 		delete(r.Data, "last_queue")
 	}
 
-	shouldQueue := !forcePlay && r.playing && r.track != nil
+	shouldQueue := !forcePlay && r.pb.playing && r.pb.track != nil
 	if shouldQueue {
-		r.queue = append(r.queue, t)
+		r.q.queue = append(r.q.queue, t)
 		r.mu.Unlock()
 		return nil
 	}
 
-	if r.track != t {
-		r.loop = 0
+	if r.pb.track != t {
+		r.pb.loop = 0
 	}
-	r.track = t
-	r.playing = true
-	r.filePath = path
-	r.position = 0
-	r.paused = false
-	r.muted = false
-	r.updatedAt = time.Now().Unix()
+	r.pb.track = t
+	r.pb.playing = true
+	r.pb.filePath = path
+	r.pb.position = 0
+	r.pb.paused = false
+	r.pb.muted = false
+	r.pb.updatedAt = time.Now().Unix()
 	r.mu.Unlock()
 
 	err := r.play()
 	if err != nil {
 		r.mu.Lock()
-		r.track = nil
-		r.playing = false
-		r.filePath = ""
+		r.pb.track = nil
+		r.pb.playing = false
+		r.pb.filePath = ""
 		r.mu.Unlock()
 		return err
 	}
@@ -71,7 +71,7 @@ func (r *RoomState) Pause(autoResumeAfter ...time.Duration) (bool, error) {
 	}
 
 	r.mu.RLock()
-	alreadyPaused := r.paused
+	alreadyPaused := r.pb.paused
 	r.mu.RUnlock()
 
 	if alreadyPaused {
@@ -84,7 +84,7 @@ func (r *RoomState) Pause(autoResumeAfter ...time.Duration) (bool, error) {
 	}
 
 	r.mu.RLock()
-	isMuted := r.muted
+	isMuted := r.pb.muted
 	r.mu.RUnlock()
 
 	if isMuted {
@@ -93,8 +93,8 @@ func (r *RoomState) Pause(autoResumeAfter ...time.Duration) (bool, error) {
 
 	r.mu.Lock()
 	r.updatePosition()
-	r.paused = true
-	r.muted = false
+	r.pb.paused = true
+	r.pb.muted = false
 
 	if r.scheduledTimers == nil {
 		r.scheduledTimers = &scheduledTimers{}
@@ -126,7 +126,7 @@ func (r *RoomState) Resume() (bool, error) {
 	}
 
 	r.mu.RLock()
-	alreadyPlaying := !r.paused
+	alreadyPlaying := !r.pb.paused
 	r.mu.RUnlock()
 
 	if alreadyPlaying {
@@ -139,10 +139,10 @@ func (r *RoomState) Resume() (bool, error) {
 	}
 
 	r.mu.Lock()
-	r.paused = false
-	r.muted = false
-	r.playing = true
-	r.updatedAt = time.Now().Unix()
+	r.pb.paused = false
+	r.pb.muted = false
+	r.pb.playing = true
+	r.pb.updatedAt = time.Now().Unix()
 	if r.scheduledTimers != nil {
 		r.scheduledTimers.cancelScheduledResume()
 	}
@@ -158,7 +158,7 @@ func (r *RoomState) Replay() error {
 	}
 
 	r.mu.RLock()
-	hasTrack := r.track != nil && r.filePath != ""
+	hasTrack := r.pb.track != nil && r.pb.filePath != ""
 	r.mu.RUnlock()
 
 	if !hasTrack {
@@ -166,24 +166,24 @@ func (r *RoomState) Replay() error {
 	}
 
 	r.mu.Lock()
-	oldPos := r.position
-	r.position = 0
+	oldPos := r.pb.position
+	r.pb.position = 0
 	r.mu.Unlock()
 
 	err := r.play()
 	if err != nil {
 		r.mu.Lock()
-		r.position = oldPos
+		r.pb.position = oldPos
 		r.mu.Unlock()
 		return err
 	}
 
 	r.mu.Lock()
-	r.position = 0
-	r.paused = false
-	r.muted = false
-	r.playing = true
-	r.updatedAt = time.Now().Unix()
+	r.pb.position = 0
+	r.pb.paused = false
+	r.pb.muted = false
+	r.pb.playing = true
+	r.pb.updatedAt = time.Now().Unix()
 	if r.scheduledTimers != nil {
 		r.scheduledTimers.cancelScheduledResume()
 		r.scheduledTimers.cancelScheduledUnmute()
@@ -205,12 +205,12 @@ func (r *RoomState) Stop() error {
 	err := r.Assistant.Ntg.Stop(r.chatID)
 
 	r.mu.Lock()
-	r.track = nil
-	r.position = 0
-	r.playing = false
-	r.paused = false
-	r.muted = false
-	r.updatedAt = 0
+	r.pb.track = nil
+	r.pb.position = 0
+	r.pb.playing = false
+	r.pb.paused = false
+	r.pb.muted = false
+	r.pb.updatedAt = 0
 	if r.scheduledTimers != nil {
 		r.scheduledTimers.cancelScheduledUnmute()
 		r.scheduledTimers.cancelScheduledResume()
@@ -228,14 +228,14 @@ func (r *RoomState) Seek(seconds int) error {
 	}
 
 	r.mu.Lock()
-	if r.track == nil || r.filePath == "" {
+	if r.pb.track == nil || r.pb.filePath == "" {
 		r.mu.Unlock()
 		return fmt.Errorf("no track to seek")
 	}
 
 	r.updatePosition()
 
-	if seconds > 0 && r.track.Duration-r.position <= seekEndThreshold {
+	if seconds > 0 && r.pb.track.Duration-r.pb.position <= seekEndThreshold {
 		r.mu.Unlock()
 		return fmt.Errorf("cannot seek, track is about to end")
 	}
@@ -246,33 +246,33 @@ func (r *RoomState) Seek(seconds int) error {
 		muted    bool
 		updated  int64
 	}{
-		position: r.position,
-		paused:   r.paused,
-		muted:    r.muted,
-		updated:  r.updatedAt,
+		position: r.pb.position,
+		paused:   r.pb.paused,
+		muted:    r.pb.muted,
+		updated:  r.pb.updatedAt,
 	}
 
-	newPos := r.position + seconds
-	if newPos >= r.track.Duration {
-		newPos = r.track.Duration - seekSafetyMargin
+	newPos := r.pb.position + seconds
+	if newPos >= r.pb.track.Duration {
+		newPos = r.pb.track.Duration - seekSafetyMargin
 	}
 	if newPos < 0 {
 		newPos = 0
 	}
 
-	r.position = newPos
-	r.paused = false
-	r.muted = false
-	r.updatedAt = time.Now().Unix()
+	r.pb.position = newPos
+	r.pb.paused = false
+	r.pb.muted = false
+	r.pb.updatedAt = time.Now().Unix()
 	r.mu.Unlock()
 
 	err := r.play()
 	if err != nil {
 		r.mu.Lock()
-		r.position = snapshot.position
-		r.paused = snapshot.paused
-		r.muted = snapshot.muted
-		r.updatedAt = snapshot.updated
+		r.pb.position = snapshot.position
+		r.pb.paused = snapshot.paused
+		r.pb.muted = snapshot.muted
+		r.pb.updatedAt = snapshot.updated
 		r.mu.Unlock()
 		return err
 	}
@@ -298,8 +298,8 @@ func (r *RoomState) SetSpeed(
 	}
 
 	r.mu.RLock()
-	hasTrack := r.track != nil && r.filePath != ""
-	currentSpeed := r.speed
+	hasTrack := r.pb.track != nil && r.pb.filePath != ""
+	currentSpeed := r.pb.speed
 	r.mu.RUnlock()
 
 	if !hasTrack {
@@ -320,11 +320,11 @@ func (r *RoomState) SetSpeed(
 
 	r.mu.Lock()
 	r.updatePosition()
-	r.speed = speed
-	r.playing = true
-	r.paused = false
-	r.muted = false
-	r.updatedAt = time.Now().Unix()
+	r.pb.speed = speed
+	r.pb.playing = true
+	r.pb.paused = false
+	r.pb.muted = false
+	r.pb.updatedAt = time.Now().Unix()
 	r.mu.Unlock()
 
 	err := r.play()
@@ -358,14 +358,14 @@ func (r *RoomState) resetSpeedToNormal() {
 	}
 
 	r.mu.Lock()
-	if r.track == nil || !r.playing || r.speed == 1.0 {
+	if r.pb.track == nil || !r.pb.playing || r.pb.speed == 1.0 {
 		r.mu.Unlock()
 		return
 	}
 
 	r.updatePosition()
-	r.speed = 1.0
-	r.updatedAt = time.Now().Unix()
+	r.pb.speed = 1.0
+	r.pb.updatedAt = time.Now().Unix()
 	r.mu.Unlock()
 
 	r.play()
@@ -378,7 +378,7 @@ func (r *RoomState) Mute(unmuteAfter ...time.Duration) (bool, error) {
 	}
 
 	r.mu.RLock()
-	alreadyMuted := r.muted
+	alreadyMuted := r.pb.muted
 	r.mu.RUnlock()
 
 	if alreadyMuted {
@@ -391,7 +391,7 @@ func (r *RoomState) Mute(unmuteAfter ...time.Duration) (bool, error) {
 	}
 
 	r.mu.RLock()
-	isPaused := r.paused
+	isPaused := r.pb.paused
 	r.mu.RUnlock()
 
 	if isPaused {
@@ -401,7 +401,7 @@ func (r *RoomState) Mute(unmuteAfter ...time.Duration) (bool, error) {
 	}
 
 	r.mu.Lock()
-	r.muted = true
+	r.pb.muted = true
 	if r.scheduledTimers == nil {
 		r.scheduledTimers = &scheduledTimers{}
 	}
@@ -435,8 +435,8 @@ func (r *RoomState) Unmute() (bool, error) {
 
 	r.mu.Lock()
 	r.updatePosition()
-	r.muted = false
-	r.paused = false
+	r.pb.muted = false
+	r.pb.paused = false
 	if r.scheduledTimers != nil {
 		r.scheduledTimers.cancelScheduledUnmute()
 	}
@@ -446,7 +446,7 @@ func (r *RoomState) Unmute() (bool, error) {
 }
 
 func (r *RoomState) play() error {
-	desc := getMediaDescription(r.filePath, r.position, r.speed, r.track.Video)
+	desc := getMediaDescription(r.pb.filePath, r.pb.position, r.pb.speed, r.pb.track.Video)
 	return r.Assistant.Ntg.Play(r.chatID, desc)
 }
 
@@ -456,11 +456,7 @@ func getMediaDescription(
 	speed float64,
 	isVideo bool,
 ) ntgcalls.MediaDescription {
-	if speed < 0.5 {
-		speed = 0.5
-	} else if speed > 4.0 {
-		speed = 4.0
-	}
+	speed = max(minSpeed, min(maxSpeed, speed))
 
 	baseCmd := "ffmpeg "
 	if isStreamURL(url) {
