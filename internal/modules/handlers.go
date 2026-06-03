@@ -24,6 +24,32 @@ type CbHandlerDef struct {
 	Filters []telegram.Filter
 }
 
+// Construtores de MsgHandlerDef que fixam os conjuntos de filtros mais comuns,
+// evitando repetir o slice literal em cada entrada.
+func sgAuth(pat string, h telegram.MessageHandler) MsgHandlerDef {
+	return MsgHandlerDef{pat, h, []telegram.Filter{superGroupFilter, authFilter}}
+}
+
+func sgAdmin(pat string, h telegram.MessageHandler) MsgHandlerDef {
+	return MsgHandlerDef{pat, h, []telegram.Filter{superGroupFilter, adminFilter}}
+}
+
+func sg(pat string, h telegram.MessageHandler) MsgHandlerDef {
+	return MsgHandlerDef{pat, h, []telegram.Filter{superGroupFilter}}
+}
+
+func sudo(pat string, h telegram.MessageHandler) MsgHandlerDef {
+	return MsgHandlerDef{pat, h, []telegram.Filter{sudoOnlyFilter, ignoreChannelFilter}}
+}
+
+func ownerCh(pat string, h telegram.MessageHandler) MsgHandlerDef {
+	return MsgHandlerDef{pat, h, []telegram.Filter{ownerFilter, ignoreChannelFilter}}
+}
+
+func ignoreCh(pat string, h telegram.MessageHandler) MsgHandlerDef {
+	return MsgHandlerDef{pat, h, []telegram.Filter{ignoreChannelFilter}}
+}
+
 var handlers = []MsgHandlerDef{
 	{Pattern: "json", Handler: jsonHandle},
 	{
@@ -41,456 +67,121 @@ var handlers = []MsgHandlerDef{
 		Handler: shellHandle,
 		Filters: []telegram.Filter{ownerFilter},
 	},
-	{
-		Pattern: "restart",
-		Handler: handleRestart,
-		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
-	},
+	ownerCh("restart", handleRestart),
 
-	{
-		Pattern: "(addsudo|addsudoer|sudoadd)",
-		Handler: handleAddSudo,
-		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
-	},
-	{
-		Pattern: "(delsudo|delsudoer|sudodel|remsudo|rmsudo|sudorem|dropsudo|unsudo)",
-		Handler: handleDelSudo,
-		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
-	},
-	{
-		Pattern: "(sudoers|listsudo|sudolist)",
-		Handler: handleGetSudoers,
-		Filters: []telegram.Filter{ignoreChannelFilter},
-	},
+	ownerCh("(addsudo|addsudoer|sudoadd)", handleAddSudo),
+	ownerCh(
+		"(delsudo|delsudoer|sudodel|remsudo|rmsudo|sudorem|dropsudo|unsudo)",
+		handleDelSudo,
+	),
+	ignoreCh("(sudoers|listsudo|sudolist)", handleGetSudoers),
 
-	{
-		Pattern: "(blockuser|blacklistuser|blackuser|bluser)",
-		Handler: handleBlockUser,
-		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
-	},
-	{
-		Pattern: "(unblockuser|unblacklistuser|unbluser|whitelistuser)",
-		Handler: handleUnblockUser,
-		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
-	},
-	{
-		Pattern: "(blockchat|blacklistchat|blackchat|blchat)",
-		Handler: handleBlockChat,
-		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
-	},
-	{
-		Pattern: "(unblockchat|unblacklistchat|unblackchat|whitechat|unblchat)",
-		Handler: handleUnblockChat,
-		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
-	},
-	{
-		Pattern: "(blocked|blacklisted)",
-		Handler: handleBlacklisted,
-		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
-	},
+	ownerCh("(blockuser|blacklistuser|blackuser|bluser)", handleBlockUser),
+	ownerCh(
+		"(unblockuser|unblacklistuser|unbluser|whitelistuser)",
+		handleUnblockUser,
+	),
+	ownerCh("(blockchat|blacklistchat|blackchat|blchat)", handleBlockChat),
+	ownerCh(
+		"(unblockchat|unblacklistchat|unblackchat|whitechat|unblchat)",
+		handleUnblockChat,
+	),
+	ownerCh("(blocked|blacklisted)", handleBlacklisted),
 
-	{
-		Pattern: "(speedtest|spt)",
-		Handler: sptHandle,
-		Filters: []telegram.Filter{sudoOnlyFilter, ignoreChannelFilter},
-	},
+	sudo("(speedtest|spt)", sptHandle),
 
-	{
-		Pattern: "(broadcast|gcast|bcast)",
-		Handler: broadcastHandler,
-		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
-	},
+	ownerCh("(broadcast|gcast|bcast)", broadcastHandler),
 
-	{
-		Pattern: "(ac|active|activevc|activevoice)",
-		Handler: activeHandler,
-		Filters: []telegram.Filter{sudoOnlyFilter, ignoreChannelFilter},
-	},
-	{
-		Pattern: "(maintenance|maint)",
-		Handler: handleMaintenance,
-		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
-	},
-	{
-		Pattern: "logger",
-		Handler: handleLogger,
-		Filters: []telegram.Filter{sudoOnlyFilter, ignoreChannelFilter},
-	},
-	{
-		Pattern: "autoleave",
-		Handler: autoLeaveHandler,
-		Filters: []telegram.Filter{sudoOnlyFilter, ignoreChannelFilter},
-	},
-	{
-		Pattern: "(log|logs)",
-		Handler: logsHandler,
-		Filters: []telegram.Filter{sudoOnlyFilter, ignoreChannelFilter},
-	},
+	sudo("(ac|active|activevc|activevoice)", activeHandler),
+	ownerCh("(maintenance|maint)", handleMaintenance),
+	sudo("logger", handleLogger),
+	sudo("autoleave", autoLeaveHandler),
+	sudo("(log|logs)", logsHandler),
 
-	{
-		Pattern: "help",
-		Handler: helpHandler,
-		Filters: []telegram.Filter{ignoreChannelFilter},
-	},
-	{
-		Pattern: "ping",
-		Handler: pingHandler,
-		Filters: []telegram.Filter{ignoreChannelFilter},
-	},
-	{
-		Pattern: "start",
-		Handler: startHandler,
-		Filters: []telegram.Filter{ignoreChannelFilter},
-	},
+	ignoreCh("help", helpHandler),
+	ignoreCh("ping", pingHandler),
+	ignoreCh("start", startHandler),
 	{
 		Pattern: "stats",
 		Handler: statsHandler,
 		Filters: []telegram.Filter{ignoreChannelFilter, sudoOnlyFilter},
 	},
-	{
-		Pattern: "bug",
-		Handler: bugHandler,
-		Filters: []telegram.Filter{ignoreChannelFilter},
-	},
-	{
-		Pattern: "privacy",
-		Handler: privacyHandler,
-		Filters: []telegram.Filter{ignoreChannelFilter},
-	},
-	{
-		Pattern: "(anime|a|tomato)",
-		Handler: animeHandler,
-		Filters: []telegram.Filter{ignoreChannelFilter},
-	},
-	{
-		Pattern: "(lang|language)",
-		Handler: langHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
+	ignoreCh("bug", bugHandler),
+	ignoreCh("privacy", privacyHandler),
+	ignoreCh("(anime|a|tomato)", animeHandler),
+	sgAuth("(lang|language)", langHandler),
 
 	// SuperGroup & Admin Filters
 
-	{
-		Pattern: "stream",
-		Handler: streamHandler,
-		Filters: []telegram.Filter{superGroupFilter},
-	},
-	{
-		Pattern: "streamstop",
-		Handler: streamStopHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "streamstatus",
-		Handler: streamStatusHandler,
-		Filters: []telegram.Filter{superGroupFilter},
-	},
+	sg("stream", streamHandler),
+	sgAuth("streamstop", streamStopHandler),
+	sg("streamstatus", streamStatusHandler),
 	{Pattern: "(rtmp|setrtmp)", Handler: setRTMPHandler},
 	// play/cplay/vplay/fplay commands
-	{
-		Pattern: "play",
-		Handler: playHandler,
-		Filters: []telegram.Filter{superGroupFilter},
-	},
-	{
-		Pattern: "(fplay|playforce)",
-		Handler: fplayHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cplay",
-		Handler: cplayHandler,
-		Filters: []telegram.Filter{superGroupFilter},
-	},
-	{
-		Pattern: "(cfplay|fcplay|cplayforce)",
-		Handler: cfplayHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "vplay",
-		Handler: vplayHandler,
-		Filters: []telegram.Filter{superGroupFilter},
-	},
-	{
-		Pattern: "(fvplay|vfplay|vplayforce)",
-		Handler: fvplayHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "(vcplay|cvplay)",
-		Handler: vcplayHandler,
-		Filters: []telegram.Filter{superGroupFilter},
-	},
-	{
-		Pattern: "(fvcplay|fvcpay|vcplayforce)",
-		Handler: fvcplayHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
+	sg("play", playHandler),
+	sgAuth("(fplay|playforce)", fplayHandler),
+	sg("cplay", cplayHandler),
+	sgAuth("(cfplay|fcplay|cplayforce)", cfplayHandler),
+	sg("vplay", vplayHandler),
+	sgAuth("(fvplay|vfplay|vplayforce)", fvplayHandler),
+	sg("(vcplay|cvplay)", vcplayHandler),
+	sgAuth("(fvcplay|fvcpay|vcplayforce)", fvcplayHandler),
 
-	{
-		Pattern: "(speed|setspeed|speedup)",
-		Handler: speedHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "skip",
-		Handler: skipHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "pause",
-		Handler: pauseHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "resume",
-		Handler: resumeHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "replay",
-		Handler: replayHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "mute",
-		Handler: muteHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "unmute",
-		Handler: unmuteHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "seek",
-		Handler: seekHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "seekback",
-		Handler: seekbackHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "jump",
-		Handler: jumpHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "(pos|position)",
-		Handler: positionHandler,
-		Filters: []telegram.Filter{superGroupFilter},
-	},
-	{
-		Pattern: "queue",
-		Handler: queueHandler,
-		Filters: []telegram.Filter{superGroupFilter},
-	},
-	{
-		Pattern: "clear",
-		Handler: clearHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "remove",
-		Handler: removeHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "move",
-		Handler: moveHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "shuffle",
-		Handler: shuffleHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "(loop|setloop)",
-		Handler: loopHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "(end|stop)",
-		Handler: stopHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "reload",
-		Handler: reloadHandler,
-		Filters: []telegram.Filter{superGroupFilter},
-	},
-	{
-		Pattern: "restore",
-		Handler: restoreHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "addauth",
-		Handler: addAuthHandler,
-		Filters: []telegram.Filter{superGroupFilter, adminFilter},
-	},
-	{
-		Pattern: "delauth",
-		Handler: delAuthHandler,
-		Filters: []telegram.Filter{superGroupFilter, adminFilter},
-	},
-	{
-		Pattern: "authlist",
-		Handler: authListHandler,
-		Filters: []telegram.Filter{superGroupFilter},
-	},
+	sgAuth("(speed|setspeed|speedup)", speedHandler),
+	sgAuth("skip", skipHandler),
+	sgAuth("pause", pauseHandler),
+	sgAuth("resume", resumeHandler),
+	sgAuth("replay", replayHandler),
+	sgAuth("mute", muteHandler),
+	sgAuth("unmute", unmuteHandler),
+	sgAuth("seek", seekHandler),
+	sgAuth("seekback", seekbackHandler),
+	sgAuth("jump", jumpHandler),
+	sg("(pos|position)", positionHandler),
+	sg("queue", queueHandler),
+	sgAuth("clear", clearHandler),
+	sgAuth("remove", removeHandler),
+	sgAuth("move", moveHandler),
+	sgAuth("shuffle", shuffleHandler),
+	sgAuth("(loop|setloop)", loopHandler),
+	sgAuth("(end|stop)", stopHandler),
+	sg("reload", reloadHandler),
+	sgAuth("restore", restoreHandler),
+	sgAdmin("addauth", addAuthHandler),
+	sgAdmin("delauth", delAuthHandler),
+	sg("authlist", authListHandler),
 
 	// CPlay commands
-	{
-		Pattern: "(cplay|cvplay)",
-		Handler: cplayHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "(cfplay|fcplay|cforceplay)",
-		Handler: cfplayHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cpause",
-		Handler: cpauseHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cresume",
-		Handler: cresumeHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cmute",
-		Handler: cmuteHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cunmute",
-		Handler: cunmuteHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "(cstop|cend)",
-		Handler: cstopHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cqueue",
-		Handler: cqueueHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cskip",
-		Handler: cskipHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "(cloop|csetloop)",
-		Handler: cloopHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cseek",
-		Handler: cseekHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cseekback",
-		Handler: cseekbackHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cjump",
-		Handler: cjumpHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cremove",
-		Handler: cremoveHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cclear",
-		Handler: cclearHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cmove",
-		Handler: cmoveHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "channelplay",
-		Handler: channelPlayHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "(cspeed|csetspeed|cspeedup)",
-		Handler: cspeedHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "creplay",
-		Handler: creplayHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "(cpos|cposition)",
-		Handler: cpositionHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "cshuffle",
-		Handler: cshuffleHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "creload",
-		Handler: creloadHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "crestore",
-		Handler: crestoreHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
+	sgAuth("(cplay|cvplay)", cplayHandler),
+	sgAuth("(cfplay|fcplay|cforceplay)", cfplayHandler),
+	sgAuth("cpause", cpauseHandler),
+	sgAuth("cresume", cresumeHandler),
+	sgAuth("cmute", cmuteHandler),
+	sgAuth("cunmute", cunmuteHandler),
+	sgAuth("(cstop|cend)", cstopHandler),
+	sgAuth("cqueue", cqueueHandler),
+	sgAuth("cskip", cskipHandler),
+	sgAuth("(cloop|csetloop)", cloopHandler),
+	sgAuth("cseek", cseekHandler),
+	sgAuth("cseekback", cseekbackHandler),
+	sgAuth("cjump", cjumpHandler),
+	sgAuth("cremove", cremoveHandler),
+	sgAuth("cclear", cclearHandler),
+	sgAuth("cmove", cmoveHandler),
+	sgAuth("channelplay", channelPlayHandler),
+	sgAuth("(cspeed|csetspeed|cspeedup)", cspeedHandler),
+	sgAuth("creplay", creplayHandler),
+	sgAuth("(cpos|cposition)", cpositionHandler),
+	sgAuth("cshuffle", cshuffleHandler),
+	sgAuth("creload", creloadHandler),
+	sgAuth("crestore", crestoreHandler),
 
-	{
-		Pattern: "(nothumb|nothumbs)",
-		Handler: nothumbHandler,
-		Filters: []telegram.Filter{superGroupFilter, authFilter},
-	},
-	{
-		Pattern: "playmode",
-		Handler: playmodeHandler,
-		Filters: []telegram.Filter{superGroupFilter, adminFilter},
-	},
-	{
-		Pattern: "(cmddelete|commanddelete)",
-		Handler: cmdDeleteHandler,
-		Filters: []telegram.Filter{superGroupFilter, adminFilter},
-	},
-	{
-		Pattern: "cleanmode",
-		Handler: cleanModeHandler,
-		Filters: []telegram.Filter{superGroupFilter, adminFilter},
-	},
-	{
-		Pattern: "adminmode",
-		Handler: adminModeHandler,
-		Filters: []telegram.Filter{superGroupFilter, adminFilter},
-	},
-	{
-		Pattern: "settings",
-		Handler: settingsHandler,
-		Filters: []telegram.Filter{superGroupFilter},
-	},
+	sgAuth("(nothumb|nothumbs)", nothumbHandler),
+	sgAdmin("playmode", playmodeHandler),
+	sgAdmin("(cmddelete|commanddelete)", cmdDeleteHandler),
+	sgAdmin("cleanmode", cleanModeHandler),
+	sgAdmin("adminmode", adminModeHandler),
+	sg("settings", settingsHandler),
 }
 
 var cbHandlers = []CbHandlerDef{
