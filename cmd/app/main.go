@@ -14,9 +14,12 @@ package main
 import "C"
 
 import (
+	"context"
+	"errors"
 	"net/http"
-	_ "net/http/pprof"
+	"net/http/pprof"
 	"os"
+	"time"
 
 	"github.com/Laky-64/gologging"
 
@@ -75,19 +78,43 @@ func main() {
 
 	modules.Init(core.Bot, core.Assistants)
 
-	startHTTPServer()
+	srv := startHTTPServer()
+	defer func() {
+		shutCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := srv.Shutdown(shutCtx); err != nil {
+			gologging.Error("HTTP server shutdown error: " + err.Error())
+		}
+	}()
 
 	core.Bot.Idle()
 }
 
-func startHTTPServer() {
-	go func() {
-		addr := "0.0.0.0:" + config.Port
+func startHTTPServer() *http.Server {
+	// pprof num mux dedicado e bind em loopback: antes era DefaultServeMux +
+	// 0.0.0.0, expondo /debug/pprof/* publicamente (info-leak de memória/stacks
+	// e DoS via profiling). Pra acessar de fora, use port-forward/túnel.
+	mux := http.NewServeMux()
+	mux.HandleFunc("/debug/pprof/", pprof.Index)
+	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
-		if err := http.ListenAndServe(addr, nil); err != nil {
+	srv := &http.Server{
+		Addr:              "127.0.0.1:" + config.Port,
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil &&
+			!errors.Is(err, http.ErrServerClosed) {
 			gologging.Error("HTTP server error: " + err.Error())
 		}
 	}()
+
+	return srv
 }
 
 func initLogger() {
