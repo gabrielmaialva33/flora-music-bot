@@ -39,45 +39,6 @@ func GetProgress(statusMsg *telegram.NewMessage) *telegram.ProgressManager {
 	return pm
 }
 
-/*
-func GetProgressBar(playedSec, durationSec int) string {
-	if durationSec == 0 || playedSec <= 0 {
-		return "◉—————————"
-	}
-
-	percentage := (float64(playedSec) / float64(durationSec)) * 100
-	umm := math.Floor(percentage)
-
-	var bar string
-
-	switch {
-	case umm >= 0 && umm <= 10:
-		bar = "◉—————————"
-	case umm > 10 && umm < 20:
-		bar = "—◉————————"
-	case umm >= 20 && umm < 30:
-		bar = "——◉———————"
-	case umm >= 30 && umm < 40:
-		bar = "———◉——————"
-	case umm >= 40 && umm < 50:
-		bar = "————◉—————"
-	case umm >= 50 && umm < 60:
-		bar = "—————◉————"
-	case umm >= 60 && umm < 70:
-		bar = "——————◉———"
-	case umm >= 70 && umm < 80:
-		bar = "———————◉——"
-	case umm >= 80 && umm < 90:
-		bar = "————————◉—"
-	case umm >= 90 && umm <= 100:
-		bar = "—————————◉"
-	default:
-		bar = "—————————◉"
-	}
-	return bar
-}
-*/
-
 func GetProgressBar(playedSec, durationSec int) string {
 	if durationSec <= 0 || playedSec <= 0 {
 		return "◉—————————"

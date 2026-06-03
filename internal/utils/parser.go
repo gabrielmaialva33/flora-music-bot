@@ -46,7 +46,7 @@ func MentionHTML(u *tg.UserObj) string {
 	}
 	fullName = EscapeHTML(ShortTitle(fullName, 15))
 
-	return fmt.Sprintf("<a href=\"tg://user?id=%d\">%s</a>", u.ID, fullName)
+	return fmt.Sprintf(`<a href="tg://user?id=%d">%s</a>`, u.ID, fullName)
 }
 
 // IfElse returns `a` if condition is true, else returns `b`.

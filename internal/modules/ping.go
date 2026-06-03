@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Laky-64/gologging"
 	tg "github.com/amarnathcjd/gogram/telegram"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/disk"
@@ -65,6 +66,7 @@ func pingHandler(m *tg.NewMessage) error {
 	}
 
 	start := time.Now()
+
 	reply, err := m.Respond(F(m.ChannelID(), "ping_start"))
 	if err != nil {
 		return err
@@ -76,13 +78,6 @@ func pingHandler(m *tg.NewMessage) error {
 	ramInfo := "N/A"
 	cpuUsage := "N/A"
 	diskUsage := "N/A"
-
-	opt := &tg.SendOptions{
-		ReplyMarkup: core.SuppMarkup(m.ChannelID()),
-	}
-	if config.PingImage != "" {
-		opt.Media = config.PingImage
-	}
 
 	v, err := mem.VirtualMemory()
 	if err == nil {
@@ -112,6 +107,27 @@ func pingHandler(m *tg.NewMessage) error {
 		"disk_usage": diskUsage,
 	})
 
-	reply.Edit(msg, opt)
+	markup := core.SuppMarkup(m.ChannelID())
+
+	// A imagem precisa ir como media message: SendMedia trata a URL como foto
+	// externa. Editar texto->mídia (ou SendOptions.Media) o Telegram interpreta
+	// como webpage preview e devolve WEBPAGE_MEDIA_EMPTY. Se a mídia falhar
+	// (URL inválida etc.), cai pro texto sem derrubar o handler.
+	if config.PingImage != "" {
+		_, err := m.Client.SendMedia(
+			m.ChannelID(),
+			config.PingImage,
+			&tg.MediaOptions{Caption: msg, ReplyMarkup: markup},
+		)
+		if err == nil {
+			reply.Delete()
+			return tg.ErrEndGroup
+		}
+		gologging.Error("[ping] media failed, fallback to text: " + err.Error())
+	}
+
+	if _, err := reply.Edit(msg, &tg.SendOptions{ReplyMarkup: markup}); err != nil {
+		gologging.Error("[ping] edit failed: " + err.Error())
+	}
 	return tg.ErrEndGroup
 }

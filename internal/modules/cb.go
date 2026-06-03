@@ -18,7 +18,7 @@ import (
 )
 
 // Action handlers map for cleaner dispatch
-type actionHandler func(*tg.CallbackQuery, *core.RoomState, int64) error
+type actionHandler func(*tg.CallbackQuery, *core.RoomState, int64, *tg.CallbackOptions) error
 
 var actionHandlers = map[string]actionHandler{
 	"pause":  handlePauseAction,
@@ -118,7 +118,7 @@ func roomHandle(cb *tg.CallbackQuery) error {
 
 	// Dispatch to handler
 	if handler, ok := actionHandlers[action]; ok {
-		return handler(cb, r, chatID)
+		return handler(cb, r, chatID, opt)
 	}
 
 	gologging.WarnF("Unknown callback type: %s", action)
@@ -193,9 +193,8 @@ func handlePauseAction(
 	cb *tg.CallbackQuery,
 	r *core.RoomState,
 	chatID int64,
+	opt *tg.CallbackOptions,
 ) error {
-	opt := &tg.CallbackOptions{Alert: true}
-
 	gologging.InfoF("Callback → pause, chatID=%d", chatID)
 
 	if r.IsPaused() {
@@ -235,9 +234,8 @@ func handleResumeAction(
 	cb *tg.CallbackQuery,
 	r *core.RoomState,
 	chatID int64,
+	opt *tg.CallbackOptions,
 ) error {
-	opt := &tg.CallbackOptions{Alert: true}
-
 	gologging.InfoF("Callback → resume, chatID=%d", chatID)
 
 	if !r.IsPaused() {
@@ -263,9 +261,8 @@ func handleReplayAction(
 	cb *tg.CallbackQuery,
 	r *core.RoomState,
 	chatID int64,
+	opt *tg.CallbackOptions,
 ) error {
-	opt := &tg.CallbackOptions{Alert: true}
-
 	gologging.InfoF("Callback → replay, chatID=%d", chatID)
 
 	statusMsg, err := cb.Respond(F(cb.ChannelID(), "cb_replaying"))
@@ -316,9 +313,8 @@ func handleSkipAction(
 	cb *tg.CallbackQuery,
 	r *core.RoomState,
 	chatID int64,
+	opt *tg.CallbackOptions,
 ) error {
-	opt := &tg.CallbackOptions{Alert: true}
-
 	gologging.InfoF("Callback → skip, chatID=%d", chatID)
 
 	if len(r.Queue()) == 0 {
@@ -395,9 +391,8 @@ func handleStopAction(
 	cb *tg.CallbackQuery,
 	r *core.RoomState,
 	chatID int64,
+	opt *tg.CallbackOptions,
 ) error {
-	opt := &tg.CallbackOptions{Alert: true}
-
 	gologging.InfoF("Callback → stop, chatID=%d", chatID)
 
 	core.DeleteRoom(r.ChatID())
@@ -414,9 +409,8 @@ func handleMuteAction(
 	cb *tg.CallbackQuery,
 	r *core.RoomState,
 	chatID int64,
+	opt *tg.CallbackOptions,
 ) error {
-	opt := &tg.CallbackOptions{Alert: true}
-
 	if r.IsMuted() {
 		remaining := r.RemainingUnmuteDuration()
 		msg := utils.IfElse(
@@ -446,9 +440,8 @@ func handleUnmuteAction(
 	cb *tg.CallbackQuery,
 	r *core.RoomState,
 	chatID int64,
+	opt *tg.CallbackOptions,
 ) error {
-	opt := &tg.CallbackOptions{Alert: true}
-
 	if !r.IsMuted() {
 		cb.Answer(F(cb.ChannelID(), "unmute_already"), opt)
 		return tg.ErrEndGroup

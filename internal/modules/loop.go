@@ -53,8 +53,7 @@ func handleLoop(m *tg.NewMessage, cplay bool) error {
 	currentLoop := r.Loop()
 
 	if !r.IsActiveChat() {
-		m.Reply(F(chatID, "room_no_active"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "room_no_active")
 	}
 
 	if len(args) < 2 {
@@ -76,15 +75,13 @@ func handleLoop(m *tg.NewMessage, cplay bool) error {
 
 	newLoop, err := strconv.Atoi(args[1])
 	if err != nil || newLoop < 0 || newLoop > 10 {
-		m.Reply(F(chatID, "loop_invalid"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "loop_invalid")
 	}
 
 	if newLoop == currentLoop {
-		m.Reply(F(chatID, "loop_already_set", locales.Arg{
+		return replyEnd(m, "loop_already_set", locales.Arg{
 			"count": currentLoop,
-		}))
-		return tg.ErrEndGroup
+		})
 	}
 
 	r.SetLoop(newLoop)

@@ -160,8 +160,7 @@ func handleQueue(m *tg.NewMessage, cplay bool) error {
 
 	t := r.Track()
 	if !r.IsActiveChat() || t == nil {
-		m.Reply(F(chatID, "queue_no_active"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "queue_no_active")
 	}
 
 	var b strings.Builder
@@ -272,8 +271,6 @@ func handleQueue(m *tg.NewMessage, cplay bool) error {
 }
 
 func handleRemove(m *tg.NewMessage, cplay bool) error {
-	chatID := m.ChannelID()
-
 	r, err := getEffectiveRoom(m, cplay)
 	if err != nil {
 		m.Reply(err.Error())
@@ -281,54 +278,45 @@ func handleRemove(m *tg.NewMessage, cplay bool) error {
 	}
 	t := r.Track()
 	if !r.IsActiveChat() || t == nil {
-		m.Reply(F(chatID, "queue_no_active"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "queue_no_active")
 	}
 
 	if len(r.Queue()) == 0 {
-		m.Reply(F(chatID, "queue_empty"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "queue_empty")
 	}
 
 	args := strings.Fields(m.Text())
 	if len(args) < 2 {
-		m.Reply(F(chatID, "remove_usage", locales.Arg{
+		return replyEnd(m, "remove_usage", locales.Arg{
 			"cmd": getCommand(m),
-		}))
-		return tg.ErrEndGroup
+		})
 	}
 
 	index, err := strconv.Atoi(args[1])
 	if err != nil {
-		m.Reply(F(chatID, "remove_invalid_index"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "remove_invalid_index")
 	}
 
 	if index <= 0 {
-		m.Reply(F(chatID, "remove_index_too_small"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "remove_index_too_small")
 	}
 
 	total := len(r.Queue())
 	if index > total {
-		m.Reply(F(chatID, "remove_index_too_big", locales.Arg{
+		return replyEnd(m, "remove_index_too_big", locales.Arg{
 			"total": total,
-		}))
-		return tg.ErrEndGroup
+		})
 	}
 
 	r.RemoveFromQueue(index - 1)
 
-	m.Reply(F(chatID, "remove_success", locales.Arg{
+	return replyEnd(m, "remove_success", locales.Arg{
 		"index": index,
 		"user":  utils.MentionHTML(m.Sender),
-	}))
-
-	return tg.ErrEndGroup
+	})
 }
 
 func handleRestoreQueue(m *tg.NewMessage, cplay bool) error {
-	chatID := m.ChannelID()
 	if !filterAuthUsers(m) {
 		return tg.ErrEndGroup
 	}
@@ -341,30 +329,24 @@ func handleRestoreQueue(m *tg.NewMessage, cplay bool) error {
 
 	ok, v := r.GetData("last_queue")
 	if !ok || v == nil {
-		m.Reply(F(chatID, "queue_restore_no_data"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "queue_restore_no_data")
 	}
 
 	tracks, ok := v.([]*state.Track)
 	if !ok {
 		r.DeleteData("last_queue")
-		m.Reply(F(chatID, "queue_restore_no_data"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "queue_restore_no_data")
 	}
 
 	r.AddTracksToQueue(tracks)
 	r.DeleteData("last_queue")
 
-	m.Reply(F(chatID, "queue_restored", locales.Arg{
+	return replyEnd(m, "queue_restored", locales.Arg{
 		"count": len(tracks),
-	}))
-
-	return tg.ErrEndGroup
+	})
 }
 
 func handleClear(m *tg.NewMessage, cplay bool) error {
-	chatID := m.ChannelID()
-
 	r, err := getEffectiveRoom(m, cplay)
 	if err != nil {
 		m.Reply(err.Error())
@@ -372,13 +354,11 @@ func handleClear(m *tg.NewMessage, cplay bool) error {
 	}
 	t := r.Track()
 	if !r.IsActiveChat() || t == nil {
-		m.Reply(F(chatID, "clear_no_active"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "clear_no_active")
 	}
 
 	if len(r.Queue()) == 0 {
-		m.Reply(F(chatID, "queue_empty"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "queue_empty")
 	}
 
 	r.SetData("last_queue", r.Queue())
@@ -389,17 +369,13 @@ func handleClear(m *tg.NewMessage, cplay bool) error {
 		restoreCmd = "crestore"
 	}
 
-	m.Reply(F(chatID, "clear_success", locales.Arg{
+	return replyEnd(m, "clear_success", locales.Arg{
 		"user": utils.MentionHTML(m.Sender),
 		"cmd":  restoreCmd,
-	}))
-
-	return tg.ErrEndGroup
+	})
 }
 
 func handleMove(m *tg.NewMessage, cplay bool) error {
-	chatID := m.ChannelID()
-
 	r, err := getEffectiveRoom(m, cplay)
 	if err != nil {
 		m.Reply(err.Error())
@@ -407,52 +383,44 @@ func handleMove(m *tg.NewMessage, cplay bool) error {
 	}
 
 	if !r.IsActiveChat() || r.Track() == nil {
-		m.Reply(F(chatID, "queue_no_active"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "queue_no_active")
 	}
 
 	if len(r.Queue()) == 0 {
-		m.Reply(F(chatID, "queue_empty"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "queue_empty")
 	}
 
 	args := strings.Fields(m.Text())
 	if len(args) < 3 {
-		m.Reply(F(chatID, "move_usage", locales.Arg{
+		return replyEnd(m, "move_usage", locales.Arg{
 			"cmd": getCommand(m),
-		}))
-		return tg.ErrEndGroup
+		})
 	}
 
 	from, err1 := strconv.Atoi(args[1])
 	to, err2 := strconv.Atoi(args[2])
 	if err1 != nil || err2 != nil {
-		m.Reply(F(chatID, "move_invalid_numbers", locales.Arg{
+		return replyEnd(m, "move_invalid_numbers", locales.Arg{
 			"cmd": getCommand(m),
-		}))
-		return tg.ErrEndGroup
+		})
 	}
 
 	if from <= 0 || to <= 0 {
-		m.Reply(F(chatID, "move_invalid_indexes_min"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "move_invalid_indexes_min")
 	}
 
 	queueLen := len(r.Queue())
 	if from > queueLen || to > queueLen {
-		m.Reply(F(chatID, "move_invalid_indexes_max", locales.Arg{
+		return replyEnd(m, "move_invalid_indexes_max", locales.Arg{
 			"queue_len": queueLen,
-		}))
-		return tg.ErrEndGroup
+		})
 	}
 
 	r.MoveInQueue(from-1, to-1)
 
-	m.Reply(F(chatID, "move_success", locales.Arg{
+	return replyEnd(m, "move_success", locales.Arg{
 		"from": from,
 		"to":   to,
 		"user": utils.MentionHTML(m.Sender),
-	}))
-
-	return tg.ErrEndGroup
+	})
 }

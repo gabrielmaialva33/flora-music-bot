@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"runtime/debug"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -19,6 +20,52 @@ import (
 	"main/internal/locales"
 	"main/internal/utils"
 )
+
+// errBadDuration: o argumento não é um inteiro válido (formato inválido).
+// errOutOfRange: o argumento é inteiro mas está fora do range [min, max].
+// Os callers (pause/mute) mostram mensagens distintas para cada caso.
+var (
+	errBadDuration = errors.New("invalid duration format")
+	errOutOfRange  = errors.New("duration out of range")
+)
+
+// replyEnd responde com a string traduzida da key e encerra o grupo de
+// handlers. Atalho para o padrão m.Reply(F(...)); return tg.ErrEndGroup.
+func replyEnd(m *tg.NewMessage, key string, args ...locales.Arg) error {
+	m.Reply(F(m.ChannelID(), key, args...))
+	return tg.ErrEndGroup
+}
+
+// speedLine devolve a linha de velocidade traduzida quando o playback não está
+// em 1.0x; caso contrário devolve string vazia.
+func speedLine(chatID int64, r *core.RoomState) string {
+	sp := r.Speed()
+	if sp == 1.0 {
+		return ""
+	}
+	return F(chatID, "speed_line", locales.Arg{
+		"speed": fmt.Sprintf("%.2f", sp),
+	})
+}
+
+// parseDurationArg interpreta um argumento de duração em segundos (sufixo "s"
+// opcional). Retorna (0, nil) quando raw está vazio (sem timer). Devolve
+// errBadDuration se não for inteiro e errOutOfRange se estiver fora de [min,max].
+func parseDurationArg(raw string, min, max int) (int, error) {
+	raw = strings.ToLower(strings.TrimSpace(raw))
+	if raw == "" {
+		return 0, nil
+	}
+	raw = strings.TrimSuffix(raw, "s")
+	sec, err := strconv.Atoi(raw)
+	if err != nil {
+		return 0, errBadDuration
+	}
+	if sec < min || sec > max {
+		return 0, errOutOfRange
+	}
+	return sec, nil
+}
 
 // downloadCancels guarda os cancel funcs de download por chat. sync.Map porque
 // gogram despacha handlers concorrentemente (/play em chats distintos, clique no

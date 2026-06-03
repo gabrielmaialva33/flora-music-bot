@@ -106,14 +106,12 @@ func handleSpeed(m *telegram.NewMessage, cplay bool) error {
 	} else {
 		s, err := strconv.ParseFloat(raw, 64)
 		if err != nil {
-			m.Reply(F(chatID, "speed_invalid_value", locales.Arg{
+			return replyEnd(m, "speed_invalid_value", locales.Arg{
 				"cmd": getCommand(m),
-			}))
-			return telegram.ErrEndGroup
+			})
 		}
 		if s < 0.50 || s > 4.0 {
-			m.Reply(F(chatID, "speed_invalid_range"))
-			return telegram.ErrEndGroup
+			return replyEnd(m, "speed_invalid_range")
 		}
 		newSpeed = s
 	}
@@ -121,13 +119,9 @@ func handleSpeed(m *telegram.NewMessage, cplay bool) error {
 	// Parse auto-reset duration
 	var resetDuration time.Duration
 	if len(args) >= 3 {
-		d := strings.ToLower(strings.TrimSpace(args[2]))
-		d = strings.TrimSuffix(d, "s")
-
-		seconds, err := strconv.Atoi(d)
-		if err != nil || seconds < 5 || seconds > 3600 {
-			m.Reply(F(chatID, "speed_invalid_duration"))
-			return telegram.ErrEndGroup
+		seconds, err := parseDurationArg(args[2], 5, 3600)
+		if err != nil {
+			return replyEnd(m, "speed_invalid_duration")
 		}
 		resetDuration = time.Duration(seconds) * time.Second
 	}
@@ -158,11 +152,10 @@ func handleSpeed(m *telegram.NewMessage, cplay bool) error {
 	}
 
 	if setErr != nil {
-		m.Reply(F(chatID, "speed_failed", locales.Arg{
+		return replyEnd(m, "speed_failed", locales.Arg{
 			"speed": fmt.Sprintf("%.2f", newSpeed),
 			"error": setErr.Error(),
-		}))
-		return telegram.ErrEndGroup
+		})
 	}
 
 	mention := utils.MentionHTML(m.Sender)

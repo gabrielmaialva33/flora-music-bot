@@ -1,8 +1,6 @@
 package modules
 
 import (
-	"fmt"
-
 	"github.com/amarnathcjd/gogram/telegram"
 
 	"main/internal/locales"
@@ -43,13 +41,11 @@ func handleResume(m *telegram.NewMessage, cplay bool) error {
 	}
 
 	if !r.IsActiveChat() {
-		m.Reply(F(chatID, "room_no_active"))
-		return telegram.ErrEndGroup
+		return replyEnd(m, "room_no_active")
 	}
 
 	if !r.IsPaused() {
-		m.Reply(F(chatID, "resume_already_playing"))
-		return telegram.ErrEndGroup
+		return replyEnd(m, "resume_already_playing")
 	}
 
 	t := r.Track()
@@ -63,19 +59,12 @@ func handleResume(m *telegram.NewMessage, cplay bool) error {
 		total := formatDuration(t.Duration)
 		mention := utils.MentionHTML(m.Sender)
 
-		speedLine := ""
-		if sp := r.Speed(); sp != 1.0 {
-			speedLine = F(chatID, "speed_line", locales.Arg{
-				"speed": fmt.Sprintf("%.2f", r.Speed()),
-			})
-		}
-
 		m.Reply(F(chatID, "resume_success", locales.Arg{
 			"title":      title,
 			"position":   pos,
 			"duration":   total,
 			"user":       mention,
-			"speed_line": speedLine,
+			"speed_line": speedLine(chatID, r),
 		}))
 	}
 

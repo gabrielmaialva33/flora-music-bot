@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Laky-64/gologging"
 	"resty.dev/v3"
@@ -9,7 +10,9 @@ import (
 
 const batbinBaseURL = "https://batbin.me/"
 
-var httpClient = resty.New()
+// Timeout: era o único client resty do projeto sem deadline — sem ele,
+// CreatePaste (usado pra subir logs/erros) penduraria a goroutine se o batbin travasse.
+var httpClient = resty.New().SetTimeout(30 * time.Second)
 
 type batbinResponse struct {
 	Success bool   `json:"success"`

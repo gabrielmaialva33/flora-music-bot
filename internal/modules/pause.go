@@ -1,8 +1,7 @@
 package modules
 
 import (
-	"fmt"
-	"strconv"
+	"errors"
 	"strings"
 	"time"
 
@@ -46,8 +45,7 @@ func handlePause(m *tg.NewMessage, cplay bool) error {
 	}
 
 	if !r.IsActiveChat() {
-		m.Reply(F(chatID, "room_no_active"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "room_no_active")
 	}
 
 	if r.IsPaused() {
@@ -58,29 +56,24 @@ func handlePause(m *tg.NewMessage, cplay bool) error {
 				"seconds": formatDuration(int(remaining.Seconds())),
 			})
 		}
-		m.Reply(F(chatID, "pause_already", locales.Arg{
+		return replyEnd(m, "pause_already", locales.Arg{
 			"auto_resume_line": autoResumeLine,
-		}))
-		return tg.ErrEndGroup
+		})
 	}
 
 	args := strings.Fields(m.Text())
 	var autoResumeDuration time.Duration
 	if len(args) >= 2 {
-		raw := strings.ToLower(strings.TrimSpace(args[1]))
-		raw = strings.TrimSuffix(raw, "s")
-		if sec, convErr := strconv.Atoi(raw); convErr == nil {
-			if sec < 5 || sec > 3600 {
-				m.Reply(F(chatID, "pause_invalid_duration"))
-				return tg.ErrEndGroup
-			}
-			autoResumeDuration = time.Duration(sec) * time.Second
-		} else {
-			m.Reply(F(chatID, "pause_invalid_format", locales.Arg{
+		sec, err := parseDurationArg(args[1], 5, 3600)
+		switch {
+		case errors.Is(err, errOutOfRange):
+			return replyEnd(m, "pause_invalid_duration")
+		case errors.Is(err, errBadDuration):
+			return replyEnd(m, "pause_invalid_format", locales.Arg{
 				"cmd": getCommand(m),
-			}))
-			return tg.ErrEndGroup
+			})
 		}
+		autoResumeDuration = time.Duration(sec) * time.Second
 	}
 
 	var pauseErr error
@@ -90,10 +83,9 @@ func handlePause(m *tg.NewMessage, cplay bool) error {
 		_, pauseErr = r.Pause()
 	}
 	if pauseErr != nil {
-		m.Reply(F(chatID, "room_pause_failed", locales.Arg{
+		return replyEnd(m, "room_pause_failed", locales.Arg{
 			"error": pauseErr.Error(),
-		}))
-		return tg.ErrEndGroup
+		})
 	}
 
 	mention := utils.MentionHTML(m.Sender)
@@ -114,10 +106,8 @@ func handlePause(m *tg.NewMessage, cplay bool) error {
 		"auto_resume_line": autoResumeLine,
 	})
 
-	if sp := r.Speed(); sp != 1.0 {
-		msg += "\n" + F(chatID, "speed_line", locales.Arg{
-			"speed": fmt.Sprintf("%.2f", sp),
-		})
+	if sl := speedLine(chatID, r); sl != "" {
+		msg += "\n" + sl
 	}
 
 	m.Reply(msg)

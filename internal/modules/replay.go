@@ -43,8 +43,7 @@ func handleReplay(m *telegram.NewMessage, cplay bool) error {
 	}
 
 	if !r.IsActiveChat() {
-		m.Reply(F(chatID, "room_no_active"))
-		return telegram.ErrEndGroup
+		return replyEnd(m, "room_no_active")
 	}
 	t := r.Track()
 

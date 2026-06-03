@@ -34,8 +34,6 @@ func cpositionHandler(m *tg.NewMessage) error {
 }
 
 func handlePosition(m *tg.NewMessage, cplay bool) error {
-	chatID := m.ChannelID()
-
 	r, err := getEffectiveRoom(m, cplay)
 	if err != nil {
 		m.Reply(err.Error())
@@ -43,20 +41,17 @@ func handlePosition(m *tg.NewMessage, cplay bool) error {
 	}
 
 	if !r.IsActiveChat() || r.Track().ID == "" {
-		m.Reply(F(chatID, "room_no_active"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "room_no_active")
 	}
 
 	r.Parse()
 
 	title := utils.EscapeHTML(utils.ShortTitle(r.Track().Title, 25))
 
-	m.Reply(F(chatID, "position_now", locales.Arg{
+	return replyEnd(m, "position_now", locales.Arg{
 		"title":    title,
 		"position": formatDuration(r.Position()),
 		"duration": formatDuration(r.Track().Duration),
 		"speed":    fmt.Sprintf("%.2f", r.Speed()),
-	}))
-
-	return tg.ErrEndGroup
+	})
 }

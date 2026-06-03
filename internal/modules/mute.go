@@ -1,7 +1,7 @@
 package modules
 
 import (
-	"strconv"
+	"errors"
 	"strings"
 	"time"
 
@@ -48,8 +48,7 @@ func handleMute(m *tg.NewMessage, cplay bool) error {
 	}
 
 	if !r.IsActiveChat() {
-		m.Reply(F(chatID, "room_no_active"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "room_no_active")
 	}
 
 	if r.IsMuted() {
@@ -69,21 +68,16 @@ func handleMute(m *tg.NewMessage, cplay bool) error {
 	var autoUnmuteDuration time.Duration
 
 	if len(args) >= 2 {
-		rawDuration := strings.ToLower(strings.TrimSpace(args[1]))
-		rawDuration = strings.TrimSuffix(rawDuration, "s")
-
-		if seconds, err := strconv.Atoi(rawDuration); err == nil {
-			if seconds < 5 || seconds > 3600 {
-				m.Reply(F(chatID, "mute_invalid_duration"))
-				return tg.ErrEndGroup
-			}
-			autoUnmuteDuration = time.Duration(seconds) * time.Second
-		} else {
-			m.Reply(F(chatID, "mute_invalid_format", locales.Arg{
+		seconds, err := parseDurationArg(args[1], 5, 3600)
+		switch {
+		case errors.Is(err, errOutOfRange):
+			return replyEnd(m, "mute_invalid_duration")
+		case errors.Is(err, errBadDuration):
+			return replyEnd(m, "mute_invalid_format", locales.Arg{
 				"cmd": getCommand(m),
-			}))
-			return tg.ErrEndGroup
+			})
 		}
+		autoUnmuteDuration = time.Duration(seconds) * time.Second
 	}
 
 	var muteErr error
@@ -94,10 +88,9 @@ func handleMute(m *tg.NewMessage, cplay bool) error {
 	}
 
 	if muteErr != nil {
-		m.Reply(F(chatID, "mute_failed", locales.Arg{
+		return replyEnd(m, "mute_failed", locales.Arg{
 			"error": muteErr.Error(),
-		}))
-		return tg.ErrEndGroup
+		})
 	}
 
 	msgArgs := locales.Arg{

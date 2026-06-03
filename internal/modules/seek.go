@@ -99,24 +99,21 @@ func handleSeek(m *telegram.NewMessage, cplay, isBack bool) error {
 	chatID := m.ChannelID()
 	t := r.Track()
 	if !r.IsActiveChat() || t == nil {
-		m.Reply(F(chatID, "seek_no_active"))
-		return telegram.ErrEndGroup
+		return replyEnd(m, "seek_no_active")
 	}
 
 	args := strings.Fields(m.Text())
 	if len(args) < 2 {
-		m.Reply(F(chatID, "seek_usage", locales.Arg{
+		return replyEnd(m, "seek_usage", locales.Arg{
 			"cmd": getCommand(m),
-		}))
-		return telegram.ErrEndGroup
+		})
 	}
 
 	seconds, err := strconv.Atoi(args[1])
 	if err != nil || seconds <= 0 {
-		m.Reply(F(chatID, "seek_invalid_seconds", locales.Arg{
+		return replyEnd(m, "seek_invalid_seconds", locales.Arg{
 			"cmd": getCommand(m),
-		}))
-		return telegram.ErrEndGroup
+		})
 	}
 
 	var direction, emoji string
@@ -124,20 +121,18 @@ func handleSeek(m *telegram.NewMessage, cplay, isBack bool) error {
 
 	if isBack {
 		if (r.Position() - seconds) <= 10 {
-			m.Reply(F(chatID, "seek_too_close_start", locales.Arg{
+			return replyEnd(m, "seek_too_close_start", locales.Arg{
 				"seconds": seconds,
-			}))
-			return telegram.ErrEndGroup
+			})
 		}
 		seekErr = r.Seek(-seconds)
 		direction = "backward"
 		emoji = "⏪"
 	} else {
 		if (t.Duration - (r.Position() + seconds)) <= 10 {
-			m.Reply(F(chatID, "seek_too_close_end", locales.Arg{
+			return replyEnd(m, "seek_too_close_end", locales.Arg{
 				"seconds": seconds,
-			}))
-			return telegram.ErrEndGroup
+			})
 		}
 		seekErr = r.Seek(seconds)
 		direction = "forward"
@@ -173,31 +168,27 @@ func handleJump(m *telegram.NewMessage, cplay bool) error {
 	t := r.Track()
 
 	if !r.IsActiveChat() || t == nil {
-		m.Reply(F(chatID, "jump_no_active"))
-		return telegram.ErrEndGroup
+		return replyEnd(m, "jump_no_active")
 	}
 
 	args := strings.Fields(m.Text())
 	if len(args) < 2 {
-		m.Reply(F(chatID, "jump_usage", locales.Arg{
+		return replyEnd(m, "jump_usage", locales.Arg{
 			"cmd": getCommand(m),
-		}))
-		return telegram.ErrEndGroup
+		})
 	}
 
 	seconds, err := strconv.Atoi(args[1])
 	if err != nil || seconds < 0 {
-		m.Reply(F(chatID, "jump_invalid_position", locales.Arg{
+		return replyEnd(m, "jump_invalid_position", locales.Arg{
 			"cmd": getCommand(m),
-		}))
-		return telegram.ErrEndGroup
+		})
 	}
 
 	if t.Duration-seconds <= 10 {
-		m.Reply(F(chatID, "jump_too_close_end", locales.Arg{
+		return replyEnd(m, "jump_too_close_end", locales.Arg{
 			"position": formatDuration(seconds),
-		}))
-		return telegram.ErrEndGroup
+		})
 	}
 
 	if err := r.Seek(seconds - r.Position()); err != nil {

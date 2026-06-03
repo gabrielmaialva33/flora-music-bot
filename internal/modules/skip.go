@@ -49,18 +49,16 @@ func handleSkip(m *telegram.NewMessage, cplay bool) error {
 
 	chatID := m.ChannelID()
 	if !r.IsActiveChat() {
-		m.Reply(F(chatID, "room_no_active"))
-		return telegram.ErrEndGroup
+		return replyEnd(m, "room_no_active")
 	}
 
 	mention := utils.MentionHTML(m.Sender)
 
 	if len(r.Queue()) == 0 {
 		core.DeleteRoom(r.ChatID())
-		m.Reply(F(chatID, "skip_stopped", locales.Arg{
+		return replyEnd(m, "skip_stopped", locales.Arg{
 			"user": mention,
-		}))
-		return telegram.ErrEndGroup
+		})
 	}
 
 	r.SetLoop(0)

@@ -44,8 +44,7 @@ func handleStop(m *telegram.NewMessage, cplay bool) error {
 		return telegram.ErrEndGroup
 	}
 	if !r.IsActiveChat() {
-		m.Reply(F(m.ChannelID(), "room_no_active"))
-		return telegram.ErrEndGroup
+		return replyEnd(m, "room_no_active")
 	}
 
 	isPaused := r.IsPaused()
@@ -63,12 +62,9 @@ func handleStop(m *telegram.NewMessage, cplay bool) error {
 	}
 
 	core.DeleteRoom(r.ChatID())
-	m.Reply(
-		F(
-			m.ChannelID(),
-			"stopped",
-			locales.Arg{"user": utils.MentionHTML(m.Sender)},
-		),
+	return replyEnd(
+		m,
+		"stopped",
+		locales.Arg{"user": utils.MentionHTML(m.Sender)},
 	)
-	return telegram.ErrEndGroup
 }

@@ -1,8 +1,6 @@
 package modules
 
 import (
-	"fmt"
-
 	tg "github.com/amarnathcjd/gogram/telegram"
 
 	"main/internal/locales"
@@ -42,37 +40,26 @@ func handleUnmute(m *tg.NewMessage, cplay bool) error {
 	chatID := m.ChannelID()
 
 	if !r.IsActiveChat() {
-		m.Reply(F(chatID, "room_no_active"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "room_no_active")
 	}
 
 	if !r.IsMuted() {
-		m.Reply(F(chatID, "unmute_already"))
-		return tg.ErrEndGroup
+		return replyEnd(m, "unmute_already")
 	}
 
 	title := utils.EscapeHTML(utils.ShortTitle(r.Track().Title, 25))
 	mention := utils.MentionHTML(m.Sender)
 
 	if _, err := r.Unmute(); err != nil {
-		m.Reply(F(chatID, "unmute_failed", locales.Arg{
+		return replyEnd(m, "unmute_failed", locales.Arg{
 			"error": err.Error(),
-		}))
-		return tg.ErrEndGroup
-	}
-
-	// optional speed line
-	var speedOpt string
-	if sp := r.Speed(); sp != 1.0 {
-		speedOpt = F(chatID, "speed_line", locales.Arg{
-			"speed": fmt.Sprintf("%.2f", sp),
 		})
 	}
 
 	msg := F(chatID, "unmute_success", locales.Arg{
 		"title":      title,
 		"user":       mention,
-		"speed_line": speedOpt,
+		"speed_line": speedLine(chatID, r),
 	})
 
 	m.Reply(msg)

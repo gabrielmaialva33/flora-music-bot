@@ -52,8 +52,7 @@ func handleShuffle(m *telegram.NewMessage, cplay bool) error {
 	chatID := m.ChannelID()
 
 	if !r.IsActiveChat() {
-		m.Reply(F(chatID, "room_no_active"))
-		return telegram.ErrEndGroup
+		return replyEnd(m, "room_no_active")
 	}
 
 	r.Parse()
@@ -66,11 +65,10 @@ func handleShuffle(m *telegram.NewMessage, cplay bool) error {
 			cmd = getCommand(m) + " off"
 		}
 
-		m.Reply(F(chatID, "shuffle_current_state", locales.Arg{
+		return replyEnd(m, "shuffle_current_state", locales.Arg{
 			"state": state,
 			"cmd":   cmd,
-		}))
-		return telegram.ErrEndGroup
+		})
 	}
 
 	var newState bool
@@ -88,11 +86,10 @@ func handleShuffle(m *telegram.NewMessage, cplay bool) error {
 			state = F(chatID, "enabled")
 			cmd = getCommand(m) + " off"
 		}
-		m.Reply(F(chatID, "shuffle_current_state", locales.Arg{
+		return replyEnd(m, "shuffle_current_state", locales.Arg{
 			"state": state,
 			"cmd":   cmd,
-		}))
-		return telegram.ErrEndGroup
+		})
 	}
 
 	r.SetShuffle(newState)
@@ -102,10 +99,8 @@ func handleShuffle(m *telegram.NewMessage, cplay bool) error {
 		state = F(chatID, "enabled")
 	}
 
-	m.Reply(F(chatID, "shuffle_updated", locales.Arg{
+	return replyEnd(m, "shuffle_updated", locales.Arg{
 		"state": state,
 		"user":  utils.MentionHTML(m.Sender),
-	}))
-
-	return telegram.ErrEndGroup
+	})
 }

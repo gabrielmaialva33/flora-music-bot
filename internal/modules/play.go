@@ -861,7 +861,10 @@ func safeGetTracks(
 		}
 	}()
 
-	tracks, err = platforms.GetTracks(m, video)
+	// Não há ctx cancelável no escopo do play/search (o ctx de download só é
+	// criado mais tarde, por track). Usa Background; o timeout efetivo vem dos
+	// clients/yt-dlp internos.
+	tracks, err = platforms.GetTracks(context.Background(), m, video)
 	return tracks, err
 }
 

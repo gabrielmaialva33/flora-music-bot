@@ -6,6 +6,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/Laky-64/gologging"
 	tg "github.com/amarnathcjd/gogram/telegram"
 
 	"main/ntgcalls"
@@ -407,7 +408,6 @@ func (ctx *Context) handleUpdates() {
 
 				status := ntgcalls.SegmentStatusNotReady
 				var data []byte
-				data = nil
 
 				if err != nil {
 					secondsWait := tg.GetFloodWait(err)
@@ -465,7 +465,7 @@ func (ctx *Context) handleUpdates() {
 		ctx.inputGroupCallsMutex.RUnlock()
 
 		if err := ctx.setCallStatus(inputGroupCall, state); err != nil {
-			fmt.Println(err)
+			gologging.ErrorF("setCallStatus failed chat=%d: %v", chatId, err)
 		}
 	})
 

@@ -20,6 +20,9 @@ func EOR(
 
 	m, err = msg.Edit(text, opts...)
 	if err != nil {
+		// Loga a causa raiz do edit (msg antiga? markup inválido? flood?) antes de
+		// cair no fallback — senão só o erro do Respond aparece e a causa some.
+		gologging.Debug("[EOR] edit failed, falling back to respond: " + err.Error())
 		msg.Delete()
 		m, err = msg.Respond(text, opts...)
 	}
