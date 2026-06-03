@@ -23,6 +23,27 @@ var (
 	ErrPeerResolveFailed        = errors.New("failed to resolve peer")
 )
 
+// Telegram RPC error codes used to classify assistant/chat failures.
+const (
+	errUserNotParticipant     = "USER_NOT_PARTICIPANT"
+	errParticipantIDInvalid   = "PARTICIPANT_ID_INVALID"
+	errChatAdminRequired      = "CHAT_ADMIN_REQUIRED"
+	errChannelPrivate         = "CHANNEL_PRIVATE"
+	errChatIDInvalid          = "CHAT_ID_INVALID"
+	errChannelInvalid         = "CHANNEL_INVALID"
+	errUserAlreadyParticipant = "USER_ALREADY_PARTICIPANT"
+)
+
+// matchAny reports whether err matches any of the given Telegram error codes.
+func matchAny(err error, codes ...string) bool {
+	for _, code := range codes {
+		if telegram.MatchError(err, code) {
+			return true
+		}
+	}
+	return false
+}
+
 type assistantState struct {
 	present        bool
 	presentFetched bool
@@ -241,20 +262,18 @@ func (s *ChatState) applyMemberStatus(m *telegram.Participant) {
 }
 
 func (s *ChatState) handleMemberFetchError(err error) error {
-	if telegram.MatchError(err, "USER_NOT_PARTICIPANT") ||
-		telegram.MatchError(err, "PARTICIPANT_ID_INVALID") {
+	if matchAny(err, errUserNotParticipant, errParticipantIDInvalid) {
 		s.SetAssistantPresent(false)
 		s.SetAssistantBanned(false)
 		return nil
 	}
 
-	if telegram.MatchError(err, "CHAT_ADMIN_REQUIRED") ||
-		telegram.MatchError(err, "CHANNEL_PRIVATE") {
+	if matchAny(err, errChatAdminRequired, errChannelPrivate) {
 		return ErrAdminPermissionRequired
 	}
 
 	gologging.Error("Member fetch error: " + err.Error())
-	return fmt.Errorf("%w: %v", ErrFetchFailed, err)
+	return fmt.Errorf("%w: %w", ErrFetchFailed, err)
 }
 
 func (s *ChatState) TryJoin() error {
@@ -275,7 +294,7 @@ func (s *ChatState) attemptJoin() error {
 	}
 
 	_, err = s.Assistant.Client.JoinChannel(link)
-	if err == nil || telegram.MatchError(err, "USER_ALREADY_PARTICIPANT") {
+	if err == nil || telegram.MatchError(err, errUserAlreadyParticipant) {
 		s.setJoinSuccess()
 		return nil
 	}
@@ -324,7 +343,7 @@ func (s *ChatState) handleJoinError(err error) error {
 		return s.approveJoinRequest()
 	}
 
-	return fmt.Errorf("%w: %v", ErrAssistantInviteFailed, err)
+	return fmt.Errorf("%w: %w", ErrAssistantInviteFailed, err)
 }
 
 func (s *ChatState) approveJoinRequest() error {
@@ -350,13 +369,12 @@ func (s *ChatState) approveJoinRequest() error {
 
 	_, err = Bot.MessagesHideChatJoinRequest(true, chatPeer, user)
 
-	if err == nil || telegram.MatchError(err, "USER_ALREADY_PARTICIPANT") {
+	if err == nil || telegram.MatchError(err, errUserAlreadyParticipant) {
 		s.setJoinSuccess()
 		return nil
 	}
 
-	if telegram.MatchError(err, "CHAT_ADMIN_REQUIRED") ||
-		telegram.MatchError(err, "CHANNEL_PRIVATE") {
+	if matchAny(err, errChatAdminRequired, errChannelPrivate) {
 		return ErrAdminPermissionRequired
 	}
 
@@ -395,7 +413,7 @@ func (s *ChatState) fetchInviteLink() error {
 		if s.isAdminError(err) {
 			return ErrAdminPermissionRequired
 		}
-		return fmt.Errorf("%w: %v", ErrAssistantInviteLinkFetch, err)
+		return fmt.Errorf("%w: %w", ErrAssistantInviteLinkFetch, err)
 	}
 
 	if link, ok := inv.(*telegram.ChatInviteExported); ok && link.Link != "" {
@@ -412,14 +430,17 @@ func (s *ChatState) fetchFullChat() (*telegram.ChannelFull, error) {
 		if s.isAdminError(err) {
 			return nil, ErrAdminPermissionRequired
 		}
-		return nil, fmt.Errorf("%w: %v", ErrFetchFailed, err)
+		return nil, fmt.Errorf("%w: %w", ErrFetchFailed, err)
 	}
 	return full, nil
 }
 
 func (s *ChatState) isAdminError(err error) bool {
-	return telegram.MatchError(err, "CHAT_ID_INVALID") ||
-		telegram.MatchError(err, "CHAT_ADMIN_REQUIRED") ||
-		telegram.MatchError(err, "CHANNEL_PRIVATE") ||
-		telegram.MatchError(err, "CHANNEL_INVALID")
+	return matchAny(
+		err,
+		errChatIDInvalid,
+		errChatAdminRequired,
+		errChannelPrivate,
+		errChannelInvalid,
+	)
 }
