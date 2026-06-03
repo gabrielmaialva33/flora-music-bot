@@ -15,149 +15,89 @@ type Client struct {
 	broadcastPartCallbacks      []BroadcastPartCallback
 }
 
+// appendLocked appends v to *s under mu's write lock.
+func appendLocked[T any](mu *sync.RWMutex, s *[]T, v T) {
+	mu.Lock()
+	defer mu.Unlock()
+	*s = append(*s, v)
+}
+
+// snapshot returns a copy of *s taken under mu's read lock, or nil if empty.
+// Taking the slice by pointer ensures the header is read inside the lock,
+// avoiding a data race with appendLocked which reassigns the header.
+func snapshot[T any](mu *sync.RWMutex, s *[]T) []T {
+	mu.RLock()
+	defer mu.RUnlock()
+	if len(*s) == 0 {
+		return nil
+	}
+	cbs := make([]T, len(*s))
+	copy(cbs, *s)
+	return cbs
+}
+
 func (ctx *Client) OnStreamEnd(callback StreamEndCallback) {
-	ctx.mu.Lock()
-	defer ctx.mu.Unlock()
-	ctx.streamEndCallbacks = append(ctx.streamEndCallbacks, callback)
+	appendLocked(&ctx.mu, &ctx.streamEndCallbacks, callback)
 }
 
 func (ctx *Client) OnUpgrade(callback UpgradeCallback) {
-	ctx.mu.Lock()
-	defer ctx.mu.Unlock()
-	ctx.upgradeCallbacks = append(ctx.upgradeCallbacks, callback)
+	appendLocked(&ctx.mu, &ctx.upgradeCallbacks, callback)
 }
 
 func (ctx *Client) OnConnectionChange(callback ConnectionChangeCallback) {
-	ctx.mu.Lock()
-	defer ctx.mu.Unlock()
-	ctx.connectionChangeCallbacks = append(
-		ctx.connectionChangeCallbacks,
-		callback,
-	)
+	appendLocked(&ctx.mu, &ctx.connectionChangeCallbacks, callback)
 }
 
 func (ctx *Client) OnSignal(callback SignalCallback) {
-	ctx.mu.Lock()
-	defer ctx.mu.Unlock()
-	ctx.signalCallbacks = append(ctx.signalCallbacks, callback)
+	appendLocked(&ctx.mu, &ctx.signalCallbacks, callback)
 }
 
 func (ctx *Client) OnFrame(callback FrameCallback) {
-	ctx.mu.Lock()
-	defer ctx.mu.Unlock()
-	ctx.frameCallbacks = append(ctx.frameCallbacks, callback)
+	appendLocked(&ctx.mu, &ctx.frameCallbacks, callback)
 }
 
 func (ctx *Client) OnRemoteSourceChange(callback RemoteSourceCallback) {
-	ctx.mu.Lock()
-	defer ctx.mu.Unlock()
-	ctx.remoteSourceCallbacks = append(ctx.remoteSourceCallbacks, callback)
+	appendLocked(&ctx.mu, &ctx.remoteSourceCallbacks, callback)
 }
 
 func (ctx *Client) OnRequestBroadcastTimestamp(
 	callback BroadcastTimestampCallback,
 ) {
-	ctx.mu.Lock()
-	defer ctx.mu.Unlock()
-	ctx.broadcastTimestampCallbacks = append(
-		ctx.broadcastTimestampCallbacks,
-		callback,
-	)
+	appendLocked(&ctx.mu, &ctx.broadcastTimestampCallbacks, callback)
 }
 
 func (ctx *Client) OnRequestBroadcastPart(callback BroadcastPartCallback) {
-	ctx.mu.Lock()
-	defer ctx.mu.Unlock()
-	ctx.broadcastPartCallbacks = append(ctx.broadcastPartCallbacks, callback)
+	appendLocked(&ctx.mu, &ctx.broadcastPartCallbacks, callback)
 }
 
 func (ctx *Client) getStreamEndCallbacks() []StreamEndCallback {
-	ctx.mu.RLock()
-	defer ctx.mu.RUnlock()
-	if len(ctx.streamEndCallbacks) == 0 {
-		return nil
-	}
-	cbs := make([]StreamEndCallback, len(ctx.streamEndCallbacks))
-	copy(cbs, ctx.streamEndCallbacks)
-	return cbs
+	return snapshot(&ctx.mu, &ctx.streamEndCallbacks)
 }
 
 func (ctx *Client) getUpgradeCallbacks() []UpgradeCallback {
-	ctx.mu.RLock()
-	defer ctx.mu.RUnlock()
-	if len(ctx.upgradeCallbacks) == 0 {
-		return nil
-	}
-	cbs := make([]UpgradeCallback, len(ctx.upgradeCallbacks))
-	copy(cbs, ctx.upgradeCallbacks)
-	return cbs
+	return snapshot(&ctx.mu, &ctx.upgradeCallbacks)
 }
 
 func (ctx *Client) getConnectionChangeCallbacks() []ConnectionChangeCallback {
-	ctx.mu.RLock()
-	defer ctx.mu.RUnlock()
-	if len(ctx.connectionChangeCallbacks) == 0 {
-		return nil
-	}
-	cbs := make([]ConnectionChangeCallback, len(ctx.connectionChangeCallbacks))
-	copy(cbs, ctx.connectionChangeCallbacks)
-	return cbs
+	return snapshot(&ctx.mu, &ctx.connectionChangeCallbacks)
 }
 
 func (ctx *Client) getSignalCallbacks() []SignalCallback {
-	ctx.mu.RLock()
-	defer ctx.mu.RUnlock()
-	if len(ctx.signalCallbacks) == 0 {
-		return nil
-	}
-	cbs := make([]SignalCallback, len(ctx.signalCallbacks))
-	copy(cbs, ctx.signalCallbacks)
-	return cbs
+	return snapshot(&ctx.mu, &ctx.signalCallbacks)
 }
 
 func (ctx *Client) getFrameCallbacks() []FrameCallback {
-	ctx.mu.RLock()
-	defer ctx.mu.RUnlock()
-	if len(ctx.frameCallbacks) == 0 {
-		return nil
-	}
-	cbs := make([]FrameCallback, len(ctx.frameCallbacks))
-	copy(cbs, ctx.frameCallbacks)
-	return cbs
+	return snapshot(&ctx.mu, &ctx.frameCallbacks)
 }
 
 func (ctx *Client) getRemoteSourceCallbacks() []RemoteSourceCallback {
-	ctx.mu.RLock()
-	defer ctx.mu.RUnlock()
-	if len(ctx.remoteSourceCallbacks) == 0 {
-		return nil
-	}
-	cbs := make([]RemoteSourceCallback, len(ctx.remoteSourceCallbacks))
-	copy(cbs, ctx.remoteSourceCallbacks)
-	return cbs
+	return snapshot(&ctx.mu, &ctx.remoteSourceCallbacks)
 }
 
 func (ctx *Client) getBroadcastTimestampCallbacks() []BroadcastTimestampCallback {
-	ctx.mu.RLock()
-	defer ctx.mu.RUnlock()
-	if len(ctx.broadcastTimestampCallbacks) == 0 {
-		return nil
-	}
-	cbs := make(
-		[]BroadcastTimestampCallback,
-		len(ctx.broadcastTimestampCallbacks),
-	)
-	copy(cbs, ctx.broadcastTimestampCallbacks)
-	return cbs
+	return snapshot(&ctx.mu, &ctx.broadcastTimestampCallbacks)
 }
 
 func (ctx *Client) getBroadcastPartCallbacks() []BroadcastPartCallback {
-	ctx.mu.RLock()
-	defer ctx.mu.RUnlock()
-	if len(ctx.broadcastPartCallbacks) == 0 {
-		return nil
-	}
-	cbs := make([]BroadcastPartCallback, len(ctx.broadcastPartCallbacks))
-	copy(cbs, ctx.broadcastPartCallbacks)
-	return cbs
+	return snapshot(&ctx.mu, &ctx.broadcastPartCallbacks)
 }
