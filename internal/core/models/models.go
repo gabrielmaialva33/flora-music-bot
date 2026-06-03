@@ -2,6 +2,8 @@ package state
 
 import (
 	"context"
+	"path/filepath"
+	"strings"
 
 	"github.com/amarnathcjd/gogram/telegram"
 )
@@ -70,3 +72,21 @@ type (
 		GetTracks(query string, video bool) ([]*Track, error)
 	}
 )
+
+// SafeFileID sanitiza um ID de track pra uso seguro como nome de arquivo. IDs
+// vêm de extractors externos (yt-dlp, SoundCloud) e podem conter "/" ou ".." —
+// sem isso, getPath/findFile montariam caminhos que escapam de downloads/.
+func SafeFileID(id string) string {
+	id = filepath.Base(id)
+	return strings.Map(func(r rune) rune {
+		switch {
+		case r >= 'a' && r <= 'z',
+			r >= 'A' && r <= 'Z',
+			r >= '0' && r <= '9',
+			r == '-', r == '_', r == '.':
+			return r
+		default:
+			return '_'
+		}
+	}, id)
+}

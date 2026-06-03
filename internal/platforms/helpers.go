@@ -22,7 +22,7 @@ func getPath(track *state.Track, ext string) string {
 		mediaType = "video"
 	}
 
-	filename := mediaType + "_" + track.ID + ext
+	filename := mediaType + "_" + state.SafeFileID(track.ID) + ext
 
 	return filepath.Join("downloads", filename)
 }
@@ -43,7 +43,7 @@ func findFile(track *state.Track) string {
 		t = "video"
 	}
 
-	files, err := filepath.Glob(filepath.Join("downloads", t+"_"+track.ID+"*"))
+	files, err := filepath.Glob(filepath.Join("downloads", t+"_"+state.SafeFileID(track.ID)+"*"))
 	if err != nil {
 		gologging.ErrorF("filepath.Glob: %v", err)
 		return ""
@@ -64,7 +64,7 @@ func findAndRemove(track *state.Track) {
 		t = "video"
 	}
 
-	files, err := filepath.Glob(filepath.Join("downloads", t+"_"+track.ID+"*"))
+	files, err := filepath.Glob(filepath.Join("downloads", t+"_"+state.SafeFileID(track.ID)+"*"))
 	if err != nil {
 		return
 	}

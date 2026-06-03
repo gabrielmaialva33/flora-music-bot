@@ -9,18 +9,21 @@ import (
 	state "main/internal/core/models"
 )
 
-// check if a track is used in any room (other than the given room)
+// check if a track is used in any room (other than the given room).
+// Deve ser chamado sob roomsMu (R)Lock e SEM segurar nenhum room.mu — usa os
+// getters travados Track()/Queue() de cada room, então segurar um room.mu aqui
+// inverteria a ordem de lock e poderia travar.
 func isTrackUsed(trackID string, skipChatID int64) bool {
-	for _, room := range rooms {
-		if room == nil || room.track == nil || room.chatID == skipChatID {
+	for chatID, room := range rooms {
+		if room == nil || chatID == skipChatID {
 			continue
 		}
 
-		if room.track.ID == trackID {
+		if t := room.Track(); t != nil && t.ID == trackID {
 			return true
 		}
 
-		if isTrackInQueue(trackID, room.queue) {
+		if isTrackInQueue(trackID, room.Queue()) {
 			return true
 		}
 	}
@@ -42,16 +45,15 @@ func isTrackInQueue(trackID string, queue []*state.Track) bool {
 	return false
 }
 
-// release current track file if unused elsewhere
-func (r *RoomState) releaseFile() {
-	if r == nil || r.track == nil {
+// releaseTrackFile remove o arquivo de track se ele não estiver em uso em nenhuma
+// outra room. DEVE ser chamado sem segurar nenhum room.mu (ver isTrackUsed).
+func releaseTrackFile(track *state.Track, skipChatID int64) {
+	if track == nil {
 		return
 	}
 
-	track := r.track
-
 	roomsMu.RLock()
-	used := isTrackUsed(track.ID, r.chatID)
+	used := isTrackUsed(track.ID, skipChatID)
 	roomsMu.RUnlock()
 
 	if used {
@@ -66,18 +68,21 @@ func (r *RoomState) releaseFile() {
 	findAndRemove(track)
 }
 
-// cleanup current + queued track files if unused
+// cleanup current + queued track files if unused.
+// Chamado por DeleteRoom, já fora de roomsMu e de r.mu — usa os getters travados.
 func (r *RoomState) cleanupFile() {
 	if r == nil {
 		return
 	}
 
+	chatID := r.ChatID()
+
 	// collect current + next tracks (max 2)
 	tracks := []*state.Track{}
-	if r.track != nil {
-		tracks = append(tracks, r.track)
+	if t := r.Track(); t != nil {
+		tracks = append(tracks, t)
 	}
-	tracks = append(tracks, r.queue...)
+	tracks = append(tracks, r.Queue()...)
 	if len(tracks) > 2 {
 		tracks = tracks[:2]
 	}
@@ -88,7 +93,7 @@ func (r *RoomState) cleanupFile() {
 		}
 
 		roomsMu.RLock()
-		used := isTrackUsed(t.ID, r.chatID)
+		used := isTrackUsed(t.ID, chatID)
 		roomsMu.RUnlock()
 
 		if used {
@@ -110,7 +115,7 @@ func findAndRemove(track *state.Track) {
 		t = "video"
 	}
 
-	files, err := filepath.Glob(filepath.Join("downloads", t+"_"+track.ID+"*"))
+	files, err := filepath.Glob(filepath.Join("downloads", t+"_"+state.SafeFileID(track.ID)+"*"))
 	if err != nil {
 		return
 	}
