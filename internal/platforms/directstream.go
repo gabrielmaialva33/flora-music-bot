@@ -12,9 +12,18 @@ import (
 
 	"github.com/Laky-64/gologging"
 	"github.com/amarnathcjd/gogram/telegram"
+	"resty.dev/v3"
 
 	state "main/internal/core/models"
 )
+
+// streamClient é dedicado ao DirectStream. Não dá pra usar o `rc` global: no
+// resty v3, SetTimeout/SetHeader mutam o client in-place, então configurar o
+// `rc` aqui corromperia o timeout e o User-Agent compartilhados com YouTube e
+// FallenApi (e ainda criaria race com chamadas concorrentes a rc.R()).
+var streamClient = resty.New().
+	SetTimeout(10*time.Second).
+	SetHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
 
 type DirectStreamPlatform struct {
 	name state.PlatformName
@@ -178,9 +187,14 @@ func (*DirectStreamPlatform) Search(
 func (d *DirectStreamPlatform) validateStream(
 	urlStr string,
 ) (*streamInfo, error) {
-	client := rc.
-		SetTimeout(10*time.Second).
-		SetHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+	// Gate SSRF: o DirectStream faz request direto na URL do usuário (inclusive
+	// dentro de CanGetTracks), então precisa passar pelo mesmo sanitizador que
+	// barra loopback/IP privado/metadata.
+	if _, err := sanitizeMediaURL(urlStr); err != nil {
+		return nil, err
+	}
+
+	client := streamClient
 
 	// Try HEAD request first (faster)
 	resp, err := client.R().Head(urlStr)
