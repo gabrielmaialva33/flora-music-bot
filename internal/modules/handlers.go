@@ -64,6 +64,32 @@ var handlers = []MsgHandlerDef{
 	},
 
 	{
+		Pattern: "(blockuser|blacklistuser|blackuser|bluser)",
+		Handler: handleBlockUser,
+		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
+	},
+	{
+		Pattern: "(unblockuser|unblacklistuser|unbluser|whitelistuser)",
+		Handler: handleUnblockUser,
+		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
+	},
+	{
+		Pattern: "(blockchat|blacklistchat|blackchat|blchat)",
+		Handler: handleBlockChat,
+		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
+	},
+	{
+		Pattern: "(unblockchat|unblacklistchat|unblackchat|whitechat|unblchat)",
+		Handler: handleUnblockChat,
+		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
+	},
+	{
+		Pattern: "(blocked|blacklisted)",
+		Handler: handleBlacklisted,
+		Filters: []telegram.Filter{ownerFilter, ignoreChannelFilter},
+	},
+
+	{
 		Pattern: "(speedtest|spt)",
 		Handler: sptHandle,
 		Filters: []telegram.Filter{sudoOnlyFilter, ignoreChannelFilter},
@@ -464,6 +490,7 @@ var cbHandlers = []CbHandlerDef{
 
 func Init(bot *telegram.Client, assistants *core.AssistantManager) {
 	bot.UpdatesGetState()
+	bot.Use(blacklistMessageMiddleware)
 	assistants.ForEach(func(a *core.Assistant) {
 		a.Client.UpdatesGetState()
 	})
@@ -474,7 +501,7 @@ func Init(bot *telegram.Client, assistants *core.AssistantManager) {
 	}
 
 	for _, h := range cbHandlers {
-		bot.AddCallbackHandler(h.Pattern, SafeCallbackHandler(h.Handler), h.Filters...).
+		bot.AddCallbackHandler(h.Pattern, WithBlacklistCallback(SafeCallbackHandler(h.Handler)), h.Filters...).
 			SetGroup(90)
 	}
 
