@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode/utf16"
 
 	"github.com/amarnathcjd/gogram/telegram"
 )
@@ -64,7 +65,7 @@ func extractFromEntities(m *telegram.NewMessage, text string) (int64, error) {
 
 		// @username mention → resolve peer
 		case *telegram.MessageEntityMention:
-			username := strings.TrimPrefix(text[e.Offset:e.Offset+e.Length], "@")
+			username := strings.TrimPrefix(sliceUTF16(text, int(e.Offset), int(e.Length)), "@")
 			peer, err := m.Client.ResolvePeer(username)
 			if err != nil {
 				return 0, fmt.Errorf("failed to resolve peer for @%s: %w", username, err)
@@ -79,6 +80,19 @@ func extractFromEntities(m *telegram.NewMessage, text string) (int64, error) {
 		}
 	}
 	return 0, nil
+}
+
+// sliceUTF16 extrai a substring de text usando offset/length em code units
+// UTF-16 — que é como o Telegram conta posições de entidades. Usar os valores
+// direto como índice de byte panica ou devolve substring errada quando o texto
+// tem emoji/acento antes/dentro da menção.
+func sliceUTF16(text string, offset, length int) string {
+	u16 := utf16.Encode([]rune(text))
+	end := offset + length
+	if offset < 0 || end > len(u16) || offset > end {
+		return ""
+	}
+	return string(utf16.Decode(u16[offset:end]))
 }
 
 func extractFromPlainText(m *telegram.NewMessage, text string) (int64, error) {
