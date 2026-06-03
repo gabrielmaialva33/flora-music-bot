@@ -184,7 +184,11 @@ func (s *SoundCloudPlatform) extractMetadata(url string) (*ytdlpInfo, error) {
 		url,
 	}
 
-	cmd := exec.Command("yt-dlp", args...)
+	// Timeout: extração de metadata sem cancelamento poderia pendurar; o Download
+	// já usa CommandContext.
+	cmdCtx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(cmdCtx, "yt-dlp", args...)
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout

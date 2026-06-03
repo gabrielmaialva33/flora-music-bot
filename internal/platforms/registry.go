@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Laky-64/gologging"
 	"github.com/amarnathcjd/gogram/telegram"
@@ -36,7 +37,9 @@ var (
 	registry = &PlatformRegistry{
 		platforms: make([]platformEntry, 0),
 	}
-	rc = resty.New()
+	// rc tem timeout: sem ele, resty.New() não impõe deadline e uma resposta
+	// lenta/half-open (ex.: InnerTube do YouTube) penduraria a goroutine pra sempre.
+	rc = resty.New().SetTimeout(30 * time.Second)
 )
 
 // Register adds a platform to the registry with given priority

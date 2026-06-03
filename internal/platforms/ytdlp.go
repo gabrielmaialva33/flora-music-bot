@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/Laky-64/gologging"
 	"github.com/amarnathcjd/gogram/telegram"
@@ -326,7 +327,11 @@ func (y *YtdlpPlatform) extractMetadata(urlStr string) (*ytdlpInfo, error) {
 
 	args = append(args, urlStr)
 
-	cmd := exec.Command("yt-dlp", args...)
+	// Timeout: o Download usa CommandContext, mas a extração de metadata não tinha
+	// cancelamento — yt-dlp poderia pendurar numa rede lenta sem nunca retornar.
+	cmdCtx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(cmdCtx, "yt-dlp", args...)
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout

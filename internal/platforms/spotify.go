@@ -284,7 +284,9 @@ func (s *SpotifyPlatform) getPlaylist(
 			tracks = append(tracks, track)
 		}
 
-		if playlistPage.Next == "" {
+		// Para também ao atingir o limite de fila — sem isso, uma playlist gigante
+		// carregaria milhares de faixas em memória e dispararia N requests à toa.
+		if playlistPage.Next == "" || len(tracks) >= config.QueueLimit {
 			break
 		}
 
