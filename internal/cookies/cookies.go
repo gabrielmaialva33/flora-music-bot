@@ -84,13 +84,13 @@ func downloadCookieFile(url string) error {
 	filePath := filepath.Join(cookieDir, id+".txt")
 
 	resp, err := client.R().
-		SetOutputFileName(filePath).
+		SetResponseSaveFileName(filePath).
 		Get(rawURL)
 	if err != nil {
 		return err
 	}
 
-	if resp.IsError() {
+	if resp.IsStatusFailure() {
 		return fmt.Errorf(
 			"unexpected status %d from %s",
 			resp.StatusCode(),

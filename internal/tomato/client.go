@@ -81,7 +81,7 @@ func (c *Client) Feed() (*FeedResponse, error) {
 	if err != nil {
 		return nil, wrapTransportErr(err)
 	}
-	if resp.IsError() {
+	if resp.IsStatusFailure() {
 		return nil, statusErr(resp.StatusCode())
 	}
 	return out, nil
@@ -107,7 +107,7 @@ func (c *Client) Search(query string, page int) (*SearchResponse, error) {
 	if err != nil {
 		return nil, wrapTransportErr(err)
 	}
-	if resp.IsError() {
+	if resp.IsStatusFailure() {
 		return nil, statusErr(resp.StatusCode())
 	}
 	return out, nil
@@ -126,7 +126,7 @@ func (c *Client) Anime(animeID int) (*AnimeResponse, error) {
 	if err != nil {
 		return nil, wrapTransportErr(err)
 	}
-	if resp.IsError() {
+	if resp.IsStatusFailure() {
 		return nil, statusErr(resp.StatusCode())
 	}
 	return out, nil
@@ -158,7 +158,7 @@ func (c *Client) SeasonEpisodes(
 	if err != nil {
 		return nil, wrapTransportErr(err)
 	}
-	if resp.IsError() {
+	if resp.IsStatusFailure() {
 		return nil, statusErr(resp.StatusCode())
 	}
 	return out, nil
@@ -178,7 +178,7 @@ func (c *Client) EpisodeStream(episodeID int) (*EpisodeStreamResponse, error) {
 	if err != nil {
 		return nil, wrapTransportErr(err)
 	}
-	if resp.IsError() {
+	if resp.IsStatusFailure() {
 		return nil, statusErr(resp.StatusCode())
 	}
 	return out, nil
