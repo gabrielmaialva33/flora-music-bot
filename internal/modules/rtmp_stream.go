@@ -14,11 +14,12 @@ import (
 	"main/internal/core"
 	"main/internal/database"
 	"main/internal/locales"
+	"main/internal/rtmp"
 	"main/internal/utils"
 )
 
 var (
-	rtmpStreams   = make(map[int64]*tg.RTMPStream)
+	rtmpStreams   = make(map[int64]*rtmp.Stream)
 	rtmpStreamsMu sync.RWMutex
 )
 
@@ -113,7 +114,7 @@ Stream keys RTMP são tipo senhas. Configurar no DM evita vazamento acidental em
 }
 
 // Get or create RTMP stream for chat
-func getOrCreateRTMPStream(chatID int64) (*tg.RTMPStream, error) {
+func getOrCreateRTMPStream(chatID int64) (*rtmp.Stream, error) {
 	rtmpStreamsMu.Lock()
 	defer rtmpStreamsMu.Unlock()
 
@@ -128,7 +129,7 @@ func getOrCreateRTMPStream(chatID int64) (*tg.RTMPStream, error) {
 		)
 	}
 
-	stream, err := core.Bot.NewRTMPStream(chatID)
+	stream, err := rtmp.New(core.Bot, chatID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RTMP stream: %w", err)
 	}
@@ -185,7 +186,7 @@ func handleStream(m *tg.NewMessage, force bool) error {
 		return tg.ErrEndGroup
 	}
 
-	if stream.State() == tg.StreamStatePlaying && !force {
+	if stream.State() == rtmp.StatePlaying && !force {
 		m.Reply(F(chatID, "rtmp_already_streaming"))
 		return tg.ErrEndGroup
 	}
@@ -287,7 +288,7 @@ func streamStopHandler(m *tg.NewMessage) error {
 	stream, exists := rtmpStreams[chatID]
 	rtmpStreamsMu.RUnlock()
 
-	if !exists || stream.State() != tg.StreamStatePlaying {
+	if !exists || stream.State() != rtmp.StatePlaying {
 		m.Reply(F(chatID, "rtmp_not_streaming"))
 		return tg.ErrEndGroup
 	}
@@ -336,12 +337,12 @@ func streamStatusHandler(m *tg.NewMessage) error {
 
 	var statusText string
 	switch state {
-	case tg.StreamStatePlaying:
+	case rtmp.StatePlaying:
 		statusText = F(chatID, "rtmp_status_playing", locales.Arg{
 			"position": formatDuration(int(pos.Seconds())),
 			"server":   maskRTMPURL(url),
 		})
-	case tg.StreamStatePaused:
+	case rtmp.StatePaused:
 		statusText = F(chatID, "rtmp_status_paused", locales.Arg{
 			"server": maskRTMPURL(url),
 		})
