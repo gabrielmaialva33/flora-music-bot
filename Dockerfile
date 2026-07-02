@@ -40,15 +40,17 @@ RUN curl -fL \
       -o /usr/local/bin/yt-dlp && \
     chmod 0755 /usr/local/bin/yt-dlp && \
     curl -fsSL https://deno.land/install.sh -o /tmp/deno-install.sh && \
-    sh /tmp/deno-install.sh && \
+    DENO_INSTALL=/usr/local sh /tmp/deno-install.sh && \
     rm -f /tmp/deno-install.sh
 
-ENV DENO_INSTALL=/root/.deno
-ENV PATH=$DENO_INSTALL/bin:$PATH
+# Deno resolve o desafio JS do YouTube (n-sig / signature) usado pelo yt-dlp.
+# Instalado em /usr/local/bin (acessível ao usuário não-root); HOME gravável
+# é necessário pro cache do solver.
+ENV HOME=/home/appuser
 
-RUN useradd -r -u 10001 appuser && \
+RUN useradd -r -u 10001 -m -d /home/appuser appuser && \
     mkdir -p /app && \
-    chown -R appuser:appuser /app
+    chown -R appuser:appuser /app /home/appuser
 
 WORKDIR /app
 
