@@ -139,3 +139,40 @@ func GetRandomCookieFile() (string, error) {
 
 	return cachedFiles[rand.Intn(len(cachedFiles))], nil
 }
+
+// PrepareTempCookie copia um cookie aleatório pra um arquivo temporário e
+// devolve o caminho + uma função de limpeza. O yt-dlp reescreve o arquivo
+// passado em --cookies (save_cookies); usar uma cópia descartável evita que ele
+// degrade o arquivo master a cada download. Devolve ("", no-op) quando não há
+// cookies disponíveis — o chamador só adiciona --cookies se o caminho != "".
+func PrepareTempCookie() (string, func()) {
+	noop := func() {}
+
+	src, err := GetRandomCookieFile()
+	if err != nil || src == "" {
+		return "", noop
+	}
+
+	data, err := os.ReadFile(src)
+	if err != nil {
+		gologging.WarnF("cookies: failed to read %s: %v", src, err)
+		return "", noop
+	}
+
+	tmp, err := os.CreateTemp("", "ytck-*.txt")
+	if err != nil {
+		gologging.WarnF("cookies: failed to create temp cookie: %v", err)
+		return "", noop
+	}
+
+	if _, err := tmp.Write(data); err != nil {
+		tmp.Close()
+		os.Remove(tmp.Name())
+		gologging.WarnF("cookies: failed to write temp cookie: %v", err)
+		return "", noop
+	}
+	tmp.Close()
+
+	path := tmp.Name()
+	return path, func() { os.Remove(path) }
+}

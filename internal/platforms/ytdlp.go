@@ -239,10 +239,11 @@ func (y *YtdlpPlatform) Download(
 		)
 	}
 
-	// Cookies (YouTube only)
+	// Cookies (YouTube only). Cópia descartável: o yt-dlp reescreve o arquivo
+	// passado em --cookies (save_cookies), o que degradaria o master.
 	if y.isYouTubeURL(track.URL) {
-		if cookieFile, err := cookies.GetRandomCookieFile(); err == nil &&
-			cookieFile != "" {
+		if cookieFile, cleanup := cookies.PrepareTempCookie(); cookieFile != "" {
+			defer cleanup()
 			formatArgs = append(formatArgs, "--cookies", cookieFile)
 		}
 	}
@@ -263,10 +264,10 @@ func (y *YtdlpPlatform) extractMetadata(
 ) (*ytdlpInfo, error) {
 	var extraArgs []string
 
-	// Add cookies only for YouTube
+	// Add cookies only for YouTube. Cópia descartável — ver Download.
 	if y.isYouTubeURL(urlStr) {
-		cookieFile, err := cookies.GetRandomCookieFile()
-		if err == nil && cookieFile != "" {
+		if cookieFile, cleanup := cookies.PrepareTempCookie(); cookieFile != "" {
+			defer cleanup()
 			extraArgs = append(extraArgs, "--cookies", cookieFile)
 		}
 	}
