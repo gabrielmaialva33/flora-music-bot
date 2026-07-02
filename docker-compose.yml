@@ -1,0 +1,14 @@
+services:
+  flora:
+    build: .
+    image: flora-music-bot:latest
+    container_name: flora
+    restart: unless-stopped
+    env_file: .env
+    # Bot MTProto worker: long-polling, sem portas expostas.
+    # MongoDB é Atlas (cloud) — não há serviço de banco aqui.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
