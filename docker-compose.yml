@@ -7,6 +7,10 @@ services:
     env_file: .env
     # Bot MTProto worker: long-polling, sem portas expostas.
     # MongoDB é Atlas (cloud) — não há serviço de banco aqui.
+    volumes:
+      # Cookies do YouTube (Netscape .txt) lidos em runtime pelo yt-dlp.
+      # Pasta no host, fora do git — não versionar credenciais.
+      - ./cookies-data:/app/internal/cookies
     logging:
       driver: json-file
       options:
